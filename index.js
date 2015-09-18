@@ -1,6 +1,6 @@
 'use strict';
 
-var transpiler = require('babel-core');
+var ts         = require('typescript');
 var Filter     = require('broccoli-persistent-filter');
 var clone      = require('clone');
 var path       = require('path');
@@ -24,74 +24,21 @@ function replaceExtensions(extensionsRegex, name) {
   return name;
 }
 
-function Babel(inputTree, _options) {
-  if (!(this instanceof Babel)) {
-    return new Babel(inputTree, _options);
+function TypeScript(inputTree, options) {
+  if (!(this instanceof TypeScript)) {
+    return new TypeScript(inputTree);
   }
 
-  var options = _options || {};
-  options.persist = !options.exportModuleMetadata; // TODO: make this also work in cache
-  Filter.call(this, inputTree, options);
+  Filter.call(this, inputTree, {extensions: ['ts','d.ts'], targetExtension: 'js'});
 
-  delete options.persist;
-  this.options = options;
-  this.moduleMetadata = {};
-  this.extensions = this.options.filterExtensions || ['js'];
-  this.extensionsRegex = getExtensionsRegex(this.extensions);
-  this.name = 'broccoli-babel-transpiler';
-
-  if (this.options.exportModuleMetadata) {
-    this.exportModuleMetadata = this.options.exportModuleMetadata;
-  }
-  // Note, Babel does not support this option so we must save it then
-  // delete it from the options hash
-  delete this.options.exportModuleMetadata;
-
-  if (this.options.browserPolyfill) {
-    var babelCorePath = require.resolve('babel-core');
-    babelCorePath = babelCorePath.replace(/\/babel-core\/.*$/, '/babel-core');
-
-    var polyfill = funnel(babelCorePath, { files: ['browser-polyfill.js'] });
-    this.inputTree = mergeTrees([polyfill, inputTree]);
-  } else {
-    this.inputTree = inputTree;
-  }
-  delete this.options.browserPolyfill;
+  this.name = 'broccoli-typescript-compiler';
 }
 
-Babel.prototype = Object.create(Filter.prototype);
-Babel.prototype.constructor = Babel;
-Babel.prototype.targetExtension = ['js'];
+TypeScript.prototype = Object.create(Filter.prototype);
+TypeScript.prototype.constructor = TypeScript;
 
-Babel.prototype.baseDir = function() {
+TypeScript.prototype.baseDir = function() {
   return __dirname;
-};
-
-Babel.prototype.build = function() {
-  var self = this;
-  return Filter.prototype.build.call(this).then(function() {
-    if (self.exportModuleMetadata) {
-      self._generateDepGraph();
-    }
-  });
-};
-
-Babel.prototype._generateDepGraph = function() {
-  var residentImports = this._cache.keys().map(byImportName);
-  var imports = Object.keys(this.moduleMetadata);
-  var evictedImports = diff(imports, residentImports);
-
-  if (evictedImports.length > 0) {
-    evictedImports.forEach(function(importName) {
-      delete this.moduleMetadata[importName];
-    }, this);
-  }
-
-  fs.writeFileSync(this.outputPath + path.sep + 'dep-graph.json', stringify(this.moduleMetadata, { space: 2 }));
-};
-
-Babel.prototype.transform = function(string, options) {
-  return transpiler.transform(string, options);
 };
 
 /*
@@ -100,54 +47,19 @@ Babel.prototype.transform = function(string, options) {
  * @method optionsString
  * @returns a stringifeid version of the input options
  */
-Babel.prototype.optionsHash  = function() {
+TypeScript.prototype.optionsHash  = function() {
   if (!this._optionsHash) {
     this._optionsHash = crypto.createHash('md5').update(stringify(this.options), 'utf8').digest('hex');
   }
   return this._optionsHash;
 };
 
-Babel.prototype.cacheKeyProcessString = function(string, relativePath) {
+TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
   return this.optionsHash() + Filter.prototype.cacheKeyProcessString.call(this, string, relativePath);
 };
 
-Babel.prototype.processString = function (string, relativePath) {
-  var options = this.copyOptions();
-
-  options.filename = options.sourceMapName = options.sourceFileName = relativePath;
-
-  if (options.moduleId === true) {
-    options.moduleId = replaceExtensions(this.extensionsRegex, options.filename);
-  }
-
-  var transpiled = this.transform(string, options);
-  var key = options.moduleId ? options.moduleId : relativePath;
-
-  if (transpiled.metadata && transpiled.metadata.modules) {
-    this.moduleMetadata[byImportName(key)] = transpiled.metadata.modules;
-  }
-
-  return transpiled.code;
+TypeScript.prototype.processString = function (string, relativePath) {
+  return ts.transpileModule(string, {compilerOptions: {target: 'ES6'}}).outputText;
 };
 
-Babel.prototype.copyOptions = function() {
-  var cloned = clone(this.options);
-  if (cloned.filterExtensions) {
-    delete cloned.filterExtensions;
-  }
-  return cloned;
-};
-
-function byImportName(relativePath) {
-  return relativePath.replace(path.extname(relativePath), '');
-}
-
-function diff(array, exclusions) {
-  return array.filter(function(item) {
-    return !exclusions.some(function(exclude) {
-      return item === exclude;
-    });
-  });
-}
-
-module.exports = Babel;
+module.exports = TypeScript;

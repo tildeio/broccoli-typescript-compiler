@@ -1,7 +1,7 @@
 {
-  "name": "broccoli-babel-transpiler",
-  "version": "5.4.5",
-  "description": "A Broccoli plugin which transpile ES6 to readable ES5 by using babel.",
+  "name": "broccoli-typescript-compiler",
+  "version": "0.0.1",
+  "description": "A Broccoli plugin which compile TypeScript into ES6.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test.js",
@@ -9,26 +9,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/babel/broccoli-babel-transpiler.git"
+    "url": "https://github.com/tildeio/broccoli-typescript-compiler.git"
   },
   "keywords": [
     "broccoli-plugin",
-    "transpiler",
-    "es6",
-    "ecmascript",
-    "ecmascript6",
-    "harmony",
+    "compiler",
+    "TypeScript",
     "javascript",
     "js"
   ],
-  "author": "nightire <nightire@very-geek.com> (http://very-geek.com/)",
+  "author": "Godfrey Chan <godfrey@tilde.io> (http://tilde.io/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/babel/broccoli-babel-transpiler/issues"
+    "url": "https://github.com/tildeio/broccoli-typescript-compiler/issues"
   },
-  "homepage": "https://github.com/babel/broccoli-babel-transpiler",
+  "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
-    "babel-core": "^5.0.0",
+    "typescript": "next",
     "broccoli-funnel": "^0.2.3",
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-persistent-filter": "^1.0.1",
