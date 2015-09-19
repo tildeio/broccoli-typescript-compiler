@@ -6,7 +6,7 @@
 
 
 A [Broccoli](https://github.com/broccolijs/broccoli) plugin which
-transpiles [TypeScript](http://www.typescriptlang.org) into ES6.
+compiles [TypeScript](http://www.typescriptlang.org) files.
 
 ## How to install?
 

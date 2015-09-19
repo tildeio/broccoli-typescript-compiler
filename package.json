@@ -1,7 +1,7 @@
 {
   "name": "broccoli-typescript-compiler",
   "version": "0.0.1",
-  "description": "A Broccoli plugin which compile TypeScript into ES6.",
+  "description": "A Broccoli plugin which compiles TypeScript files.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test.js",

@@ -1,10 +1,11 @@
-import Greeter from './types';
-class Person {
-    constructor(name) {
+var types_1 = require('./types');
+var Person = (function () {
+    function Person(name) {
         this._name = name;
     }
-    name() {
+    Person.prototype.name = function () {
         return this._name;
-    }
-}
-document.body.innerHTML = new Greeter().greet(new Person("Godfrey"));
+    };
+    return Person;
+})();
+document.body.innerHTML = new types_1["default"]().greet(new Person("Godfrey"));

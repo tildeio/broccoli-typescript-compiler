@@ -24,6 +24,27 @@ function replaceExtensions(extensionsRegex, name) {
   return name;
 }
 
+function parseOptions(tsconfigPath) {
+  try {
+    var configFile = fs.readFileSync(tsconfigPath);
+    var rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
+
+    if (rawConfig.error) {
+      throw new Error(rawConfig.error);
+    }
+
+    var parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
+
+    if (parsedConfig.errors && parsedConfig.errors.length) {
+      throw new Error(parsedConfig.errors.join(", "));
+    }
+
+    return parsedConfig.options;
+  } catch(e) {
+    throw new Error("Cannot load tsconfig.json from " + path + ": " + e.message);
+  }
+}
+
 function TypeScript(inputTree, options) {
   if (!(this instanceof TypeScript)) {
     return new TypeScript(inputTree);
@@ -31,15 +52,13 @@ function TypeScript(inputTree, options) {
 
   Filter.call(this, inputTree, {extensions: ['ts','d.ts'], targetExtension: 'js'});
 
+  this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), "tsconfig.json"));
+
   this.name = 'broccoli-typescript-compiler';
 }
 
 TypeScript.prototype = Object.create(Filter.prototype);
 TypeScript.prototype.constructor = TypeScript;
-
-TypeScript.prototype.baseDir = function() {
-  return __dirname;
-};
 
 /*
  * @private
@@ -59,7 +78,14 @@ TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
 };
 
 TypeScript.prototype.processString = function (string, relativePath) {
-  return ts.transpileModule(string, {compilerOptions: {target: 'ES6'}}).outputText;
+  try{
+    return ts.transpileModule(string, {compilerOptions: this.options}).outputText;
+  }catch(e){
+    console.log("TYPESCRIPT ERROR: " + e.message)
+    console.log(e.stack + "\n");
+
+    return "";
+  }
 };
 
 module.exports = TypeScript;

@@ -17,12 +17,12 @@ var expectations = path.join(__dirname, 'expectations');
 
 var typescript;
 
-describe('transpile TypeScript to ES6', function() {
+describe('transpile TypeScript', function() {
 
   before(function() {
     typescript = makeTestHelper({
-      subject: function(tree) {
-        return new TypeScript(tree);
+      subject: function(tree, options) {
+        return new TypeScript(tree, options);
       },
       fixturePath: inputPath
     });
@@ -33,12 +33,25 @@ describe('transpile TypeScript to ES6', function() {
     return cleanupBuilders();
   });
 
-  it('basic', function () {
+  it('uses tsconfig from CWD by default', function () {
     return typescript('files').then(function(results) {
       var outputPath = results.directory;
 
       var output = fs.readFileSync(path.join(outputPath, 'fixtures.js')).toString();
       var input = fs.readFileSync(path.join(expectations,  'expected.js')).toString();
+
+      expect(output).to.eql(input);
+    });
+  });
+  
+  it('uses tsconfig from options', function () {
+    var tsconfigPath = path.join(__dirname, "fixtures", "tsconfig.json");
+    
+    return typescript('files', {tsconfig: tsconfigPath}).then(function(results) {
+      var outputPath = results.directory;
+
+      var output = fs.readFileSync(path.join(outputPath, 'fixtures.js')).toString();
+      var input = fs.readFileSync(path.join(expectations,  'expected.es6')).toString();
 
       expect(output).to.eql(input);
     });
