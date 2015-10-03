@@ -41,7 +41,7 @@ function parseOptions(tsconfigPath) {
 
     return parsedConfig.options;
   } catch(e) {
-    throw new Error("Cannot load tsconfig.json from " + path + ": " + e.message);
+    throw new Error("Cannot load tsconfig.json from " + tsconfigPath + ": " + e.message);
   }
 }
 
