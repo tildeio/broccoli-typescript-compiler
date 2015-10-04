@@ -25,11 +25,14 @@
   },
   "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
-    "broccoli-funnel": "^0.2.3",
     "broccoli-merge-trees": "^0.2.1",
-    "broccoli-persistent-filter": "^1.0.1",
+    "broccoli-plugin": "^1.2.0",
+    "broccoli-funnel": "^0.2.8",
     "clone": "^0.2.0",
-    "json-stable-stringify": "^1.0.0"
+    "json-stable-stringify": "^1.0.0",
+    "walk-sync": "^0.2.3",
+    "filendir": "^1.0.0",
+    "chalk": "^1.1.1"
   },
   "peerDependencies": {
     "typescript": "^1.6.2 || ^1.7.0-dev"
