@@ -94,7 +94,7 @@ function TypeScript(inputNodes, options) {
           preserveConstEnums: true,
           removeComments: false,
           sourceMap: false,
-          target: 2
+          target: 2 // ES6
         };
       },
       getDefaultLibFileName: function (options) { return ts.getDefaultLibFilePath(options); },
@@ -150,7 +150,7 @@ TypeScript.prototype.build = function() {
     if (self.files.hasOwnProperty(file) && self.files[file].needsEmit) {
       var f = self.files[file];
       var emitFailed = self.emitFile(f.absPath, f.srcDir, self.outputPath);
-      f.needsEmit = false;
+      f.needsEmit = emitFailed;
     }
   }
 }
