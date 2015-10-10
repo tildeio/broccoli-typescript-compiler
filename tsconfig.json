@@ -1,5 +1,10 @@
 {
 	"compilerOptions": {
-		"target": "ES3"
-	}
+		"target": "ES3",
+		"module": "commonjs"
+	},
+	"files": [
+		"index.ts",
+		"typings/tsd.d.ts"
+	]
 }
