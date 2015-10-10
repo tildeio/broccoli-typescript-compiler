@@ -1,10 +1,13 @@
 import Filter = require('broccoli-filter');
 import TS = require('typescript');
-
-interface TypeScriptFilterOptions {}
+import _ = require('lodash');
+import fs = require('fs');
 
 class TypeScript extends Filter {
 	constructor(inputNode: BroccoliNode, options: TypeScriptFilterOptions) {
+		// TODO: Handle options... and test
+		// Options: tsConfigPath, then merge in tsOptions
+		_.merge({}, options.tsOptions, JSON.parse(fs.readFileSync('file', 'utf8')));
 		super(inputNode, {
 			name: 'typescript',
 			annotation: inputNode.annotation,

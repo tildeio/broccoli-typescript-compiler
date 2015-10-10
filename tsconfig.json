@@ -5,6 +5,8 @@
 	},
 	"files": [
 		"index.ts",
+		"lib/ConfigParser.ts",
+		"test/ConfigParserTest.ts",
 		"typings/tsd.d.ts"
 	]
 }

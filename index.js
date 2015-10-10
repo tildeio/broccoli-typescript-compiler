@@ -5,9 +5,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Filter = require('broccoli-filter');
 var TS = require('typescript');
+var _ = require('lodash');
+var fs = require('fs');
 var TypeScript = (function (_super) {
     __extends(TypeScript, _super);
     function TypeScript(inputNode, options) {
+        // TODO: Handle options... and test
+        // Options: tsConfigPath, then merge in tsOptions
+        _.merge({}, options.tsOptions, JSON.parse(fs.readFileSync('file', 'utf8')));
         _super.call(this, inputNode, {
             name: 'typescript',
             annotation: inputNode.annotation,

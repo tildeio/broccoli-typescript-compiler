@@ -4,8 +4,9 @@
   "description": "A Broccoli plugin which compiles TypeScript files.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test.js",
-    "test:debug": "mocha debug test.js"
+    "pretest": "tsc",
+    "test": "node_modules/mocha/bin/mocha test/**/*.js",
+    "test:debug": "node_modules/mocha/bin/mocha debug test.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,8 @@
   "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
     "broccoli-filter": "^1.2.2",
+    "lodash": "^3.10.1",
+    
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-plugin": "^1.2.0",
     "broccoli-funnel": "^0.2.8",
@@ -39,8 +42,9 @@
   "devDependencies": {
     "broccoli": "^0.16.3",
     "broccoli-test-helpers": "0.0.8",
-    "chai": "^1.10.0",
     "mkdirp": "^0.5.1",
+    
+    "chai": "^1.10.0",
     "mocha": "^1.21.4"
   }
 }
