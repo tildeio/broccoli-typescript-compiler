@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
+    "broccoli-filter": "^1.2.2",
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-plugin": "^1.2.0",
     "broccoli-funnel": "^0.2.8",
@@ -40,7 +41,6 @@
     "broccoli-test-helpers": "0.0.8",
     "chai": "^1.10.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^1.21.4",
-    "rimraf": "^2.4.2"
+    "mocha": "^1.21.4"
   }
 }
