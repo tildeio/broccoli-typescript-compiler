@@ -1,4 +1,5 @@
 import Filter from "broccoli-filter"
+import * as TS from 'typescript'
 
 interface TypeScriptFilterOptions {}
 
@@ -13,7 +14,7 @@ class TypeScript extends Filter {
 	}
 	
 	processString(contents: string, relativePath: string): string {
-		return '';
+		return TS.transpileModule(contents, {compilerOptions: {}, fileName: relativePath}).outputText;
 	}
 }
 
