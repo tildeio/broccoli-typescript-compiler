@@ -32,10 +32,8 @@
     "json-stable-stringify": "^1.0.0",
     "walk-sync": "^0.2.3",
     "filendir": "^1.0.0",
-    "chalk": "^1.1.1"
-  },
-  "peerDependencies": {
-    "typescript": "^1.6.2 || ^1.7.0-dev"
+    "chalk": "^1.1.1",
+    "typescript": "^1.7.0-dev.20151006"
   },
   "devDependencies": {
     "broccoli": "^0.16.3",

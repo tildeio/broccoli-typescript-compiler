@@ -90,11 +90,11 @@ function TypeScript(inputNodes, options) {
           diagnostics: true,
           noImplicitAny: true,
           //outDir: self.outputPath, TODO: Get this working
-          module: 0,
+          module: 5,
           preserveConstEnums: true,
           removeComments: false,
           sourceMap: false,
-          target: 2 // ES6
+          target: 0 // ES3
         };
       },
       getDefaultLibFileName: function (options) { return ts.getDefaultLibFilePath(options); },
