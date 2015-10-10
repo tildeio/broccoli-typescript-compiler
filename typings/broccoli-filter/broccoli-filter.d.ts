@@ -16,5 +16,5 @@ declare module "broccoli-filter" {
 		getDestFilePath(relativePath: string): string;
 	}
 	
-	export default BroccoliFilter
+	export = BroccoliFilter
 }

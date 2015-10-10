@@ -1,5 +1,5 @@
-import Filter from "broccoli-filter"
-import * as TS from 'typescript'
+import Filter = require('broccoli-filter');
+import TS = require('typescript');
 
 interface TypeScriptFilterOptions {}
 
@@ -18,4 +18,4 @@ class TypeScript extends Filter {
 	}
 }
 
-export default TypeScript;
+export = TypeScript;

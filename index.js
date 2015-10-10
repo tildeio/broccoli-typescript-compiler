@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var broccoli_filter_1 = require("broccoli-filter");
+var Filter = require('broccoli-filter');
 var TS = require('typescript');
 var TypeScript = (function (_super) {
     __extends(TypeScript, _super);
@@ -19,6 +19,5 @@ var TypeScript = (function (_super) {
         return TS.transpileModule(contents, { compilerOptions: {}, fileName: relativePath }).outputText;
     };
     return TypeScript;
-})(broccoli_filter_1["default"]);
-exports.__esModule = true;
-exports["default"] = TypeScript;
+})(Filter);
+module.exports = TypeScript;
