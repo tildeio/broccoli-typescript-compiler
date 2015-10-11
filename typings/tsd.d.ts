@@ -16,12 +16,20 @@ declare module 'pinkie-promise' {
 //
 
 interface TSFile {
-        version: number,
+        hash: {
+			key: {
+				mtime: number,
+				basePath?: string,
+				relativePath?: string
+			}
+		},
 		contents: string
 }
 
 interface TSFileRegistry {
-        [relativeFilePath: string] : TSFile
+        get(relativePath: string): TSFile;
+		set(key: any, value: TSFile);
+		keys(): string[];
 }
 
 interface TypeScriptFilterOptions {

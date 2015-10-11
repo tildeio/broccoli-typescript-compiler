@@ -11,16 +11,16 @@ var BFLanguageServiceHost = require('./lib/BFLanguageServiceHost');
 var TypeScript = (function (_super) {
     __extends(TypeScript, _super);
     function TypeScript(inputNode, options) {
-        this.options = new ConfigParser(options);
-        this.fileRegistry = {};
-        var languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, path.join(__dirname, inputNode.toString()), this.fileRegistry);
-        this.tsService = ts.createLanguageService(languageServiceHost, ts.createDocumentRegistry());
         _super.call(this, inputNode, {
             name: 'typescript',
             annotation: inputNode.toString(),
             extensions: ['ts'],
             targetExtension: 'js'
         });
+        this.options = new ConfigParser(options);
+        this.fileRegistry = this._cache;
+        var languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, path.join(__dirname, inputNode.toString()), this.fileRegistry);
+        this.tsService = ts.createLanguageService(languageServiceHost, ts.createDocumentRegistry());
     }
     TypeScript.prototype.processString = function (contents, relativePath) {
         // TODO: Need to know when files are deleted to remove from fileRegistry...
@@ -28,34 +28,22 @@ var TypeScript = (function (_super) {
         // TODO: Test this.
         // TODO: Output errors
         // TODO: Reemit files in our registry that had prior build errors
-        //
-        // TODO: Could synchronize with cache...
-        // this._cache
-        var confirmedFiles = this._cache.keys();
-        var confirmedFilesSet = {};
-        for (var i = 0; i < confirmedFiles.length; i++) {
-            confirmedFilesSet[confirmedFiles[i]] = true;
+        // the first time a file is built, it has no cache entry
+        if (this.fileRegistry.get(relativePath)) {
+            this.fileRegistry.get(relativePath).contents = contents;
+            this.fileRegistry.get(relativePath).hash.key.mtime++; // Hack to trigger update since cache doesn't get updated until after processString
         }
-        var lsFiles = Object.keys(this.fileRegistry);
-        for (var i = 0; i < lsFiles.length; i++) {
-            if (lsFiles[i] in confirmedFilesSet) {
-                continue;
-            }
+        else {
+            this.fileRegistry.set(relativePath, {
+                contents: contents,
+                hash: { key: { mtime: 1337 } }
+            }); // temporary cache entry
         }
-        if (!this.fileRegistry[relativePath]) {
-            this.fileRegistry[relativePath] = {
-                version: 0,
-                contents: ""
-            };
-        }
-        console.log(relativePath, " changed");
-        this.fileRegistry[relativePath].contents = contents;
-        this.fileRegistry[relativePath].version++;
         var output = this.tsService.getEmitOutput(relativePath);
         if (output.outputFiles.length > 1) {
             throw new Error("More than one file was emitted on this change... Are you using const enums or internal modules?");
         }
-        return output.outputFiles[0].text;
+        return output.outputFiles[0].text; // after we return, our cache entry is overwritten so we lose contents. could keep separate cahce but then have to worry about deleting it
     };
     return TypeScript;
 })(Filter);

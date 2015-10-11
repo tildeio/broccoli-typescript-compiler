@@ -11,18 +11,17 @@ class TypeScript extends Filter {
 	private fileRegistry: TSFileRegistry;
 
 	constructor(inputNode: BroccoliNode, options: TypeScriptFilterOptions) {
-		this.options = new ConfigParser(options);
-
-		this.fileRegistry = {};
-		const languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, path.join(__dirname, inputNode.toString()), this.fileRegistry);
-		this.tsService = ts.createLanguageService(languageServiceHost, ts.createDocumentRegistry());
-
 		super(inputNode, {
 			name: 'typescript',
 			annotation: inputNode.toString(),
 			extensions: ['ts'],
 			targetExtension: 'js',
 		});
+
+		this.options = new ConfigParser(options);
+		this.fileRegistry = this._cache;
+		const languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, path.join(__dirname, inputNode.toString()), this.fileRegistry);
+		this.tsService = ts.createLanguageService(languageServiceHost, ts.createDocumentRegistry());
 	}
 
 	processString(contents: string, relativePath: string): string {
@@ -32,39 +31,24 @@ class TypeScript extends Filter {
 		// TODO: Test this.
 		// TODO: Output errors
 		// TODO: Reemit files in our registry that had prior build errors
-		//
-		// TODO: Could synchronize with cache...
-		// this._cache
-		let confirmedFiles = (<any>this)._cache.keys();
-		let confirmedFilesSet = {};
-		for(let i = 0; i < confirmedFiles.length; i++) { confirmedFilesSet[confirmedFiles[i]] = true; }
 
-		let lsFiles = Object.keys(this.fileRegistry);
-		for(let i = 0; i < lsFiles.length; i++) {
-			if (lsFiles[i] in confirmedFilesSet) {
-				continue;
-			}
-			//delete this.fileRegistry[lsFiles[i]];
+		// the first time a file is built, it has no cache entry
+		if (this.fileRegistry.get(relativePath)) {
+			this.fileRegistry.get(relativePath).contents = contents;
+			this.fileRegistry.get(relativePath).hash.key.mtime++; // Hack to trigger update since cache doesn't get updated until after processString
+		} else {
+			this.fileRegistry.set(relativePath, {
+				contents,
+				hash: { key: { mtime: 1337 } }
+			}); // temporary cache entry
 		}
-
-		if (!this.fileRegistry[relativePath]) {
-			this.fileRegistry[relativePath] = {
-				version: 0,
-				contents: ""
-			};
-		}
-
-		console.log(relativePath, " changed");
-
-		this.fileRegistry[relativePath].contents = contents;
-		this.fileRegistry[relativePath].version++;
 
 		const output = this.tsService.getEmitOutput(relativePath);
 		if (output.outputFiles.length > 1) {
 			throw new Error("More than one file was emitted on this change... Are you using const enums or internal modules?");
 		}
 
-		return output.outputFiles[0].text;
+		return output.outputFiles[0].text; // after we return, our cache entry is overwritten so we lose contents. could keep separate cahce but then have to worry about deleting it
 	}
 }
 

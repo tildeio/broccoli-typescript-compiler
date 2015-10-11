@@ -14,6 +14,7 @@ declare module "broccoli-persistent-filter" {
 		constructor(inputNode: BroccoliNode, options: FilterOptions);
 		abstract processString(contents: string, relativePath: string): string;
 		getDestFilePath(relativePath: string): string;
+		_cache: TSFileRegistry
 	}
 
 	export = BroccoliFilter
