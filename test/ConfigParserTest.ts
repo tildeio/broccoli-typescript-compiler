@@ -6,7 +6,7 @@ import sinon = require("sinon");
 import sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 
-import ConfigParser = require("../lib/ConfigParser")
+import ConfigParser = require("../lib/ConfigParser");
 
 describe('ConfigParser', function() {
   context('with no parameters', function() { 

@@ -1,12 +1,14 @@
 import Filter = require('broccoli-filter');
 import TS = require('typescript');
 import fs = require('fs');
+import ConfigParser = require('./lib/ConfigParser');
 
 class TypeScript extends Filter {
+	private options: ConfigParser;
+	
 	constructor(inputNode: BroccoliNode, options: TypeScriptFilterOptions) {
-		// TODO: Handle options... and test
-		// Options: tsConfigPath, then merge in tsOptions
-		_.merge({}, options.tsOptions, JSON.parse(fs.readFileSync('file', 'utf8')));
+		this.options = new ConfigParser(options);
+		
 		super(inputNode, {
 			name: 'typescript',
 			annotation: inputNode.annotation,
