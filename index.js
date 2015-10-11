@@ -5,7 +5,6 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Filter = require('broccoli-filter');
 var TS = require('typescript');
-var _ = require('lodash');
 var fs = require('fs');
 var TypeScript = (function (_super) {
     __extends(TypeScript, _super);

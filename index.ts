@@ -1,6 +1,5 @@
 import Filter = require('broccoli-filter');
 import TS = require('typescript');
-import _ = require('lodash');
 import fs = require('fs');
 
 class TypeScript extends Filter {

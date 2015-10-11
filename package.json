@@ -28,6 +28,7 @@
   "dependencies": {
     "broccoli-filter": "^1.2.2",
     "lodash": "^3.10.1",
+    "tsconfig": "^2.0.0",
     
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-plugin": "^1.2.0",
@@ -45,6 +46,8 @@
     "mkdirp": "^0.5.1",
     
     "chai": "^1.10.0",
-    "mocha": "^1.21.4"
+    "mocha": "^1.21.4",
+    "sinon": "^1.17.1",
+    "sinon-chai": "^2.8.0"
   }
 }
