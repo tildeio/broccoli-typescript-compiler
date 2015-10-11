@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Filter = require('broccoli-filter');
+var Filter = require('broccoli-persistent-filter');
 var ts = require('typescript');
 var path = require('path');
 var ConfigParser = require('./lib/ConfigParser');
@@ -24,9 +24,24 @@ var TypeScript = (function (_super) {
     }
     TypeScript.prototype.processString = function (contents, relativePath) {
         // TODO: Need to know when files are deleted to remove from fileRegistry...
-        // Leverage the _cache as file registry?
-        // called on changed files only
+        // Do stale entries actually cause problems for the language service?
         // TODO: Test this.
+        // TODO: Output errors
+        // TODO: Reemit files in our registry that had prior build errors
+        //
+        // TODO: Could synchronize with cache...
+        // this._cache
+        var confirmedFiles = this._cache.keys();
+        var confirmedFilesSet = {};
+        for (var i = 0; i < confirmedFiles.length; i++) {
+            confirmedFilesSet[confirmedFiles[i]] = true;
+        }
+        var lsFiles = Object.keys(this.fileRegistry);
+        for (var i = 0; i < lsFiles.length; i++) {
+            if (lsFiles[i] in confirmedFilesSet) {
+                continue;
+            }
+        }
         if (!this.fileRegistry[relativePath]) {
             this.fileRegistry[relativePath] = {
                 version: 0,

@@ -7,7 +7,7 @@
 /// <reference path="node/node.d.ts" />
 /// <reference path="chai/chai.d.ts" />
 /// <reference path="mocha/mocha.d.ts" />
-/// <reference path="broccoli-filter/broccoli-filter.d.ts" />
+/// <reference path="broccoli-persistent-filter/broccoli-persistent-filter.d.ts" />
 
 // Pinkie-Promise (for tsconfig)
 declare module 'pinkie-promise' {

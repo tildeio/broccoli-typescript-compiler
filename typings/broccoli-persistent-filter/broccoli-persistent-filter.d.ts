@@ -9,12 +9,12 @@ interface FilterOptions {
 	annotation: string;
 }
 
-declare module "broccoli-filter" {
+declare module "broccoli-persistent-filter" {
 	abstract class BroccoliFilter {
 		constructor(inputNode: BroccoliNode, options: FilterOptions);
 		abstract processString(contents: string, relativePath: string): string;
 		getDestFilePath(relativePath: string): string;
 	}
-	
+
 	export = BroccoliFilter
 }

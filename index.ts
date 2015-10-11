@@ -1,4 +1,4 @@
-import Filter = require('broccoli-filter');
+import Filter = require('broccoli-persistent-filter');
 import ts = require('typescript');
 import fs = require('fs');
 import path = require('path');
@@ -27,9 +27,26 @@ class TypeScript extends Filter {
 
 	processString(contents: string, relativePath: string): string {
 		// TODO: Need to know when files are deleted to remove from fileRegistry...
-		// Leverage the _cache as file registry?
-		// called on changed files only
+		// Do stale entries actually cause problems for the language service?
+
 		// TODO: Test this.
+		// TODO: Output errors
+		// TODO: Reemit files in our registry that had prior build errors
+		//
+		// TODO: Could synchronize with cache...
+		// this._cache
+		let confirmedFiles = (<any>this)._cache.keys();
+		let confirmedFilesSet = {};
+		for(let i = 0; i < confirmedFiles.length; i++) { confirmedFilesSet[confirmedFiles[i]] = true; }
+
+		let lsFiles = Object.keys(this.fileRegistry);
+		for(let i = 0; i < lsFiles.length; i++) {
+			if (lsFiles[i] in confirmedFilesSet) {
+				continue;
+			}
+			//delete this.fileRegistry[lsFiles[i]];
+		}
+
 		if (!this.fileRegistry[relativePath]) {
 			this.fileRegistry[relativePath] = {
 				version: 0,
