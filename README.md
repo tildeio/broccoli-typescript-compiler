@@ -23,3 +23,4 @@ var tsTranspiler = require('broccoli-typescript-compiler');
 var scriptTree = tsTranspiler(inputTree);
 ```
 
+Avoid const enums and internal modules

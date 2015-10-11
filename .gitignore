@@ -1,3 +1,5 @@
 node_modules/
 tmp/
 fixtures/tmp/
+lib/**/*.js
+test/**/*.js

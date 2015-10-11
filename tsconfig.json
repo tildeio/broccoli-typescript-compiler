@@ -1,5 +1,14 @@
 {
 	"compilerOptions": {
-		"target": "ES3"
-	}
+		"target": "ES3",
+		"module": "commonjs"
+	},
+	"files": [
+		"index.ts",
+		"lib/BFLanguageServiceHost.ts",
+		"test/BFLanguageServiceHostTest.ts",
+		"lib/ConfigParser.ts",
+		"test/ConfigParserTest.ts",
+		"typings/tsd.d.ts"
+	]
 }

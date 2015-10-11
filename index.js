@@ -1,91 +1,51 @@
-'use strict';
-
-var ts         = require('typescript');
-var Filter     = require('broccoli-persistent-filter');
-var clone      = require('clone');
-var path       = require('path');
-var fs         = require('fs');
-var stringify  = require('json-stable-stringify');
-var mergeTrees = require('broccoli-merge-trees');
-var funnel     = require('broccoli-funnel');
-var crypto     = require('crypto');
-
-function getExtensionsRegex(extensions) {
-  return extensions.map(function(extension) {
-    return new RegExp('\.' + extension + '$');
-  });
-}
-
-function replaceExtensions(extensionsRegex, name) {
-  for (var i = 0, l = extensionsRegex.length; i < l; i++) {
-    name = name.replace(extensionsRegex[i], '');
-  }
-
-  return name;
-}
-
-function parseOptions(tsconfigPath) {
-  try {
-    var configFile = fs.readFileSync(tsconfigPath);
-    var rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
-
-    if (rawConfig.error) {
-      throw new Error(rawConfig.error);
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Filter = require('broccoli-persistent-filter');
+var ts = require('typescript');
+var path = require('path');
+var ConfigParser = require('./lib/ConfigParser');
+var BFLanguageServiceHost = require('./lib/BFLanguageServiceHost');
+var TypeScript = (function (_super) {
+    __extends(TypeScript, _super);
+    function TypeScript(inputNode, options) {
+        _super.call(this, inputNode, {
+            name: 'typescript',
+            annotation: inputNode.toString(),
+            extensions: ['ts'],
+            targetExtension: 'js'
+        });
+        this.options = new ConfigParser(options);
+        this.fileRegistry = this._cache;
+        var languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, path.join(__dirname, inputNode.toString()), this.fileRegistry);
+        this.tsService = ts.createLanguageService(languageServiceHost, ts.createDocumentRegistry());
     }
-
-    var parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
-
-    if (parsedConfig.errors && parsedConfig.errors.length) {
-      throw new Error(parsedConfig.errors.join(", "));
-    }
-
-    return parsedConfig.options;
-  } catch(e) {
-    throw new Error("Cannot load tsconfig.json from " + tsconfigPath + ": " + e.message);
-  }
-}
-
-function TypeScript(inputTree, options) {
-  if (!(this instanceof TypeScript)) {
-    return new TypeScript(inputTree);
-  }
-
-  Filter.call(this, inputTree, {extensions: ['ts','d.ts'], targetExtension: 'js'});
-
-  this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), "tsconfig.json"));
-
-  this.name = 'broccoli-typescript-compiler';
-}
-
-TypeScript.prototype = Object.create(Filter.prototype);
-TypeScript.prototype.constructor = TypeScript;
-
-/*
- * @private
- *
- * @method optionsString
- * @returns a stringifeid version of the input options
- */
-TypeScript.prototype.optionsHash  = function() {
-  if (!this._optionsHash) {
-    this._optionsHash = crypto.createHash('md5').update(stringify(this.options), 'utf8').digest('hex');
-  }
-  return this._optionsHash;
-};
-
-TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
-  return this.optionsHash() + Filter.prototype.cacheKeyProcessString.call(this, string, relativePath);
-};
-
-TypeScript.prototype.processString = function (string, relativePath) {
-  try{
-    return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
-  }catch(e){
-    console.log("TYPESCRIPT ERROR: " + e.message)
-    console.log(e.stack + "\n");
-
-    return "";
-  }
-};
-
+    TypeScript.prototype.processString = function (contents, relativePath) {
+        // TODO: Test this.
+        // TODO: Reemit files in our registry that had prior build errors
+        if (this.fileRegistry.get(relativePath)) {
+            // We know about this file, but its contents have changed.
+            // We temporarily update our filter's cache entry with the new contents and a new "version"
+            this.fileRegistry.get(relativePath).contents = contents;
+            this.fileRegistry.get(relativePath).hash.key.mtime++;
+        }
+        else {
+            // This is a new file to us, so we create a temporary cache entry for our language host.
+            // This entry is overwritten on returning from this function.
+            this.fileRegistry.set(relativePath, {
+                contents: contents,
+                hash: { key: { mtime: 1337 } }
+            });
+        }
+        var output = this.tsService.getEmitOutput(relativePath);
+        if (output.outputFiles.length > 1) {
+            throw new Error("More than one file was emitted on this change... Are you using const enums or internal modules?");
+        }
+        // TODO: Emit Errors
+        return output.outputFiles[0].text; // after we return, our cache entry is overwritten so we lose contents. could keep separate cahce but then have to worry about deleting it
+    };
+    return TypeScript;
+})(Filter);
 module.exports = TypeScript;
