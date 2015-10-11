@@ -13,6 +13,15 @@
 declare module 'pinkie-promise' {
   export = Promise
 }
+//
+
+interface TSFile {
+        version: number
+}
+
+interface TSFileRegistry {
+        [relativeFilePath: string] : TSFile
+}
 
 interface TypeScriptFilterOptions {
 	options?: TypeScriptFilterGeneralOptions,
@@ -21,5 +30,5 @@ interface TypeScriptFilterOptions {
 }
 
 interface TypeScriptFilterGeneralOptions {
-	
+
 }
