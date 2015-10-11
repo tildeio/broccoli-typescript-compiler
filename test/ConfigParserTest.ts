@@ -8,48 +8,34 @@ chai.use(sinonChai);
 
 import ConfigParser = require("../lib/ConfigParser")
 
-describe('parsing FilterOptions', function() {
-  var subject: ConfigParser;
-  var generalOptions: TypeScriptFilterGeneralOptions = 
-    {id: 'these are the general options'};
-  
-  after(function() {
-    subject = undefined;
-  });
-  
-  context('with no parameters', function() {
-      before(function() {
-        subject = new ConfigParser(undefined);
-      });
-      
+describe('ConfigParser', function() {
+  context('with no parameters', function() { 
       it('returns empty options', function() {
+        const subject = new ConfigParser(undefined);
         expect(subject.generalOptions()).to.eql({});
       });
       
       it('returns empty tsOptions', function() {
+        const subject = new ConfigParser(undefined);
         expect(subject.tsOptions()).to.eql({});
       });
   });
   
   describe('#generalOptions', function() {  
     context('with options', function() {
-      before(function() {
-        subject = new ConfigParser({
-          options: generalOptions
-        });
-      });
+      var generalOptions = {id: 'these are the general options'};
       
       it('returns the options', function() {
+        const subject = new ConfigParser({
+          options: generalOptions
+        });
         expect(subject.generalOptions()).to.eql(generalOptions);
       });
     });
 
     context('without options', function() {
-      before(function() {
-        subject = new ConfigParser({});
-      });
-      
       it('returns empty options', function() {
+        const subject = new ConfigParser({});
         expect(subject.generalOptions()).to.eql({});
       });
     });
@@ -64,51 +50,36 @@ describe('parsing FilterOptions', function() {
       id: 'these are the ts options'
     };
     var tsConfigResult = 'the result!';
+    
+    var buildParser = function(o: TypeScriptFilterOptions) {
+      return new ConfigParser(o, <any>tsconfigMock);
+    }
 
-    context('with a file', function() { 
-      before(function() {
+    beforeEach(function() {
         tsconfigMock = {
           loadSync: sinon.stub().returns(tsConfigResult),
         };
-        subject = new ConfigParser({
-          tsConfigPath: tsConfigPath
-        }, <any>tsconfigMock);
-      });
-      
+    });
+
+    context('with a file', function() { 
       it('delegates to tsconfig', function() {
+        const subject = buildParser({tsConfigPath});
         expect(subject.tsOptions()).to.eql(tsConfigResult);
         expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath, {});
       });
     });
     
     context('without a file', function() { 
-      before(function() {
-        tsconfigMock = {
-          loadSync: sinon.stub(),
-        };
-        subject = new ConfigParser({
-          tsOptions: tsOptions
-        }, <any>tsconfigMock);
-      });
-      
       it('does not delegates to tsconfig', function() {
+        const subject = buildParser({tsOptions});
         expect(subject.tsOptions()).to.eql(tsOptions);
         expect(tsconfigMock.loadSync).not.to.have.been.called;
       });
     });
     
     context('with a file and config', function() { 
-      before(function() {
-        tsconfigMock = {
-          loadSync: sinon.stub().returns(tsConfigResult),
-        };
-        subject = new ConfigParser({
-          tsConfigPath: tsConfigPath,
-          tsOptions: tsOptions
-        }, <any>tsconfigMock);
-      });
-      
       it('delegates to tsconfig', function() {
+        const subject = buildParser({tsConfigPath, tsOptions});
         expect(subject.tsOptions()).to.eql(tsConfigResult);
         expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath, tsOptions);
       });
