@@ -3,7 +3,7 @@ import _tsconfig = require('tsconfig');
 class ConfigParser {
 	constructor(private options: TypeScriptFilterOptions = {},
 				private tsconfig = _tsconfig) {}
-	// private tsconfig: {loadSync: (dir: string, options?: _tsconfig.Options) => _tsconfig.TSConfig} = _tsconfig) {}
+				
 	generalOptions() : TypeScriptFilterGeneralOptions {
 		return this.options.options || {};
 	}
