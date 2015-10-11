@@ -1,30 +1,25 @@
-/// <reference path="../typings/tsd.d.ts" />
-import chai = require("chai");
-const expect = chai.expect;
-
-import sinon = require("sinon");
-import sinonChai = require('sinon-chai');
-chai.use(sinonChai);
+import Helper = require('./Helper');
+const {expect, sinon} = Helper;
 
 import ConfigParser = require("../lib/ConfigParser");
 
 describe('ConfigParser', function() {
-  context('with no parameters', function() { 
+  context('with no parameters', function() {
       it('returns empty options', function() {
         const subject = new ConfigParser(undefined);
         expect(subject.generalOptions()).to.eql({});
       });
-      
+
       it('returns empty tsOptions', function() {
         const subject = new ConfigParser(undefined);
         expect(subject.tsOptions()).to.eql({});
       });
   });
-  
-  describe('#generalOptions', function() {  
+
+  describe('#generalOptions', function() {
     context('with options', function() {
       var generalOptions = {id: 'these are the general options'};
-      
+
       it('returns the options', function() {
         const subject = new ConfigParser({
           options: generalOptions
@@ -40,7 +35,7 @@ describe('ConfigParser', function() {
       });
     });
   });
-  
+
   describe('#tsOptions', function() {
     var tsconfigMock: {
         loadSync: Sinon.SinonStub
@@ -50,7 +45,7 @@ describe('ConfigParser', function() {
       id: 'these are the ts options'
     };
     var tsConfigResult = 'the result!';
-    
+
     var buildParser = function(o: TypeScriptFilterOptions) {
       return new ConfigParser(o, <any>tsconfigMock);
     }
@@ -61,23 +56,23 @@ describe('ConfigParser', function() {
         };
     });
 
-    context('with a file', function() { 
+    context('with a file', function() {
       it('delegates to tsconfig', function() {
         const subject = buildParser({tsConfigPath});
         expect(subject.tsOptions()).to.eql(tsConfigResult);
         expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath, {});
       });
     });
-    
-    context('without a file', function() { 
+
+    context('without a file', function() {
       it('does not delegates to tsconfig', function() {
         const subject = buildParser({tsOptions});
         expect(subject.tsOptions()).to.eql(tsOptions);
         expect(tsconfigMock.loadSync).not.to.have.been.called;
       });
     });
-    
-    context('with a file and config', function() { 
+
+    context('with a file and config', function() {
       it('delegates to tsconfig', function() {
         const subject = buildParser({tsConfigPath, tsOptions});
         expect(subject.tsOptions()).to.eql(tsConfigResult);
