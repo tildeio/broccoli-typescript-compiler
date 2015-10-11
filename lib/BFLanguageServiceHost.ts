@@ -1,12 +1,10 @@
 import _ts = require('typescript');
-import _fs = require('fs');
 
 class BFLanguageServiceHost implements _ts.LanguageServiceHost {
         constructor(private options: _ts.CompilerOptions,
                     private currentDirectory: string,
                     private fileRegistry: TSFileRegistry,
-                    private ts = _ts,
-                    private fs = _fs) {
+                    private ts = _ts) {
                 if (!this.options) { throw new Error("compiler options missing"); }
         }
 
@@ -22,7 +20,8 @@ class BFLanguageServiceHost implements _ts.LanguageServiceHost {
                 if (!this.fileRegistry[fileName]) {
                         // TODO: Check if file exists?
                         this.fileRegistry[fileName] = {
-                                version: 0
+                                version: 0,
+                                contents: "" // TODO
                         };
                 }
                 return this.fileRegistry[fileName].version.toString();
@@ -30,12 +29,12 @@ class BFLanguageServiceHost implements _ts.LanguageServiceHost {
 
         getScriptSnapshot(fileName: string): _ts.IScriptSnapshot {
                 // TODO: use this._cache
-                const fs = this.fs;
-                if (!fs.existsSync(fileName)) {
-                        // TODO: Delete from FileRegistry?
+                const entry = this.fileRegistry[fileName];
+                if (!entry) {
                         return undefined;
                 }
-                return this.ts.ScriptSnapshot.fromString(fs.readFileSync(fileName).toString());
+                
+                return this.ts.ScriptSnapshot.fromString(entry.contents);
         }
 
         getCurrentDirectory(): string {

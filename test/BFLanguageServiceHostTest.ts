@@ -18,10 +18,6 @@ describe('BFLanguageServiceHost', function() {
 			fromString(contents: string)
 		}
 	};
-	let fsMock: {
-		existsSync(fileName: string),
-		readFileSync(fileName: string)
-	};
 
 	beforeEach(function() {
 		tsMock = {
@@ -29,11 +25,6 @@ describe('BFLanguageServiceHost', function() {
 			ScriptSnapshot: {
 				fromString: sinon.stub().returns(defaultContents)
 			}
-		};
-
-		fsMock = {
-			existsSync: sinon.stub().returns(true),
-			readFileSync: sinon.stub().returns(defaultFileContents)
 		};
 	});
 
@@ -56,8 +47,8 @@ describe('BFLanguageServiceHost', function() {
 			expect(subject.getScriptFileNames()).to.eql([]);
 
 			// Add some files
-			fileRegistry[pathA] = { version: 0 };
-			fileRegistry[pathB] = { version: 0 };
+			fileRegistry[pathA] = { version: 0, contents: "" };
+			fileRegistry[pathB] = { version: 0, contents: "" };
 			expect(subject.getScriptFileNames()).to.eql([pathA, pathB]);
 
 			// Remove a file
@@ -76,7 +67,8 @@ describe('BFLanguageServiceHost', function() {
 		beforeEach(function() {
 			fileRegistry = {};
 			fileRegistry[path] = {
-				version
+				version,
+				contents: ""
 			}
 			subject = new BFLanguageServiceHost(options, cwd, fileRegistry);
 		});
@@ -102,15 +94,18 @@ describe('BFLanguageServiceHost', function() {
 	describe('#getScriptSnapshot', function() {
 		context('the file does not exist', function() {
 			it('should return undefined', function() {
-				(<Sinon.SinonStub>fsMock.existsSync).returns(false);
-				subject = new BFLanguageServiceHost(options, cwd, {}, <any>tsMock, <any>fsMock);
+				subject = new BFLanguageServiceHost(options, cwd, {}, <any>tsMock);
 				expect(subject.getScriptSnapshot("blah")).to.eql(undefined);
 			});
 		});
 
 		context('the file exists', function() {
 			it('should return the script snapshot', function() {
-				subject = new BFLanguageServiceHost(options, cwd, {}, <any>tsMock, <any>fsMock);
+				subject = new BFLanguageServiceHost(options, cwd, {
+					blah: {
+						version: 0,
+						contents: defaultFileContents
+					}}, <any>tsMock);
 				expect(subject.getScriptSnapshot("blah")).to.eql(defaultContents);
 				expect(tsMock.ScriptSnapshot.fromString).to.have.been.calledWithExactly(defaultFileContents);
 			});

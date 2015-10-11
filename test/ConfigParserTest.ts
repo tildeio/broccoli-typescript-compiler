@@ -1,5 +1,5 @@
 import Helper = require('./Helper');
-const {expect, sinon} = Helper;
+const {expect, sinon, _} = Helper;
 
 import ConfigParser = require("../lib/ConfigParser");
 
@@ -12,7 +12,7 @@ describe('ConfigParser', function() {
 
       it('returns empty tsOptions', function() {
         const subject = new ConfigParser(undefined);
-        expect(subject.tsOptions()).to.eql({});
+        expect(subject.tsOptions()).to.eql({compilerOptions: {}});
       });
   });
 
@@ -42,9 +42,16 @@ describe('ConfigParser', function() {
     };
     var tsConfigPath = 'test-tsconfig.json';
     var tsOptions = {
-      id: 'these are the ts options'
+      compilerOptions: {
+        a: 'these are the ts options',
+        b: 'the overridden result'
+      }
     };
-    var tsConfigResult = 'the result!';
+    var tsConfigResult = {
+      compilerOptions: {
+        b: 'the result!'
+      }
+    };
 
     var buildParser = function(o: TypeScriptFilterOptions) {
       return new ConfigParser(o, <any>tsconfigMock);
@@ -60,7 +67,7 @@ describe('ConfigParser', function() {
       it('delegates to tsconfig', function() {
         const subject = buildParser({tsConfigPath});
         expect(subject.tsOptions()).to.eql(tsConfigResult);
-        expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath, {});
+        expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath);
       });
     });
 
@@ -75,8 +82,8 @@ describe('ConfigParser', function() {
     context('with a file and config', function() {
       it('delegates to tsconfig', function() {
         const subject = buildParser({tsConfigPath, tsOptions});
-        expect(subject.tsOptions()).to.eql(tsConfigResult);
-        expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath, tsOptions);
+        expect(subject.tsOptions()).to.eql(_.merge(tsConfigResult, tsOptions));
+        expect(tsconfigMock.loadSync).to.have.been.calledWithExactly(tsConfigPath);
       });
     });
   });

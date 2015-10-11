@@ -1,4 +1,5 @@
 import _tsconfig = require('tsconfig');
+import _ = require('lodash');
 
 class ConfigParser {
 	constructor(private options: TypeScriptFilterOptions = {},
@@ -8,11 +9,16 @@ class ConfigParser {
 		return this.options.options || {};
 	}
 	tsOptions(): _tsconfig.Options {
-		if (!this.options.tsConfigPath) {
-			return this.options.tsOptions || {};
+		// Empty Options object, file options, supplied options
+		let defaultOptions = { compilerOptions: {} };
+		let fileOptions = {};
+		let objOptions = this.options.tsOptions || {};
+
+		if (this.options.tsConfigPath) {
+			fileOptions = this.tsconfig.loadSync(this.options.tsConfigPath);
 		}
 
-		return this.tsconfig.loadSync(this.options.tsConfigPath, this.options.tsOptions || {});
+		return _.merge(defaultOptions, fileOptions, objOptions);
 	}
 }
 

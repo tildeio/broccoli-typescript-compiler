@@ -16,7 +16,8 @@ declare module 'pinkie-promise' {
 //
 
 interface TSFile {
-        version: number
+        version: number,
+		contents: string
 }
 
 interface TSFileRegistry {

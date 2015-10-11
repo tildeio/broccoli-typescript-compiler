@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Filter = require('broccoli-filter');
 var ts = require('typescript');
+var path = require('path');
 var ConfigParser = require('./lib/ConfigParser');
 var BFLanguageServiceHost = require('./lib/BFLanguageServiceHost');
 var TypeScript = (function (_super) {
@@ -12,22 +13,34 @@ var TypeScript = (function (_super) {
     function TypeScript(inputNode, options) {
         this.options = new ConfigParser(options);
         this.fileRegistry = {};
-        var languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, undefined, this.fileRegistry);
+        var languageServiceHost = new BFLanguageServiceHost(this.options.tsOptions().compilerOptions, path.join(__dirname, inputNode.toString()), this.fileRegistry);
         this.tsService = ts.createLanguageService(languageServiceHost, ts.createDocumentRegistry());
         _super.call(this, inputNode, {
             name: 'typescript',
-            annotation: inputNode.annotation,
+            annotation: inputNode.toString(),
             extensions: ['ts'],
             targetExtension: 'js'
         });
     }
     TypeScript.prototype.processString = function (contents, relativePath) {
         // TODO: Need to know when files are deleted to remove from fileRegistry...
+        // Leverage the _cache as file registry?
         // called on changed files only
-        return ts.transpileModule(contents, {
-            compilerOptions: this.options.tsOptions().compilerOptions,
-            fileName: relativePath
-        }).outputText;
+        // TODO: Test this.
+        if (!this.fileRegistry[relativePath]) {
+            this.fileRegistry[relativePath] = {
+                version: 0,
+                contents: ""
+            };
+        }
+        console.log(relativePath, " changed");
+        this.fileRegistry[relativePath].contents = contents;
+        this.fileRegistry[relativePath].version++;
+        var output = this.tsService.getEmitOutput(relativePath);
+        if (output.outputFiles.length > 1) {
+            throw new Error("More than one file was emitted on this change... Are you using const enums or internal modules?");
+        }
+        return output.outputFiles[0].text;
     };
     return TypeScript;
 })(Filter);
