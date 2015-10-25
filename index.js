@@ -27,21 +27,25 @@ function replaceExtensions(extensionsRegex, name) {
 function parseOptions(tsconfigPath) {
   try {
     var configFile = fs.readFileSync(tsconfigPath);
-    var rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
+    var rawConfig = ts.parseConfigFileTextToJson(tsconfigPath, configFile);
 
     if (rawConfig.error) {
       throw new Error(rawConfig.error);
     }
 
-    var parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
+    var parsedConfig = ts.convertCompilerOptionsFromJson(rawConfig.config.compilerOptions, path.dirname(tsconfigPath));
+
+    // var parsedConfig = ts.readConfigFile(tsconfigPath);
+
+    // var parsedConfig = ts.readConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
 
     if (parsedConfig.errors && parsedConfig.errors.length) {
-      throw new Error(parsedConfig.errors.join(", "));
+      throw new Error(parsedConfig.errors.join(', '));
     }
 
     return parsedConfig.options;
   } catch(e) {
-    throw new Error("Cannot load tsconfig.json from " + tsconfigPath + ": " + e.message);
+    throw new Error("Cannot load tsconfig.json from " + path + ": " + e.message);
   }
 }
 
