@@ -27,13 +27,27 @@ function replaceExtensions(extensionsRegex, name) {
 function parseOptions(tsconfigPath) {
   try {
     var configFile = fs.readFileSync(tsconfigPath, 'utf8');
-    var rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
+    var rawConfig;
+
+    if (typeof ts.parseConfigFileText === 'function') {
+      rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
+    } else {
+      // >= 1.8
+      rawConfig = ts.parseConfigFileTextToJson(tsconfigPath, configFile);
+    }
 
     if (rawConfig.error) {
       throw new Error(rawConfig.error.messageText);
     }
 
-    var parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
+    var parsedConfig;
+
+    if (typeof ts.parseConfigFile === 'function') {
+      parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
+    } else {
+      // >= 1.8
+      parsedConfig = ts.convertCompilerOptionsFromJson(rawConfig.config.compilerOptions, path.dirname(tsconfigPath));
+    }
 
     if (parsedConfig.errors && parsedConfig.errors.length) {
       throw new Error(parsedConfig.errors.join(', '));
