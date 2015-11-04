@@ -30,18 +30,21 @@ function parseOptions(tsconfigPath) {
     var rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
 
     if (rawConfig.error) {
-      throw new Error(rawConfig.error);
+      throw new Error(rawConfig.error.messageText);
     }
 
     var parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
 
     if (parsedConfig.errors && parsedConfig.errors.length) {
-      throw new Error(parsedConfig.errors.join(", "));
+      throw new Error(parsedConfig.errors.join(', '));
     }
 
     return parsedConfig.options;
   } catch(e) {
-    throw new Error("Cannot load tsconfig.json from " + tsconfigPath + ": " + e.message);
+    console.error('Cannot load tsconfig.json from ' + tsconfigPath);
+    console.error(e.stack + '\n');
+
+    throw e;
   }
 }
 
@@ -81,10 +84,10 @@ TypeScript.prototype.processString = function (string, relativePath) {
   try{
     return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
   }catch(e){
-    console.log("TYPESCRIPT ERROR: " + e.message)
-    console.log(e.stack + "\n");
+    console.error('TYPESCRIPT ERROR:');
+    console.error(e.stack + '\n');
 
-    return "";
+    return '';
   }
 };
 
