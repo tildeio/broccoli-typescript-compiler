@@ -26,7 +26,7 @@ function replaceExtensions(extensionsRegex, name) {
 
 function parseOptions(tsconfigPath) {
   try {
-    var configFile = fs.readFileSync(tsconfigPath);
+    var configFile = fs.readFileSync(tsconfigPath, 'utf8');
     var rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
 
     if (rawConfig.error) {
