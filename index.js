@@ -44,6 +44,9 @@ function parseOptions(tsconfigPath) {
 
     if (typeof ts.parseConfigFile === 'function') {
       parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
+    } else if (typeof ts.parseJsonConfigFileContent === 'function') {
+      // Handle breaking change made in typescript@1.7.3
+      parsedConfig = ts.parseJsonConfigFileContent(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
     } else {
       // >= 1.8
       parsedConfig = ts.convertCompilerOptionsFromJson(rawConfig.config.compilerOptions, path.dirname(tsconfigPath));
