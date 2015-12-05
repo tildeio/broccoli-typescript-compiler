@@ -56,6 +56,9 @@ function parseOptions(tsconfigPath) {
       throw new Error(parsedConfig.errors.join(', '));
     }
 
+    // "No emit" doesn't make sense here, and will cause the compiler to throw
+    parsedConfig.options.noEmit = false;
+
     return parsedConfig.options;
   } catch(e) {
     console.error('Cannot load tsconfig.json from ' + tsconfigPath);
