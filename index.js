@@ -78,11 +78,12 @@ function TypeScript(inputTree, options) {
     persist: true,
     extensions: ['ts','d.ts'],
     targetExtension: 'js',
+    name: 'broccoli-typescript-compiler'
   });
 
-  this.name = 'broccoli-typescript-compiler';
   this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), 'tsconfig.json'));
 }
+
 
 TypeScript.prototype = Object.create(Filter.prototype);
 TypeScript.prototype.constructor = TypeScript;
