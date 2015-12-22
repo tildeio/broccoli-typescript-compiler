@@ -83,7 +83,7 @@ function TypeScript(inputTree, _options) {
     annotation: options.annotation
   });
 
-  this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), 'tsconfig.json'));
+  this.options = parseOptions(options.tsconfig || path.join(process.cwd(), 'tsconfig.json'));
 }
 
 
