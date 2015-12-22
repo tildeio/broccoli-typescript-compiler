@@ -76,9 +76,9 @@ function TypeScript(inputTree, options) {
 
   Filter.call(this, inputTree, {extensions: ['ts','d.ts'], targetExtension: 'js'});
 
-  this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), "tsconfig.json"));
 
   this.name = 'broccoli-typescript-compiler';
+  this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), 'tsconfig.json'));
 }
 
 TypeScript.prototype = Object.create(Filter.prototype);
