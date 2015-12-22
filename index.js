@@ -79,7 +79,8 @@ function TypeScript(inputTree, _options) {
     persist: true,
     extensions: ['ts','d.ts'],
     targetExtension: 'js',
-    name: 'broccoli-typescript-compiler'
+    name: 'broccoli-typescript-compiler',
+    annotation: options.annotation
   });
 
   this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), 'tsconfig.json'));
