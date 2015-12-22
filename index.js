@@ -68,20 +68,31 @@ function parseOptions(tsconfigPath) {
   }
 }
 
-function TypeScript(inputTree, options) {
+module.exports = TypeScript;
+function TypeScript(inputTree, _options) {
   if (!(this instanceof TypeScript)) {
-    return new TypeScript(inputTree);
+    return new TypeScript(inputTree, _options);
   }
 
-  Filter.call(this, inputTree, {extensions: ['ts','d.ts'], targetExtension: 'js'});
+  var options = _options || {};
+  Filter.call(this, inputTree, {
+    persist: true,
+    extensions: ['ts','d.ts'],
+    targetExtension: 'js',
+    name: 'broccoli-typescript-compiler',
+    annotation: options.annotation
+  });
 
-  this.options = parseOptions((options && options.tsconfig) || path.join(process.cwd(), "tsconfig.json"));
-
-  this.name = 'broccoli-typescript-compiler';
+  this.options = parseOptions(options.tsconfig || path.join(process.cwd(), 'tsconfig.json'));
 }
+
 
 TypeScript.prototype = Object.create(Filter.prototype);
 TypeScript.prototype.constructor = TypeScript;
+
+TypeScript.prototype.baseDir = function() {
+  return __dirname;
+};
 
 /*
  * @private
@@ -101,14 +112,5 @@ TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
 };
 
 TypeScript.prototype.processString = function (string, relativePath) {
-  try{
-    return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
-  }catch(e){
-    console.error('TYPESCRIPT ERROR:');
-    console.error(e.stack + '\n');
-
-    return '';
-  }
+  return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
 };
-
-module.exports = TypeScript;
