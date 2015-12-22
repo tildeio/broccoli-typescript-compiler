@@ -70,11 +70,12 @@ function parseOptions(tsconfigPath) {
 
 module.exports = TypeScript;
 function TypeScript(inputTree, _options) {
+  var options = _options || {};
+
   if (!(this instanceof TypeScript)) {
-    return new TypeScript(inputTree, _options);
+    return new TypeScript(inputTree, options);
   }
 
-  var options = _options || {};
   Filter.call(this, inputTree, {
     persist: true,
     extensions: ['ts','d.ts'],
