@@ -68,6 +68,7 @@ function parseOptions(tsconfigPath) {
   }
 }
 
+module.exports = TypeScript;
 function TypeScript(inputTree, options) {
   if (!(this instanceof TypeScript)) {
     return new TypeScript(inputTree);
@@ -103,5 +104,3 @@ TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
 TypeScript.prototype.processString = function (string, relativePath) {
   return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
 };
-
-module.exports = TypeScript;
