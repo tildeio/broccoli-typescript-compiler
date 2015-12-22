@@ -33,20 +33,9 @@ describe('transpile TypeScript', function() {
     return cleanupBuilders();
   });
 
-  it('uses tsconfig from CWD by default', function () {
-    return typescript('files').then(function(results) {
-      var outputPath = results.directory;
-
-      var output = fs.readFileSync(path.join(outputPath, 'fixtures.js')).toString();
-      var input = fs.readFileSync(path.join(expectations,  'expected.js')).toString();
-
-      expect(output).to.eql(input);
-    });
-  });
-  
   it('uses tsconfig from options', function () {
     var tsconfigPath = path.join(__dirname, "fixtures", "tsconfig.json");
-    
+
     return typescript('files', {tsconfig: tsconfigPath}).then(function(results) {
       var outputPath = results.directory;
 

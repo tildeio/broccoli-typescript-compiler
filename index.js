@@ -84,7 +84,12 @@ function TypeScript(inputTree, _options) {
     annotation: options.annotation
   });
 
-  this.options = parseOptions(options.tsconfig || path.join(process.cwd(), 'tsconfig.json'));
+  var tsConfig = options.tsconfig;
+  if (tsConfig) {
+    this.options = parseOptions(tsConfig);
+  } else {
+    throw new TypeError('TypeScriptCompiler missing tsconfig: "path/to/tsconfig.json"');
+  }
 }
 
 
