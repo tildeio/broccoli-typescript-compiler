@@ -2,13 +2,9 @@
 
 var fs     = require('fs');
 var expect = require('chai').expect;
-var broccoli = require('broccoli');
 var path = require('path');
 var TypeScript = require('./index');
 var helpers = require('broccoli-test-helpers');
-var stringify = require('json-stable-stringify');
-var mkdirp = require('mkdirp').sync;
-var rm = require('rimraf').sync;
 var makeTestHelper = helpers.makeTestHelper;
 var cleanupBuilders = helpers.cleanupBuilders;
 
@@ -32,7 +28,7 @@ describe('transpile TypeScript', function() {
   });
 
   it('uses tsconfig from options', function () {
-    var tsconfigPath = path.join(__dirname, "fixtures", "tsconfig.json");
+    var tsconfigPath = path.join(__dirname, 'fixtures', 'tsconfig.json');
 
     return typescript('files', {
       tsconfig: tsconfigPath
