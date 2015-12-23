@@ -3,12 +3,13 @@
 var ts         = require('typescript');
 var Filter     = require('broccoli-persistent-filter');
 var clone      = require('clone');
-var path       = require('path');
 var fs         = require('fs');
 var stringify  = require('json-stable-stringify');
 var mergeTrees = require('broccoli-merge-trees');
 var funnel     = require('broccoli-funnel');
 var crypto     = require('crypto');
+
+var loadTSConfig = require('./lib/load-ts-config');
 
 function getExtensionsRegex(extensions) {
   return extensions.map(function(extension) {
@@ -22,50 +23,6 @@ function replaceExtensions(extensionsRegex, name) {
   }
 
   return name;
-}
-
-function parseOptions(tsconfigPath) {
-  try {
-    var configFile = fs.readFileSync(tsconfigPath, 'utf8');
-    var rawConfig;
-
-    if (typeof ts.parseConfigFileText === 'function') {
-      rawConfig = ts.parseConfigFileText(tsconfigPath, configFile);
-    } else {
-      // >= 1.8
-      rawConfig = ts.parseConfigFileTextToJson(tsconfigPath, configFile);
-    }
-
-    if (rawConfig.error) {
-      throw new Error(rawConfig.error.messageText);
-    }
-
-    var parsedConfig;
-
-    if (typeof ts.parseConfigFile === 'function') {
-      parsedConfig = ts.parseConfigFile(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
-    } else if (typeof ts.parseJsonConfigFileContent === 'function') {
-      // Handle breaking change made in typescript@1.7.3
-      parsedConfig = ts.parseJsonConfigFileContent(rawConfig.config, ts.sys, path.dirname(tsconfigPath));
-    } else {
-      // >= 1.8
-      parsedConfig = ts.convertCompilerOptionsFromJson(rawConfig.config.compilerOptions, path.dirname(tsconfigPath));
-    }
-
-    if (parsedConfig.errors && parsedConfig.errors.length) {
-      throw new Error(parsedConfig.errors.map(function(err) { return err.messageText; }).join(' '));
-    }
-
-    // "No emit" doesn't make sense here, and will cause the compiler to throw
-    parsedConfig.options.noEmit = false;
-
-    return parsedConfig.options;
-  } catch(e) {
-    console.error('Cannot load tsconfig.json from ' + tsconfigPath);
-    console.error(e.stack + '\n');
-
-    throw e;
-  }
 }
 
 module.exports = TypeScript;
@@ -86,12 +43,11 @@ function TypeScript(inputTree, _options) {
 
   var tsConfig = options.tsconfig;
   if (tsConfig) {
-    this.options = parseOptions(tsConfig);
+    this.options = loadTSConfig(tsConfig);
   } else {
     throw new TypeError('TypeScriptCompiler missing tsconfig: "path/to/tsconfig.json"');
   }
 }
-
 
 TypeScript.prototype = Object.create(Filter.prototype);
 TypeScript.prototype.constructor = TypeScript;
