@@ -2,28 +2,10 @@
 
 var ts         = require('typescript');
 var Filter     = require('broccoli-persistent-filter');
-var clone      = require('clone');
-var fs         = require('fs');
 var stringify  = require('json-stable-stringify');
-var mergeTrees = require('broccoli-merge-trees');
-var funnel     = require('broccoli-funnel');
 var crypto     = require('crypto');
 
 var loadTSConfig = require('./lib/load-ts-config');
-
-function getExtensionsRegex(extensions) {
-  return extensions.map(function(extension) {
-    return new RegExp('\.' + extension + '$');
-  });
-}
-
-function replaceExtensions(extensionsRegex, name) {
-  for (var i = 0, l = extensionsRegex.length; i < l; i++) {
-    name = name.replace(extensionsRegex[i], '');
-  }
-
-  return name;
-}
 
 module.exports = TypeScript;
 function TypeScript(inputTree, _options) {
