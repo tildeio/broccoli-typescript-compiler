@@ -96,8 +96,4 @@ describe('loadTSConfig', function() {
       target: 2
     });
   });
-
-
-
-
 });
