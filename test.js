@@ -60,7 +60,11 @@ describe('loadTSConfig', function() {
   it('throws for missing file', function() {
     expect(function() {
       loadTSConfig('nothing/here');
-    }).to.throw('Cannot load tsconfig.json from: `nothing/here`\nENOENT: no such file or directory, open \'nothing/here\'');
+    }).to.throw(/no such file or directory/);
+
+    expect(function() {
+      loadTSConfig('nothing/here');
+    }).to.throw(/Cannot load tsconfig.json from/);
   });
 
   it('throws for empty file', function() {
