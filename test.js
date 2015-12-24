@@ -3,36 +3,25 @@
 var fs     = require('fs');
 var expect = require('chai').expect;
 var path = require('path');
-var TypeScript = require('./index');
-var helpers = require('broccoli-test-helpers');
-var makeTestHelper = helpers.makeTestHelper;
-var cleanupBuilders = helpers.cleanupBuilders;
+var typeScript = require('./index');
+var broccoli = require('broccoli');
 
 var inputPath = path.join(__dirname, 'fixtures');
 var expectations = path.join(__dirname, 'expectations');
 
-var typescript;
+var builder;
 
 describe('transpile TypeScript', function() {
-  before(function() {
-    typescript = makeTestHelper({
-      subject: function(tree, options) {
-        return new TypeScript(tree, options);
-      },
-      fixturePath: inputPath
-    });
-  });
-
   afterEach(function () {
-    return cleanupBuilders();
+    return builder.cleanup();
   });
 
   it('uses tsconfig from options', function () {
-    var tsconfigPath = path.join(__dirname, 'fixtures', 'tsconfig.json');
+    builder = new broccoli.Builder(typeScript('fixtures/files', {
+      tsconfig: __dirname + '/fixtures/tsconfig.json'
+    }));
 
-    return typescript('files', {
-      tsconfig: tsconfigPath
-    }).then(function(results) {
+    return builder.build().then(function(results) {
       var outputPath = results.directory;
 
       var output = fs.readFileSync(path.join(outputPath, 'fixtures.js')).toString();
