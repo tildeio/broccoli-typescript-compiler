@@ -53,7 +53,7 @@ function parseOptions(tsconfigPath) {
     }
 
     if (parsedConfig.errors && parsedConfig.errors.length) {
-      throw new Error(parsedConfig.errors.join(', '));
+      throw new Error(parsedConfig.errors.map(function(err) { return err.messageText; }).join(' '));
     }
 
     // "No emit" doesn't make sense here, and will cause the compiler to throw
