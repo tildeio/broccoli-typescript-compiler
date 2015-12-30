@@ -3,6 +3,7 @@
 var fs = require('fs');
 var loadTSConfig = require('../lib/load-ts-config');
 var expect = require('chai').expect;
+var ensurePosix = require('ensure-posix-path');
 
 describe('loadTSConfig', function() {
 
@@ -49,13 +50,18 @@ describe('loadTSConfig', function() {
   });
 
   it('loads advanced', function() {
-    expect(loadTSConfig(__dirname + '/fixtures/more-advanced-ts-config.js')).to.deep.eql({
+    var config = loadTSConfig(__dirname + '/fixtures/more-advanced-ts-config.js');
+
+    config.mapRoot = ensurePosix(config.mapRoot);
+    config.rootDir = ensurePosix(config.rootDir);
+
+    expect(config).to.deep.eql({
       inlineSourceMap: true,
       inlineSources: true,
-      mapRoot: __dirname + '/fixtures/packages',
+      mapRoot: ensurePosix(__dirname + '/fixtures/packages'),
       moduleResolution: 2,
       noEmit: false,
-      rootDir: __dirname + '/fixtures/packages',
+      rootDir: ensurePosix(__dirname + '/fixtures/packages'),
       target: 2
     });
   });
