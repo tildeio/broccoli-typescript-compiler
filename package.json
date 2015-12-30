@@ -29,7 +29,8 @@
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-persistent-filter": "^1.0.1",
     "clone": "^0.2.0",
-    "json-stable-stringify": "^1.0.0"
+    "json-stable-stringify": "^1.0.0",
+    "walk-sync": "^2.14.4"
   },
   "peerDependencies": {
     "typescript": "^1.6.2 || ^1.7.0-dev || ^1.8.0-dev"
