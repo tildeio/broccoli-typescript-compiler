@@ -21,6 +21,7 @@ install:
   - npm config set cache C:\nc
   - npm version
   - npm install
+  - npm install typescript
 
 # Post-install test scripts.
 test_script:
