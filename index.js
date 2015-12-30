@@ -13,6 +13,7 @@ var findTSConfig = require('./lib/find-ts-config');
 module.exports = TypeScript;
 function TypeScript(inputTree, _options) {
   var options = _options || {};
+  options.tsconfig = options.tsconfig || findTSConfig(getCallerFile(2));
 
   if (!(this instanceof TypeScript)) {
     return new TypeScript(inputTree, options);
@@ -26,7 +27,7 @@ function TypeScript(inputTree, _options) {
     annotation: options.annotation
   });
 
-  this.options = loadTSConfig(options.tsconfig || findTSConfig(getCallerFile()));
+  this.options = loadTSConfig(options.tsconfig)
 }
 
 TypeScript.prototype = Object.create(Filter.prototype);

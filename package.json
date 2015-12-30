@@ -30,7 +30,7 @@
     "broccoli-persistent-filter": "^1.0.1",
     "clone": "^0.2.0",
     "findup": "^0.1.5",
-    "get-caller-file": "^1.0.0",
+    "get-caller-file": "^1.0.1",
     "json-stable-stringify": "^1.0.0",
     "walk-sync": "^0.2.6"
   },
