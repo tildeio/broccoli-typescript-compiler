@@ -26,7 +26,7 @@ function TypeScript(inputTree, _options) {
     annotation: options.annotation
   });
 
-  this.options = loadTSConfig(options.tsConfig || findTSConfig(getCallerFile()));
+  this.options = loadTSConfig(options.tsconfig || findTSConfig(getCallerFile()));
 }
 
 TypeScript.prototype = Object.create(Filter.prototype);
