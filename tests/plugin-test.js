@@ -43,6 +43,21 @@ describe('transpile TypeScript', function() {
         expect(output).to.eql(input);
       });
     });
+
+    describe('tsconfig resolution', function() {
+      it('basic resolution', function () {
+        builder = new broccoli.Builder(new TypeScript('tests/fixtures/files'));
+
+        return builder.build().then(function(results) {
+          var outputPath = results.directory;
+
+          var output = fs.readFileSync(outputPath + '/fixtures.js').toString();
+          var input = fs.readFileSync(expectations + '/expected.js').toString();
+
+          expect(output).to.eql(input);
+        });
+      });
+    });
   });
 
   describe('rebuilds', function() {

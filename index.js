@@ -5,7 +5,10 @@ var Filter     = require('broccoli-persistent-filter');
 var stringify  = require('json-stable-stringify');
 var crypto     = require('crypto');
 
+var getCallerFile = require('get-caller-file');
+
 var loadTSConfig = require('./lib/load-ts-config');
+var findTSConfig = require('./lib/find-ts-config');
 
 module.exports = TypeScript;
 function TypeScript(inputTree, _options) {
@@ -27,7 +30,7 @@ function TypeScript(inputTree, _options) {
   if (tsConfig) {
     this.options = loadTSConfig(tsConfig);
   } else {
-    throw new TypeError('TypeScriptCompiler missing tsconfig: "path/to/tsconfig.json"');
+    this.options = loadTSConfig(findTSConfig(getCallerFile()));
   }
 }
 
