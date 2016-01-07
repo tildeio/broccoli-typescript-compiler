@@ -8,14 +8,17 @@ var ensurePosix = require('ensure-posix-path');
 describe('loadTSConfig', function() {
 
   it('throws on invalid input', function() {
-    expect(loadTSConfig).to.throw(/to be a string/);
+    var message = 'The tsconfig option must be a tsconfig JSON object or a path to a valid tsconfig.json file';
+
+    expect(loadTSConfig).to.throw(message);
+
     expect(function() {
       loadTSConfig(undefined);
-    }).to.throw(/to be a string/);
+    }).to.throw(message);
 
     expect(function() {
       loadTSConfig(null);
-    }).to.throw(/to be a string/);
+    }).to.throw(message);
   });
 
   it('throws for missing file', function() {
