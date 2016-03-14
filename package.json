@@ -35,7 +35,7 @@
     "walk-sync": "^0.2.6"
   },
   "peerDependencies": {
-    "typescript": "^1.6.2 || ^1.7.0-dev || ^1.8.0-dev"
+    "typescript": "^1.6.2 || ^1.7.0 || ^1.8.0 || ^1.9.0-dev"
   },
   "devDependencies": {
     "broccoli": "^0.16.3",
