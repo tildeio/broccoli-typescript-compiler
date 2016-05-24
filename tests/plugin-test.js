@@ -169,4 +169,29 @@ describe('transpile TypeScript', function() {
       });
     });
   });
+
+  describe('moduleName', function() {
+    it('takes a function to name AMD modules', function() {
+      builder = new broccoli.Builder(new TypeScript('tests/fixtures/amd', {
+        tsconfig: {
+          'compilerOptions': {
+            'module': 'amd'
+          }
+        },
+        moduleName: function(path) {
+          return path.replace(/\.ts$/, '');
+        }
+      }));
+
+      return builder.build().then(function(results) {
+        var outputPath = results.directory;
+        var entries = walkSync.entries(outputPath);
+
+        expect(entries).to.have.length(2);
+
+        var output = fs.readFileSync(outputPath + '/types.js', 'UTF8');
+        expect(output).match(/^define\("types", /);
+      });
+    });
+  });
 });
