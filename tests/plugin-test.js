@@ -161,9 +161,9 @@ describe('transpile TypeScript', function() {
 
         expect(entries.map(function(entry) { return entry.relativePath; })).to.deep.eql([
           'fixtures.js',
+          'orange.js',
           'orange/',
           'orange/two.js',
-          'orange.js',
           'types.js'
         ]);
       });
