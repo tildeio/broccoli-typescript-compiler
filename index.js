@@ -27,6 +27,7 @@ function TypeScript(inputTree, _options) {
     annotation: options.annotation
   });
 
+  this.moduleName = options.moduleName;
   this.options = loadTSConfig(options.tsconfig);
 }
 
@@ -55,5 +56,11 @@ TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
 };
 
 TypeScript.prototype.processString = function (string, relativePath) {
-  return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
+  var options = {compilerOptions: this.options, fileName: relativePath};
+
+  if (this.moduleName) {
+    options.moduleName = this.moduleName(relativePath);
+  }
+
+  return ts.transpileModule(string, options).outputText;
 };
