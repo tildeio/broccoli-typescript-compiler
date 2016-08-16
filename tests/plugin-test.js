@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var expect = require('chai').expect;
-var TypeScript = require('..');
+var filter = require('..');
 var broccoli = require('broccoli');
 var walkSync = require('walk-sync');
 var mkdirp = require('mkdirp');
@@ -19,6 +19,7 @@ function entryFor(path, entries) {
 }
 
 describe('transpile TypeScript', function() {
+  this.timeout(5000);
   var builder;
 
   afterEach(function () {
@@ -27,7 +28,7 @@ describe('transpile TypeScript', function() {
 
   describe('tsconfig', function() {
     it('uses tsconfig path from options', function () {
-      builder = new broccoli.Builder(new TypeScript('tests/fixtures/files', {
+      builder = new broccoli.Builder(filter('tests/fixtures/files', {
         tsconfig: __dirname + '/fixtures/tsconfig.json'
       }));
 
@@ -35,7 +36,7 @@ describe('transpile TypeScript', function() {
         var outputPath = results.directory;
         var entries = walkSync.entries(outputPath);
 
-        expect(entries).to.have.length(2);
+        expect(entries).to.have.length(3);
 
         var output = fs.readFileSync(outputPath + '/fixtures.js', 'UTF8');
         var input = fs.readFileSync(expectations + '/expected.es6', 'UTF8');
@@ -45,10 +46,12 @@ describe('transpile TypeScript', function() {
     });
 
     it('uses tsconfig json from options', function () {
-      builder = new broccoli.Builder(new TypeScript('tests/fixtures/files', {
+      builder = new broccoli.Builder(filter('tests/fixtures/files', {
         tsconfig: {
           "compilerOptions": {
-            "target": "ES6"
+            "target": "es2015",
+            "module": "es2015",
+            "sourceMap": false
           }
         }
       }));
@@ -57,7 +60,7 @@ describe('transpile TypeScript', function() {
         var outputPath = results.directory;
         var entries = walkSync.entries(outputPath);
 
-        expect(entries).to.have.length(2);
+        expect(entries).to.have.length(3);
 
         var output = fs.readFileSync(outputPath + '/fixtures.js', 'UTF8');
         var input = fs.readFileSync(expectations + '/expected.es6', 'UTF8');
@@ -68,15 +71,23 @@ describe('transpile TypeScript', function() {
 
     describe('tsconfig resolution', function() {
       it('basic resolution', function () {
-        builder = new broccoli.Builder(new TypeScript('tests/fixtures/files'));
+        // since this uses the project tsconfig I need these in lib
+        var Funnel = require('broccoli-funnel');
+        var input = new Funnel('tests/fixtures/files', {
+          destDir: 'lib'
+        });
+        builder = new broccoli.Builder(filter(input));
 
         return builder.build().then(function(results) {
           var outputPath = results.directory;
 
-          var output = fs.readFileSync(outputPath + '/fixtures.js').toString();
-          var input = fs.readFileSync(expectations + '/expected.js').toString();
+          var actualJS = fs.readFileSync(outputPath + '/dist/fixtures.js').toString();
+          var actualMap = fs.readFileSync(outputPath + '/dist/fixtures.js.map').toString();
+          var expectedJS = fs.readFileSync(expectations + '/expected.js').toString();
+          var expectedMap = fs.readFileSync(expectations + '/expected.js.map').toString();
 
-          expect(output).to.eql(input);
+          expect(actualJS).to.eql(expectedJS);
+          expect(actualMap).to.eql(expectedMap);
         });
       });
     });
@@ -86,7 +97,8 @@ describe('transpile TypeScript', function() {
     var lastEntries, outputPath;
 
     beforeEach(function() {
-      builder = new broccoli.Builder(new TypeScript('tests/fixtures/files', {
+      cleanup();
+      builder = new broccoli.Builder(filter('tests/fixtures/files', {
         tsconfig: __dirname + '/fixtures/tsconfig.json'
       }));
 
@@ -94,17 +106,17 @@ describe('transpile TypeScript', function() {
         outputPath = results.directory;
 
         lastEntries = walkSync.entries(outputPath);
-        expect(lastEntries).to.have.length(2);
-        return builder.build();
+        expect(lastEntries).to.have.length(3);
+        expect(lastEntries.map(function(entry) { return entry.relativePath; })).to.deep.eql([
+          'fixtures.js',
+          'orange.js',
+          'types.js'
+        ]);
       });
     });
 
     afterEach(function() {
-      rimraf.sync('tests/fixtures/files/apple.ts');
-      rimraf.sync('tests/fixtures/files/orange.js');
-
-      rimraf.sync('tests/fixtures/files/red/');
-      rimraf.sync('tests/fixtures/files/orange/');
+      cleanup();
     });
 
     it('noop rebuild', function() {
@@ -112,61 +124,62 @@ describe('transpile TypeScript', function() {
         var entries = walkSync.entries(results.directory);
 
         expect(entries).to.deep.equal(lastEntries);
-        expect(entries).to.have.length(2);
+        expect(entries).to.have.length(3);
       });
     });
 
     it('mixed rebuild', function() {
-      var entries = walkSync.entries(outputPath);
-      expect(entries).to.have.length(2);
-
       fs.writeFileSync('tests/fixtures/files/apple.ts', 'var apple : String;');
-      fs.writeFileSync('tests/fixtures/files/orange.js', 'var orange;');
-
       mkdirp.sync('tests/fixtures/files/red/');
-      mkdirp.sync('tests/fixtures/files/orange/');
-
       fs.writeFileSync('tests/fixtures/files/red/one.ts', 'var one : String');
-      fs.writeFileSync('tests/fixtures/files/orange/two.js', 'var two');
 
       return builder.build().then(function(results) {
         var entries = walkSync.entries(results.directory);
+        expect(entries.map(function(entry) { return entry.relativePath; })).to.deep.eql([
+          'apple.js',
+          'fixtures.js',
+          'orange.js',
+          'red/',
+          'red/one.js',
+          'types.js'
+        ]);
 
-        expect(entries).to.not.deep.equal(lastEntries);
-        expect(entries).to.have.length(8);
+        expect(entryFor('fixtures.js', entries)).to.eql(entryFor('fixtures.js', lastEntries));
+        expect(entryFor('types.js',    entries)).to.eql(entryFor('types.js',    lastEntries));
+        expect(entryFor('orange.js',   entries)).to.eql(entryFor('orange.js', lastEntries));
 
-        rimraf.sync('tests/fixtures/files/apple.ts');
-        fs.writeFileSync('tests/fixtures/files/orange.js', 'var orange : String;');
+        expect(entryFor('apple.js',   entries)).to.not.eql(entryFor('apple.js',   lastEntries));
+        expect(entryFor('red/',       entries)).to.not.eql(entryFor('red/',       lastEntries));
+        expect(entryFor('red/one.js', entries)).to.not.eql(entryFor('red/one.js', lastEntries));
 
-        rimraf.sync('tests/fixtures/files/red/');
+        cleanup();
 
-        rimraf.sync('tests/fixtures/files/red/one.ts');
-        fs.writeFileSync('tests/fixtures/files/orange/two.js', 'var wasTwo;');
+        lastEntries = entries;
 
         return builder.build();
       }).then(function(results) {
         var entries = walkSync.entries(results.directory);
-
         expect(entries).to.not.deep.equal(lastEntries);
-        expect(entries).to.have.length(5);
+        expect(entries).to.have.length(3);
 
         // expected stability
         expect(entryFor('fixtures.js', entries)).to.eql(entryFor('fixtures.js', lastEntries));
-        expect(entryFor('oranges/',    entries)).to.eql(entryFor('oranges/', lastEntries));
         expect(entryFor('types.js',    entries)).to.eql(entryFor('types.js', lastEntries));
-
-        // expected in-stability
-        expect(entryFor('orange.js',     entries)).to.not.eql(entryFor('orange.js', lastEntries));
-        expect(entryFor('orange/two.js', entries)).to.not.eql(entryFor('orange/two.js', lastEntries));
+        expect(entryFor('orange.js',    entries)).to.eql(entryFor('orange.js', lastEntries));
 
         expect(entries.map(function(entry) { return entry.relativePath; })).to.deep.eql([
           'fixtures.js',
           'orange.js',
-          'orange/',
-          'orange/two.js',
           'types.js'
         ]);
       });
     });
   });
 });
+
+function cleanup() {
+  try {
+    fs.unlinkSync('tests/fixtures/files/apple.ts');
+    rimraf.sync('tests/fixtures/files/red/');
+  } catch (e) { }
+}

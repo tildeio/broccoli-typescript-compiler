@@ -1,59 +1,29 @@
-'use strict';
+var TypeScript = require("./dist/plugin").default;
+var MergeTrees = require("broccoli-merge-trees");
+var Funnel = require("broccoli-funnel");
 
-var ts         = require('typescript');
-var Filter     = require('broccoli-persistent-filter');
-var stringify  = require('json-stable-stringify');
-var crypto     = require('crypto');
-
-var getCallerFile = require('get-caller-file');
-
-var loadTSConfig = require('./lib/load-ts-config');
-var findTSConfig = require('./lib/find-ts-config');
-
-module.exports = TypeScript;
-function TypeScript(inputTree, _options) {
-  var options = _options || {};
-  options.tsconfig = options.tsconfig || findTSConfig(getCallerFile(2));
-
-  if (!(this instanceof TypeScript)) {
-    return new TypeScript(inputTree, options);
-  }
-
-  Filter.call(this, inputTree, {
-    persist: true,
-    extensions: ['ts','d.ts'],
-    targetExtension: 'js',
-    name: 'broccoli-typescript-compiler',
-    annotation: options.annotation
+// Mimic filter behavior for backwards compat
+function filter(inputNode, options) {
+  var passthrough = new Funnel(inputNode, {
+    exclude: ["**/*.ts"],
+    annotation: "TypeScript passthrough"
   });
-
-  this.options = loadTSConfig(options.tsconfig);
+  var filter = new Funnel(inputNode, {
+    include: ["**/*.ts"],
+    annotation: "TypeScript input"
+  });
+  return new MergeTrees([
+    passthrough,
+    new TypeScript(filter, options)
+  ], {
+    overwrite: true,
+    annotation: "TypeScript passthrough/ouput"
+  });
 }
 
-TypeScript.prototype = Object.create(Filter.prototype);
-TypeScript.prototype.constructor = TypeScript;
-
-TypeScript.prototype.baseDir = function() {
-  return __dirname;
+filter.TypeScript = TypeScript;
+filter.typescript = function typescript(inputNode, options) {
+  return new TypeScript(inputNode, options);
 };
 
-/*
- * @private
- *
- * @method optionsString
- * @returns a stringifeid version of the input options
- */
-TypeScript.prototype.optionsHash  = function() {
-  if (!this._optionsHash) {
-    this._optionsHash = crypto.createHash('md5').update(stringify(this.options), 'utf8').digest('hex');
-  }
-  return this._optionsHash;
-};
-
-TypeScript.prototype.cacheKeyProcessString = function(string, relativePath) {
-  return this.optionsHash() + Filter.prototype.cacheKeyProcessString.call(this, string, relativePath);
-};
-
-TypeScript.prototype.processString = function (string, relativePath) {
-  return ts.transpileModule(string, {compilerOptions: this.options, fileName: relativePath}).outputText;
-};
+module.exports = filter;

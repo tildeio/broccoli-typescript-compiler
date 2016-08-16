@@ -1,5 +1,25 @@
 {
-	"compilerOptions": {
-		"target": "ES3"
-	}
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "moduleResolution": "node",
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "newLine": "LF",
+    "rootDir": "lib",
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true
+  },
+  "filesGlob": [
+    "lib/**.ts"
+  ],
+  "exclude": [
+    "index.d.ts",
+    "**/node_modules",
+    "dist/**",
+    "tmp/**",
+    "tests/**"
+  ]
 }
