@@ -1,0 +1,6 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "tslint.ignoreDefinitionFiles": true,
+  "tslint.validateWithDefaultConfig": true,
+  "tslint.exclude": ["node_modules/**/*"]
+}

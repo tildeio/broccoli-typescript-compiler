@@ -1,6 +1,6 @@
 'use strict';
 
-var findTSConfig = require('../lib/find-ts-config');
+var findTSConfig = require('../dist/utils').findConfig;
 var expect = require('chai').expect;
 var ensurePosix = require('ensure-posix-path');
 var path = require('path');

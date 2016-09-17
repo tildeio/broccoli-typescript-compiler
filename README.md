@@ -20,7 +20,28 @@ $ npm install broccoli-typescript-compiler --save-dev
 In your `Brocfile.js`:
 
 ```js
-var tsTranspiler = require('broccoli-typescript-compiler');
-var scriptTree = tsTranspiler(inputTree);
+var typescript = require('broccoli-typescript-compiler')
+var cjsTree = typescript(inputTree, {
+  tsconfig: {,
+    compilerOptions: {
+      module: "commonjs",
+      target: "es5",
+      moduleResolution: "node",
+      newLine: "LF",
+      rootDir: "src",
+      outDir: "dist",
+      sourceMap: true,
+      declaration: true
+    },
+    files: ["src/index.ts"]
+  },
+  annotation: "compile program"
+}).typescript;
 ```
+Legacy filter behavior (compile all .ts files and only .ts and
+passthrough everything else).
 
+```js
+var filter = require('broccoli-typescript-compiler');
+var scriptTree = filter(inputTree);
+```

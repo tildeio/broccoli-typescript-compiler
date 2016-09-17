@@ -1,12 +1,20 @@
 {
   "name": "broccoli-typescript-compiler",
-  "version": "0.6.2",
+  "version": "1.0.0",
   "description": "A Broccoli plugin which compiles TypeScript files.",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "test": "mocha tests",
-    "test:debug": "mocha debug tests"
+    "test:debug": "mocha debug tests",
+    "prepublish": "npm run build",
+    "build": "tsc",
+    "build:watch": "tsc -p tsconfig.json --watch"
   },
+  "files": [
+    "dist/*",
+    "index.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/tildeio/broccoli-typescript-compiler.git"
@@ -25,25 +33,29 @@
   },
   "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
-    "broccoli-funnel": "^1.0.2",
-    "broccoli-merge-trees": "^1.1.1",
-    "broccoli-persistent-filter": "^1.0.1",
-    "clone": "^0.2.0",
+    "broccoli-funnel": "^1.0.6",
+    "broccoli-merge-trees": "^1.1.4",
+    "broccoli-plugin": "^1.2.1",
     "findup": "^0.1.5",
+    "fs-tree-diff": "^0.5.2",
     "get-caller-file": "^1.0.1",
-    "json-stable-stringify": "^1.0.0",
-    "walk-sync": "^0.2.6"
+    "heimdalljs": "^0.3.0-alpha3",
+    "json-stable-stringify": "^1.0.1",
+    "md5-hex": "^1.3.0",
+    "walk-sync": "^0.3.1"
   },
   "peerDependencies": {
-    "typescript": "^1.6.2 || ^1.7.0 || ^1.8.0 || ^1.9.0-dev || ^2.0.0 || ^2.0.0-dev || ^2.1.0-dev || next"
+    "typescript": ">=1.8.0"
   },
   "devDependencies": {
+    "@types/node": "^6.0.38",
     "broccoli": "^0.16.3",
-    "broccoli-test-helpers": "0.0.8",
     "chai": "^1.10.0",
     "ensure-posix-path": "^1.0.1",
     "mkdirp": "^0.5.1",
     "mocha": "^1.21.4",
-    "rimraf": "^2.4.2"
+    "rimraf": "^2.4.2",
+    "tslint": "^3.14.0",
+    "typescript": "^2.0.0"
   }
 }

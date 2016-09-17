@@ -1,9 +1,18 @@
+sudo: false
 language: node_js
 node_js:
-  - "0.10"
+  - "6"
+  - "5"
+  - "4"
   - "0.12"
-  - "iojs"
+  - "0.10"
+
 before_install:
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
-  - "npm install typescript"
+  - nvm install 6
+  - nvm use 6
+
+install:
+  - npm install
+
+before_script:
+  - nvm use $TRAVIS_NODE_VERSION
