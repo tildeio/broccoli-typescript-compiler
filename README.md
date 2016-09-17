@@ -20,7 +20,7 @@ $ npm install broccoli-typescript-compiler --save-dev
 In your `Brocfile.js`:
 
 ```js
-var typescript = require('broccoli-typescript-compiler')
+var typescript = require('broccoli-typescript-compiler').typescript;
 var cjsTree = typescript(inputTree, {
   tsconfig: {,
     compilerOptions: {
@@ -36,7 +36,7 @@ var cjsTree = typescript(inputTree, {
     files: ["src/index.ts"]
   },
   annotation: "compile program"
-}).typescript;
+});
 ```
 Legacy filter behavior (compile all .ts files and only .ts and
 passthrough everything else).

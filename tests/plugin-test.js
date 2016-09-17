@@ -51,7 +51,8 @@ describe('transpile TypeScript', function() {
           "compilerOptions": {
             "target": "es2015",
             "module": "es2015",
-            "sourceMap": false
+            "sourceMap": false,
+            "newLine": "LF"
           }
         }
       }));
