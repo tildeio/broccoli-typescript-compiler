@@ -1,4 +1,4 @@
-import { BroccoliPlugin, getCallerFile } from "./helpers";
+import { BroccoliPlugin, getCallerFile, heimdall } from "./helpers";
 import { readConfig, findConfig } from "./utils";
 import Compiler from "./compiler";
 
@@ -7,7 +7,10 @@ export interface TypeScriptOptions {
   annotation?: string | undefined;
 }
 
-export default class TypeScript extends BroccoliPlugin {
+export { findConfig } from "./utils";
+
+export class TypeScript extends BroccoliPlugin {
+
   config: Object;
   configFileName: string | undefined;
   host: Compiler | undefined;
@@ -37,11 +40,15 @@ export default class TypeScript extends BroccoliPlugin {
   }
 
   build() {
+    let token = heimdall.start("TypeScript:compile");
+    let inputPath = this.inputPaths[0];
     let { host } = this;
     if (!host) {
-      host = this.host = new Compiler(this.outputPath, this.inputPaths[0], this.config, this.configFileName);
+      host = this.host = new Compiler(this.outputPath, inputPath, this.config, this.configFileName);
+    } else {
+      host.updateInput(inputPath);
     }
-
-    host.compile(this.inputPaths[0]);
+    host.compile();
+    heimdall.stop(token);
   }
 }

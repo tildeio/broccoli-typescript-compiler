@@ -7,6 +7,7 @@ const { sys } = ts;
 
 export default class Compiler {
   public config: ts.ParsedCommandLine;
+
   private output: OutputPatcher;
   private input: SourceCache;
   private host: ts.CompilerHost;
@@ -15,6 +16,7 @@ export default class Compiler {
   constructor(public outputPath: string, public inputPath: string, public rawConfig: any, public configFileName: string | undefined) {
     let output = new OutputPatcher(outputPath);
     let config = parseConfig(inputPath, rawConfig, configFileName, undefined);
+    logDiagnostics(config.errors);
     let input = new SourceCache(inputPath, config.options);
     let host = createCompilerHost(input, output, config.options);
     this.output = output;
@@ -27,6 +29,7 @@ export default class Compiler {
     // the config builds the list of files
     let token = heimdall.start("TypeScript:updateInput");
     let config = this.config = parseConfig(inputPath, this.rawConfig, this.configFileName, this.config.options);
+    logDiagnostics(config.errors);
     if (this.inputPath !== inputPath) {
       this.inputPath = inputPath;
       this.config = config;
@@ -38,7 +41,14 @@ export default class Compiler {
     heimdall.stop(token);
   }
 
-  public createProgram() {
+  public compile() {
+    this.createProgram();
+    this.emitDiagnostics();
+    this.emitProgram();
+    this.patchOutput();
+  }
+
+  protected createProgram() {
     let { config, host } = this;
     let { fileNames, options } = config;
     let token = heimdall.start("TypeScript:createProgram");
@@ -47,54 +57,46 @@ export default class Compiler {
     heimdall.stop(token);
   }
 
-  public emitDiagnostics() {
+  protected emitDiagnostics() {
+    // this is where bindings are resolved and typechecking is done
     let token = heimdall.start("TypeScript:emitDiagnostics");
     let diagnostics = ts.getPreEmitDiagnostics(this.program);
-    this.checkDiagnostics(diagnostics);
+    logDiagnostics(diagnostics);
     heimdall.stop(token);
   }
 
-  public emitProgram() {
+  protected emitProgram() {
     let token = heimdall.start("TypeScript:emitProgram");
     let emitResult = this.program.emit();
-    this.checkDiagnostics(emitResult.diagnostics);
+    logDiagnostics(emitResult.diagnostics);
     heimdall.stop(token);
   }
 
-  public patchOutput() {
+  protected patchOutput() {
     let token = heimdall.start("TypeScript:patchOutput");
     this.output.patch();
     heimdall.stop(token);
   }
+}
 
-  public compile(inputPath: string) {
-    let token = heimdall.start("TypeScript:compile");
-    this.updateInput(inputPath);
-    this.createProgram();
-    this.emitDiagnostics();
-    this.emitProgram();
-    this.patchOutput();
-    heimdall.stop(token);
+function logDiagnostics(diagnostics: ts.Diagnostic[] | undefined) {
+  if (!diagnostics) return;
+  for (let i = 0; i < diagnostics.length; i++) {
+    let diagnostic = diagnostics[i];
+    let message = formatDiagnostic(diagnostic);
+    console.error(message);
   }
+}
 
-  public checkDiagnostics(diagnostics: ts.Diagnostic[]) {
-    for (let i = 0; i < diagnostics.length; i++) {
-      let diagnostic = diagnostics[i];
-      let message = this.formatDiagnostic(diagnostic);
-      console.error(message);
-    }
-  }
+function formatDiagnostic(d: ts.Diagnostic): string {
+  let msg = ts.flattenDiagnosticMessageText(d.messageText, sys.newLine);
+  if (!d.file) return msg;
+  return formatMessage(d.file, d.start, msg);
+}
 
-  public formatDiagnostic(d: ts.Diagnostic): string {
-    let msg = ts.flattenDiagnosticMessageText(d.messageText, "\n");
-    if (!d.file) return msg;
-    return this.formatMessage(d.file, d.start, msg);
-  }
-
-  public formatMessage(sourceFile: ts.SourceFile, start: number, msg: string): string {
-    let loc = sourceFile.getLineAndCharacterOfPosition(start);
-    return `${ sourceFile.fileName }(${ loc.line + 1 },${ loc.character + 1 }): ${msg}`;
-  }
+function formatMessage(sourceFile: ts.SourceFile, start: number, msg: string): string {
+  let loc = sourceFile.getLineAndCharacterOfPosition(start);
+  return `${ sourceFile.fileName }(${ loc.line + 1 },${ loc.character + 1 }): ${msg}`;
 }
 
 function parseConfig(inputPath: string, rawConfig: any, configFileName: string | undefined, previous?: ts.CompilerOptions) {

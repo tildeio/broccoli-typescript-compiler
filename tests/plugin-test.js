@@ -75,15 +75,15 @@ describe('transpile TypeScript', function() {
         // since this uses the project tsconfig I need these in lib
         var Funnel = require('broccoli-funnel');
         var input = new Funnel('tests/fixtures/files', {
-          destDir: 'lib'
+          destDir: 'src'
         });
         builder = new broccoli.Builder(filter(input));
 
         return builder.build().then(function(results) {
           var outputPath = results.directory;
 
-          var actualJS = fs.readFileSync(outputPath + '/dist/fixtures.js').toString();
-          var actualMap = fs.readFileSync(outputPath + '/dist/fixtures.js.map').toString();
+          var actualJS = fs.readFileSync(outputPath + '/lib/fixtures.js').toString();
+          var actualMap = fs.readFileSync(outputPath + '/lib/fixtures.js.map').toString();
           var expectedJS = fs.readFileSync(expectations + '/expected.js').toString();
           var expectedMap = fs.readFileSync(expectations + '/expected.js.map').toString();
 
