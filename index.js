@@ -1,4 +1,5 @@
-var TypeScript = require("./dist/plugin").default;
+var plugin = require("./dist/plugin");
+var TypeScript = plugin.TypeScript;
 var MergeTrees = require("broccoli-merge-trees");
 var Funnel = require("broccoli-funnel");
 
@@ -17,10 +18,11 @@ function filter(inputNode, options) {
     new TypeScript(filter, options)
   ], {
     overwrite: true,
-    annotation: "TypeScript passthrough/ouput"
+    annotation: "TypeScript passthrough + ouput"
   });
 }
 
+filter.findConfig = plugin.findConfig;
 filter.TypeScript = TypeScript;
 filter.typescript = function typescript(inputNode, options) {
   return new TypeScript(inputNode, options);

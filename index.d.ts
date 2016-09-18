@@ -1,4 +1,4 @@
-import TypeScript, { TypeScriptOptions } from "./dist/plugin";
+import { TypeScript, TypeScriptOptions } from "./lib/plugin";
 
 declare var filter: {
 
@@ -14,6 +14,8 @@ declare var filter: {
    * TypeScript Broccoli plugin class.
    */
   TypeScript: TypeScript;
+
+  findConfig(root: string): string;
 
   /**
    * Returns a Broccoli plugin instance that compiles

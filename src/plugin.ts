@@ -7,7 +7,10 @@ export interface TypeScriptOptions {
   annotation?: string | undefined;
 }
 
-export default class TypeScript extends BroccoliPlugin {
+export { findConfig } from "./utils";
+
+export class TypeScript extends BroccoliPlugin {
+
   config: Object;
   configFileName: string | undefined;
   host: Compiler | undefined;

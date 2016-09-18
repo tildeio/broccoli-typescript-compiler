@@ -8,11 +8,12 @@
     "test": "mocha tests",
     "test:debug": "mocha debug tests",
     "prepublish": "npm run build",
-    "build": "tsc",
-    "build:watch": "tsc -p tsconfig.json --watch"
+    "build": "tsc && rollup -c && sorcery -i dist/plugin.js"
   },
   "files": [
     "dist/*",
+    "lib/*.d.ts",
+    "index.js",
     "index.d.ts"
   ],
   "repository": {
@@ -55,6 +56,9 @@
     "mkdirp": "^0.5.1",
     "mocha": "^1.21.4",
     "rimraf": "^2.4.2",
+    "rollup": "^0.35.14",
+    "rollup-plugin-buble": "^0.14.0",
+    "sorcery": "^0.10.0",
     "tslint": "^3.14.0",
     "typescript": "^2.0.0"
   }

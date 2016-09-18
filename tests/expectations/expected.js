@@ -1,13 +1,11 @@
-"use strict";
-var types_1 = require('./types');
-var Person = (function () {
-    function Person(name) {
+import Greeter from './types';
+class Person {
+    constructor(name) {
         this._name = name;
     }
-    Person.prototype.name = function () {
+    name() {
         return this._name;
-    };
-    return Person;
-}());
-document.body.innerHTML = new types_1.default().greet(new Person("Godfrey"));
+    }
+}
+document.body.innerHTML = new Greeter().greet(new Person("Godfrey"));
 //# sourceMappingURL=fixtures.js.map
