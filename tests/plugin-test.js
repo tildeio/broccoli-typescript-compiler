@@ -153,6 +153,26 @@ describe('transpile TypeScript', function() {
         expect(entryFor('red/',       entries)).to.not.eql(entryFor('red/',       lastEntries));
         expect(entryFor('red/one.js', entries)).to.not.eql(entryFor('red/one.js', lastEntries));
 
+        var update = fs.readFileSync('tests/fixtures/files/fixtures.ts', 'utf8');
+        fs.writeFileSync('tests/fixtures/files/apple.ts', update);
+
+        lastEntries = entries;
+        return builder.build();
+      }).then(function (results) {
+        var entries = walkSync.entries(results.directory);
+        expect(entryFor('fixtures.js', entries)).to.eql(entryFor('fixtures.js', lastEntries));
+        expect(entryFor('types.js',    entries)).to.eql(entryFor('types.js',    lastEntries));
+        expect(entryFor('orange.js',   entries)).to.eql(entryFor('orange.js', lastEntries));
+        expect(entryFor('red/',        entries)).to.eql(entryFor('red/', lastEntries));
+        expect(entryFor('red/one.js',  entries)).to.eql(entryFor('red/one.js', lastEntries));
+
+        expect(entryFor('apple.js',    entries)).to.not.eql(entryFor('apple.js',   lastEntries));
+
+        var expectedJS = fs.readFileSync(expectations + '/expected.es6').toString();
+        var actualJS = fs.readFileSync(outputPath + '/apple.js').toString();
+
+        expect(actualJS).to.eql(expectedJS);
+
         cleanup();
 
         lastEntries = entries;
