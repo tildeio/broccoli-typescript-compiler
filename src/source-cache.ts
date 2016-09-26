@@ -21,12 +21,12 @@ export default class SourceCache {
     let cache = this.cache;
     let lastTree = this.lastTree;
     if (lastTree) {
-      lastTree.calculatePatch(nextTree).forEach(([op, , entry]) => {
+      lastTree.calculatePatch(nextTree).forEach(([op, path]) => {
         switch (op) {
           case "unlink":
           case "create":
           case "change":
-            cache[entry.fullPath] = undefined;
+            cache["/" + path] = undefined;
             break;
         }
       });
