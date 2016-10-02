@@ -19,7 +19,7 @@ function entryFor(path, entries) {
 }
 
 describe('transpile TypeScript', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   var builder;
 
   // TODO: random tmpdir
