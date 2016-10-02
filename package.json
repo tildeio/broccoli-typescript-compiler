@@ -53,6 +53,8 @@
     "broccoli": "^0.16.3",
     "chai": "^3.5.0",
     "ensure-posix-path": "^1.0.1",
+    "fixturify": "^0.3.0",
+    "fs-extra": "^0.30.0",
     "mkdirp": "^0.5.1",
     "mocha": "^3.1.0",
     "rimraf": "^2.4.2",
