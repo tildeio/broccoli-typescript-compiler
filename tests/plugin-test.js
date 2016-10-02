@@ -1,12 +1,12 @@
 'use strict';
 
-var fs = require('fs');
+var fs = require('fs-extra');
 var expect = require('chai').expect;
 var filter = require('..');
 var broccoli = require('broccoli');
 var walkSync = require('walk-sync');
-var mkdirp = require('mkdirp');
-var rimraf = require('rimraf');
+var path = require('path');
+var fixturify = require('fixturify');
 
 var expectations = __dirname + '/expectations';
 
@@ -19,16 +19,25 @@ function entryFor(path, entries) {
 }
 
 describe('transpile TypeScript', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   var builder;
 
+  // TODO: random tmpdir
+  var INPUT_PATH = path.resolve(__dirname, '../tmp/input');
+
+  beforeEach(function() {
+    fs.mkdirpSync(INPUT_PATH);
+    fixturify.writeSync(INPUT_PATH, fixturify.readSync(__dirname + '/fixtures/files'));
+  });
+
   afterEach(function () {
-    return builder && builder.cleanup();
+    fs.removeSync(INPUT_PATH);
+    return builder.cleanup();
   });
 
   describe('tsconfig', function() {
     it('uses tsconfig path from options', function () {
-      builder = new broccoli.Builder(filter('tests/fixtures/files', {
+      builder = new broccoli.Builder(filter(INPUT_PATH, {
         tsconfig: __dirname + '/fixtures/tsconfig.json'
       }));
 
@@ -46,7 +55,7 @@ describe('transpile TypeScript', function() {
     });
 
     it('uses tsconfig json from options', function () {
-      builder = new broccoli.Builder(filter('tests/fixtures/files', {
+      builder = new broccoli.Builder(filter(INPUT_PATH, {
         tsconfig: {
           "compilerOptions": {
             "target": "es2015",
@@ -74,7 +83,7 @@ describe('transpile TypeScript', function() {
       it('basic resolution', function () {
         // since this uses the project tsconfig I need these in lib
         var Funnel = require('broccoli-funnel');
-        var input = new Funnel('tests/fixtures/files', {
+        var input = new Funnel(INPUT_PATH, {
           destDir: 'src'
         });
         builder = new broccoli.Builder(filter(input));
@@ -98,8 +107,7 @@ describe('transpile TypeScript', function() {
     var lastEntries, outputPath;
 
     beforeEach(function() {
-      cleanup();
-      builder = new broccoli.Builder(filter('tests/fixtures/files', {
+      builder = new broccoli.Builder(filter(INPUT_PATH, {
         tsconfig: __dirname + '/fixtures/tsconfig.json'
       }));
 
@@ -116,10 +124,6 @@ describe('transpile TypeScript', function() {
       });
     });
 
-    afterEach(function() {
-      cleanup();
-    });
-
     it('noop rebuild', function() {
       return builder.build().then(function(results) {
         var entries = walkSync.entries(results.directory);
@@ -130,9 +134,12 @@ describe('transpile TypeScript', function() {
     });
 
     it('mixed rebuild', function() {
-      fs.writeFileSync('tests/fixtures/files/apple.ts', 'var apple : String;');
-      mkdirp.sync('tests/fixtures/files/red/');
-      fs.writeFileSync('tests/fixtures/files/red/one.ts', 'var one : String');
+      fixturify.writeSync(INPUT_PATH, {
+        'apple.ts': 'var apple : String',
+        red: {
+          'one.ts': 'var one : String',
+        }
+      });
 
       return builder.build().then(function(results) {
         var entries = walkSync.entries(results.directory);
@@ -154,7 +161,10 @@ describe('transpile TypeScript', function() {
         expect(entryFor('red/one.js', entries)).to.not.eql(entryFor('red/one.js', lastEntries));
 
         var update = fs.readFileSync('tests/fixtures/files/fixtures.ts', 'utf8');
-        fs.writeFileSync('tests/fixtures/files/apple.ts', update);
+
+        fixturify.writeSync(INPUT_PATH, {
+          'apple.ts': update
+        })
 
         lastEntries = entries;
         return builder.build();
@@ -173,7 +183,10 @@ describe('transpile TypeScript', function() {
 
         expect(actualJS).to.eql(expectedJS);
 
-        cleanup();
+        fixturify.writeSync(INPUT_PATH, {
+          'apple.ts': null,
+          red: null,
+        });
 
         lastEntries = entries;
 
@@ -197,10 +210,3 @@ describe('transpile TypeScript', function() {
     });
   });
 });
-
-function cleanup() {
-  try {
-    fs.unlinkSync('tests/fixtures/files/apple.ts');
-    rimraf.sync('tests/fixtures/files/red/');
-  } catch (e) { }
-}

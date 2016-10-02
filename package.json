@@ -6,7 +6,7 @@
   "typings": "index.d.ts",
   "scripts": {
     "test": "mocha tests",
-    "test:debug": "mocha debug tests",
+    "test:debug": "mocha --no-timeouts debug tests",
     "prepublish": "npm run build",
     "build": "tsc && rollup -c && sorcery -i dist/plugin.js"
   },
@@ -51,12 +51,14 @@
   "devDependencies": {
     "@types/node": "^6.0.38",
     "broccoli": "^0.16.3",
-    "chai": "^1.10.0",
+    "chai": "^3.5.0",
     "ensure-posix-path": "^1.0.1",
+    "fixturify": "^0.3.0",
+    "fs-extra": "^0.30.0",
     "mkdirp": "^0.5.1",
-    "mocha": "^1.21.4",
+    "mocha": "^3.1.0",
     "rimraf": "^2.4.2",
-    "rollup": "^0.35.14",
+    "rollup": "^0.36.1",
     "rollup-plugin-buble": "^0.14.0",
     "sorcery": "^0.10.0",
     "tslint": "^3.14.0",
