@@ -17,7 +17,7 @@ $ npm install broccoli-typescript-compiler --save-dev
 ```js
 var typescript = require('broccoli-typescript-compiler').typescript;
 var cjsTree = typescript(inputTree, {
-  tsconfig: {,
+  tsconfig: {
     compilerOptions: {
       module: "commonjs",
       target: "es5",
