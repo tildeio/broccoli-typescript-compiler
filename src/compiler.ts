@@ -111,7 +111,8 @@ function createParseConfigHost(inputPath: string): ts.ParseConfigHost {
   return {
     useCaseSensitiveFileNames: ts.sys.useCaseSensitiveFileNames,
     fileExists: path => sys.fileExists(realPath(path)),
-    readDirectory: (rootDir, extensions, excludes, includes) => sys.readDirectory(realPath(rootDir), extensions, excludes, includes).map(stripRoot)
+    readDirectory: (rootDir, extensions, excludes, includes) => sys.readDirectory(realPath(rootDir), extensions, excludes, includes).map(stripRoot),
+    readFile: ts.sys.readFile
   };
 }
 
