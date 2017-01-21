@@ -1,10 +1,13 @@
 import { FSTree, walkSync } from "./helpers";
 import { createMap } from "./utils";
-import { SourceFile, createSourceFile, ScriptTarget, sys, CompilerOptions, getDefaultLibFileName, getDefaultLibFilePath } from "typescript";
+import { sys, CompilerOptions, getDefaultLibFileName, getDefaultLibFilePath, IScriptSnapshot, ScriptSnapshot } from "typescript";
 
 export default class SourceCache {
   private lastTree: FSTree | undefined = undefined;
-  private cache = createMap<SourceFile>();
+  private cache = createMap<{
+    content: string | undefined,
+    version: number
+  }>();
   private charset: string | undefined;
   public libFileName: string;
   private libFilePath: string;
@@ -24,9 +27,14 @@ export default class SourceCache {
       lastTree.calculatePatch(nextTree).forEach(([op, path]) => {
         switch (op) {
           case "unlink":
-          case "create":
-          case "change":
             cache["/" + path] = undefined;
+            break;
+          case "change":
+            let file = cache["/" + path];
+            if (file) {
+              file.content = undefined;
+              file.version++;
+            }
             break;
         }
       });
@@ -45,31 +53,31 @@ export default class SourceCache {
     return sys.fileExists(this.realPath(fileName));
   }
 
-  public readFile(fileName: string): string {
-    let { cache } = this;
-    let content = cache[fileName];
-    if (content !== undefined) {
-      return content.text;
-    }
-    return sys.readFile(this.realPath(fileName), this.charset);
+  public getScriptVersion(fileName: string): number | undefined {
+    let file = this.cache[fileName];
+    return file && file.version;
   }
 
-  public getSourceFile(fileName: string, languageVersion: ScriptTarget, onError: (message: string) => void): SourceFile {
+  public getScriptSnapshot(fileName: string): IScriptSnapshot | undefined {
+    return ScriptSnapshot.fromString(this.readFile(fileName));
+  }
+
+  public readFile(fileName: string): string {
     let { cache } = this;
-    let sourceFile = cache[fileName];
-    if (!sourceFile) {
-      let text;
-      try {
-        text = this.readFile(fileName);
-      } catch (e) {
-        if (onError) {
-          onError(e.message);
-        }
-        text = "";
-      }
-      sourceFile = cache[fileName] = createSourceFile(fileName, text, languageVersion);
+    let file = cache[fileName];
+    if (file === undefined) {
+      file = cache[fileName] = {
+        content: undefined,
+        version: 0
+      };
     }
-    return sourceFile;
+    let content;
+    if (file.content) {
+      content = file.content;
+    } else {
+      content = file.content = sys.readFile(this.realPath(fileName), this.charset);
+    }
+    return content;
   }
 }
 

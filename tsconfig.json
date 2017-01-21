@@ -12,16 +12,7 @@
     "sourceMap": true,
     "declaration": true
   },
-  "filesGlob": [
+  "include": [
     "src/**.ts"
-  ],
-  "exclude": [
-    "index.d.ts",
-    "**/node_modules",
-    "node_modules",
-    "dist/**",
-    "lib/**",
-    "tmp/**",
-    "tests/**"
   ]
 }
