@@ -2,6 +2,7 @@ import * as ts from "typescript";
 import SourceCache from "./source-cache";
 import OutputPatcher from "./output-patcher";
 import { heimdall } from "./helpers";
+import { createParseConfigHost, formatDiagnosticsHost } from "./utils";
 
 const { sys } = ts;
 
@@ -9,8 +10,9 @@ export default class Compiler {
   public config: ts.ParsedCommandLine;
 
   private output: OutputPatcher;
-  private input: SourceCache;
-  private host: ts.CompilerHost;
+  public input: SourceCache;
+  private host: ts.LanguageServiceHost;
+  private languageService: ts.LanguageService;
   private program: ts.Program;
 
   constructor(public outputPath: string, public inputPath: string, public rawConfig: any, public configFileName: string | undefined) {
@@ -18,11 +20,11 @@ export default class Compiler {
     let config = parseConfig(inputPath, rawConfig, configFileName, undefined);
     logDiagnostics(config.errors);
     let input = new SourceCache(inputPath, config.options);
-    let host = createCompilerHost(input, output, config.options);
     this.output = output;
     this.config = config;
     this.input = input;
-    this.host = host;
+    this.host = createLanguageServiceHost(this);
+    this.languageService = ts.createLanguageService(this.host, ts.createDocumentRegistry());
   }
 
   public updateInput(inputPath: string) {
@@ -34,7 +36,6 @@ export default class Compiler {
       this.inputPath = inputPath;
       this.config = config;
       this.input = new SourceCache(inputPath, config.options);
-      this.host = createCompilerHost(this.input, this.output, config.options);
     } else {
       this.input.updateCache();
     }
@@ -49,11 +50,9 @@ export default class Compiler {
   }
 
   protected createProgram() {
-    let { config, host } = this;
-    let { fileNames, options } = config;
+    let { languageService } = this;
     let token = heimdall.start("TypeScript:createProgram");
-    let program = ts.createProgram(fileNames, options, host, this.program);
-    this.program = program;
+    this.program = languageService.getProgram();
     heimdall.stop(token);
   }
 
@@ -67,7 +66,9 @@ export default class Compiler {
 
   protected emitProgram() {
     let token = heimdall.start("TypeScript:emitProgram");
-    let emitResult = this.program.emit();
+    let emitResult = this.program.emit(undefined, (fileName: string, data: string) => {
+      this.output.add(fileName.slice(1), data);
+    });
     logDiagnostics(emitResult.diagnostics);
     heimdall.stop(token);
   }
@@ -81,22 +82,7 @@ export default class Compiler {
 
 function logDiagnostics(diagnostics: ts.Diagnostic[] | undefined) {
   if (!diagnostics) return;
-  for (let i = 0; i < diagnostics.length; i++) {
-    let diagnostic = diagnostics[i];
-    let message = formatDiagnostic(diagnostic);
-    console.error(message);
-  }
-}
-
-function formatDiagnostic(d: ts.Diagnostic): string {
-  let msg = ts.flattenDiagnosticMessageText(d.messageText, sys.newLine);
-  if (!d.file) return msg;
-  return formatMessage(d.file, d.start, msg);
-}
-
-function formatMessage(sourceFile: ts.SourceFile, start: number, msg: string): string {
-  let loc = sourceFile.getLineAndCharacterOfPosition(start);
-  return `${ sourceFile.fileName }(${ loc.line + 1 },${ loc.character + 1 }): ${msg}`;
+  sys.write(ts.formatDiagnostics(diagnostics, formatDiagnosticsHost));
 }
 
 function parseConfig(inputPath: string, rawConfig: any, configFileName: string | undefined, previous?: ts.CompilerOptions) {
@@ -104,39 +90,39 @@ function parseConfig(inputPath: string, rawConfig: any, configFileName: string |
   return ts.parseJsonConfigFileContent(rawConfig, host, "/", previous, configFileName);
 }
 
-function createParseConfigHost(inputPath: string): ts.ParseConfigHost {
-  let rootLength = inputPath.length;
-  let stripRoot = fileName => fileName.slice(rootLength);
-  let realPath = fileName => inputPath + fileName;
+function createLanguageServiceHost(compiler: Compiler): ts.LanguageServiceHost {
   return {
-    useCaseSensitiveFileNames: ts.sys.useCaseSensitiveFileNames,
-    fileExists: path => sys.fileExists(realPath(path)),
-    readDirectory: (rootDir, extensions, excludes, includes) => sys.readDirectory(realPath(rootDir), extensions, excludes, includes).map(stripRoot),
-    readFile: ts.sys.readFile
-  };
-}
-
-function createCompilerHost(input: SourceCache, output: OutputPatcher, options: ts.CompilerOptions): ts.CompilerHost {
-  let newLine = getNewLine(options);
-  let caseSensitive = ts.sys.useCaseSensitiveFileNames;
-  return {
-    getCurrentDirectory: () => "/",
-    getNewLine: () => newLine,
-    useCaseSensitiveFileNames: () => caseSensitive,
-    getCanonicalFileName: fileName => caseSensitive ? fileName : fileName.toLowerCase(),
-    getSourceFile: (fileName: string, languageVersion: ts.ScriptTarget, onError: (message: string) => void) => input.getSourceFile(fileName, languageVersion, onError),
-    getDefaultLibFileName: () => input.libFileName,
-    getDirectories: path => ts.sys.getDirectories(input.realPath(path)),
-    fileExists: fileName => input.fileExists(fileName),
-    readFile: fileName => input.readFile(fileName),
-    writeFile: (fileName, content) => {
-      let relativePath = fileName.slice(1);
-      output.add(relativePath, content);
+    getCurrentDirectory() {
+      return "/";
+    },
+    getCompilationSettings() {
+      return compiler.config.options;
+    },
+    getNewLine() {
+      return _getNewLine(compiler.config.options);
+    },
+    getScriptFileNames(): string[] {
+      return compiler.config.fileNames;
+    },
+    getScriptVersion(fileName: string): string {
+      return "" + compiler.input.getScriptVersion(fileName);
+    },
+    getScriptSnapshot(fileName: string): ts.IScriptSnapshot | undefined {
+      return compiler.input.getScriptSnapshot(fileName);
+    },
+    getDefaultLibFileName() {
+      return compiler.input.libFileName;
+    },
+    fileExists(fileName) {
+      return compiler.input.fileExists(fileName);
+    },
+    readFile(fileName) {
+      return compiler.input.readFile(fileName);
     }
   };
 }
 
-function getNewLine(options: ts.CompilerOptions) {
+function _getNewLine(options: ts.CompilerOptions): string {
   let newLine;
   if (options.newLine === undefined) {
     newLine = sys.newLine;
