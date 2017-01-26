@@ -2,19 +2,17 @@
   "name": "broccoli-typescript-compiler",
   "version": "1.0.1",
   "description": "A Broccoli plugin which compiles TypeScript files.",
-  "main": "index.js",
-  "typings": "index.d.ts",
+  "main": "dist/lib/index.js",
+  "typings": "dist/lib/index.d.ts",
   "scripts": {
-    "test": "mocha tests",
-    "test:debug": "mocha --no-timeouts debug tests",
+    "test": "mocha dist/tests",
+    "test:debug": "mocha --no-timeouts debug dist/tests",
     "prepublish": "npm run build",
-    "build": "tsc && rollup -c && sorcery -i dist/plugin.js"
+    "build": "tsc"
   },
   "files": [
-    "dist/*",
-    "lib/*.d.ts",
-    "index.js",
-    "index.d.ts"
+    "dist",
+    "!dist/tests"
   ],
   "repository": {
     "type": "git",
@@ -41,7 +39,6 @@
     "fs-tree-diff": "^0.5.2",
     "get-caller-file": "^1.0.1",
     "heimdalljs": "^0.3.0-alpha3",
-    "json-stable-stringify": "^1.0.1",
     "md5-hex": "^1.3.0",
     "walk-sync": "^0.3.1"
   },
@@ -49,19 +46,20 @@
     "typescript": ">=1.8.0"
   },
   "devDependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/mkdirp": "^0.3.29",
+    "@types/mocha": "^2.2.38",
     "@types/node": "^6.0.52",
-    "broccoli": "^0.16.3",
+    "@types/rsvp": "^3.0.0",
+    "broccoli": "^1.1.0",
+    "broccoli-test-helper": "^1.1.0",
     "chai": "^3.5.0",
-    "ensure-posix-path": "^1.0.1",
-    "fixturify": "^0.3.0",
-    "fs-extra": "^0.30.0",
+    "fixturify": "^0.3.2",
     "mkdirp": "^0.5.1",
     "mocha": "^3.1.0",
-    "rimraf": "^2.4.2",
-    "rollup": "^0.36.1",
-    "rollup-plugin-buble": "^0.14.0",
+    "rimraf": "^2.5.4",
     "sorcery": "^0.10.0",
     "tslint": "^4.0.2",
-    "typescript": "~2.1.4"
+    "typescript": "^2.1.5"
   }
 }

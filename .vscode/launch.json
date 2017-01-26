@@ -5,21 +5,23 @@
       "name": "Launch",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceRoot}/tests/plugin-test.js",
-      "stopOnEntry": false,
-      "args": [],
+      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "args": [
+        "--no-timeouts",
+        "${workspaceRoot}/dist/tests/"
+      ],
+      "runtimeArgs": [
+        "--no-lazy"
+      ],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "build",
-      "runtimeExecutable": null,
-      "runtimeArgs": [
-        "--nolazy",
-        "${workspaceRoot}/node_modules/.bin/_mocha",
-        "--no-timeouts"
-      ],
       "env": {
         "NODE_ENV": "development"
       },
-      "sourceMaps": true
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceRoot}/dist/**/*.js"
+      ]
     }
   ]
 }

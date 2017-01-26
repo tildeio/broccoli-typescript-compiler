@@ -1,10 +1,9 @@
 import * as ts from "typescript";
+import { sys } from "typescript";
 import SourceCache from "./source-cache";
 import OutputPatcher from "./output-patcher";
 import { heimdall } from "./helpers";
 import { createParseConfigHost, formatDiagnosticsHost } from "./utils";
-
-const { sys } = ts;
 
 export default class Compiler {
   public config: ts.ParsedCommandLine;
@@ -50,7 +49,7 @@ export default class Compiler {
   }
 
   protected createProgram() {
-    let { languageService } = this;
+    let languageService = this.languageService;
     let token = heimdall.start("TypeScript:createProgram");
     this.program = languageService.getProgram();
     heimdall.stop(token);

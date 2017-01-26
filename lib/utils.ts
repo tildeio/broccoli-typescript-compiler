@@ -2,8 +2,10 @@ import { sys, readConfigFile, formatDiagnostics, FormatDiagnosticsHost, ParseCon
 import { findup } from "./helpers";
 import { join } from "path";
 
-const { create: createObject } = Object;
-const { newLine, useCaseSensitiveFileNames, getCurrentDirectory } = sys;
+const createObject = Object.create;
+const newLine = sys.newLine;
+const useCaseSensitiveFileNames = sys.useCaseSensitiveFileNames;
+const getCurrentDirectory = sys.getCurrentDirectory;
 
 export function getCanonicalFileName(fileName: string): string {
   return useCaseSensitiveFileNames ? fileName : fileName.toLowerCase();
@@ -39,7 +41,6 @@ export function createParseConfigHost(inputPath: string): ParseConfigHost {
   let fileExists = path => sys.fileExists(realPath(path));
   let readDirectory = (rootDir, extensions, excludes, includes) => sys.readDirectory(realPath(rootDir), extensions, excludes, includes).map(stripRoot);
   let readFile = path => sys.readFile(realPath(path));
-  const { useCaseSensitiveFileNames } = sys;
   return {
     useCaseSensitiveFileNames,
     fileExists,

@@ -35,12 +35,16 @@ export default class OutputPatcher {
       throw e;
     } finally {
       this.entries = [];
-      this.contents = Object.create(null);
+      this.contents = createMap<string>();
     }
   }
 
   private _patch() {
-    let { entries, lastTree, isUnchanged, outputPath, contents } = this;
+    let entries = this.entries;
+    let lastTree = this.lastTree;
+    let isUnchanged = this.isUnchanged;
+    let outputPath = this.outputPath;
+    let contents = this.contents;
     let nextTree = FSTree.fromEntries(entries, {
       sortAndExpand: true
     });
@@ -48,7 +52,10 @@ export default class OutputPatcher {
       lastTree = FSTree.fromEntries(walkSync.entries(outputPath));
     }
     let patch = lastTree.calculatePatch(nextTree, isUnchanged);
-    patch.forEach(([op, path, entry]) => {
+    patch.forEach((change) => {
+      let op = change[0];
+      let path = change[1];
+      let entry = change[2];
       switch (op) {
         case "mkdir":
           // the expanded dirs don't have a base

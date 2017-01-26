@@ -24,7 +24,9 @@ export default class SourceCache {
     let cache = this.cache;
     let lastTree = this.lastTree;
     if (lastTree) {
-      lastTree.calculatePatch(nextTree).forEach(([op, path]) => {
+      lastTree.calculatePatch(nextTree).forEach((change) => {
+        let op = change[0];
+        let path = change[1];
         switch (op) {
           case "unlink":
             cache["/" + path] = undefined;
@@ -64,7 +66,7 @@ export default class SourceCache {
   }
 
   public readFile(fileName: string): string {
-    let { cache } = this;
+    let cache = this.cache;
     let file = cache[fileName];
     if (file === undefined) {
       file = cache[fileName] = {

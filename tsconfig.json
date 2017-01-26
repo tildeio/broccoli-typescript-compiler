@@ -1,18 +1,24 @@
 {
   "compilerOptions": {
-    "module": "es2015",
+    "module": "commonjs",
     "target": "es2015",
     "moduleResolution": "node",
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "newLine": "LF",
-    "rootDir": "src",
-    "outDir": "lib",
+    "outDir": "dist",
     "sourceMap": true,
     "declaration": true
   },
   "include": [
-    "src/**.ts"
+    "index.ts",
+    "lib/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests/fixtures"
   ]
 }
