@@ -210,3 +210,34 @@ describe('transpile TypeScript', function() {
     });
   });
 });
+
+describe('handles missing files', function() {
+  this.timeout(10000);
+  var builder;
+
+  // TODO: random tmpdir
+  var INPUT_PATH = path.resolve(__dirname, '../tmp/input');
+
+  beforeEach(function() {
+    fs.mkdirpSync(INPUT_PATH);
+    fixturify.writeSync(INPUT_PATH, fixturify.readSync(__dirname + '/fixtures/files-with-missing-imports'));
+  });
+
+  afterEach(function () {
+    fs.removeSync(INPUT_PATH);
+    return builder.cleanup();
+  });
+
+  it('should successfully compile', function () {
+    builder = new broccoli.Builder(filter(INPUT_PATH, {
+      tsconfig: __dirname + '/fixtures/tsconfig.json'
+    }));
+
+    return builder.build().then(function(results) {
+      var outputPath = results.directory;
+      var entries = walkSync.entries(outputPath);
+
+      expect(entries).to.have.length(2);
+    });
+  });
+})
