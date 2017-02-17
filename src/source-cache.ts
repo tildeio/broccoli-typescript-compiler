@@ -59,7 +59,8 @@ export default class SourceCache {
   }
 
   public getScriptSnapshot(fileName: string): IScriptSnapshot | undefined {
-    return ScriptSnapshot.fromString(this.readFile(fileName));
+    let text = this.readFile(fileName);
+    return text !== undefined ? ScriptSnapshot.fromString(text) : undefined;
   }
 
   public readFile(fileName: string): string {
