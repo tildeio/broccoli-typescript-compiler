@@ -37,14 +37,26 @@ var cjsTree = typescript(inputTree, {
 });
 ```
 
-The broccoli plugin class
+### Config Options:
+
+`tsconfig:` 
+* default (when ommited): will find the nearest `tsconfig` relative to where the BroccoliTypeScriptCompiler is invoked.
+* as string: a absolute path to a config tsconfig file
+* as config object: See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+
+`annotation:`
+
+An optional string, which when provide should be a descriptive annotation. Useful for debugging, to tell multiple instances of the same plugin apart.
+
+### Ways to use:
+
+via the broccoli plugin subclass
 
 ```js
 var TypeScript = require('broccoli-typescript-compiler').TypeScript;
 ```
 
-Legacy filter behavior (compile all .ts files and only .ts and
-passthrough everything else).
+via a function:
 
 ```js
 var filter = require('broccoli-typescript-compiler');
