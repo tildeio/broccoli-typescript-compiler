@@ -39,7 +39,10 @@ var cjsTree = typescript(inputTree, {
 
 ### Config Options:
 
-* `tsconfig:` See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+`tsconfig:` 
+* default (when ommited): will find the nearest `tsconfig` relative to where the BroccoliTypeScriptCompiler is invoked.
+* as string: a absolute path to a config tsconfig file
+* as config object: See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
 
 ### Ways to use:
 
