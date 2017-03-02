@@ -44,6 +44,10 @@ var cjsTree = typescript(inputTree, {
 * as string: a absolute path to a config tsconfig file
 * as config object: See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
 
+`annotation:`
+
+An optional string, which when provide should be a descriptive annotation. Useful for debugging, to tell multiple instances of the same plugin apart.
+
 ### Ways to use:
 
 via the broccoli plugin subclass
