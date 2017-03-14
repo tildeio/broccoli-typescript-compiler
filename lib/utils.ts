@@ -1,6 +1,6 @@
-import { sys, readConfigFile, formatDiagnostics, FormatDiagnosticsHost, ParseConfigHost } from "typescript";
-import { findup } from "./helpers";
 import { join } from "path";
+import { formatDiagnostics, FormatDiagnosticsHost, ParseConfigHost, readConfigFile, sys } from "typescript";
+import { findup } from "./helpers";
 
 const createObject = Object.create;
 const newLine = sys.newLine;
@@ -36,11 +36,13 @@ export function readConfig(configFile: string): any {
 
 export function createParseConfigHost(inputPath: string): ParseConfigHost {
   let rootLength = inputPath.length;
-  let stripRoot = fileName => fileName.slice(rootLength);
-  let realPath = fileName => inputPath + fileName;
-  let fileExists = path => sys.fileExists(realPath(path));
-  let readDirectory = (rootDir, extensions, excludes, includes) => sys.readDirectory(realPath(rootDir), extensions, excludes, includes).map(stripRoot);
-  let readFile = path => sys.readFile(realPath(path));
+  let stripRoot = (fileName) => fileName.slice(rootLength);
+  let realPath = (fileName) => inputPath + fileName;
+  let fileExists = (path) => sys.fileExists(realPath(path));
+  let readDirectory = (rootDir, extensions, excludes, includes) => {
+    return sys.readDirectory(realPath(rootDir), extensions, excludes, includes).map(stripRoot);
+  };
+  let readFile = (path) => sys.readFile(realPath(path));
   return {
     useCaseSensitiveFileNames,
     fileExists,
@@ -55,7 +57,9 @@ export interface Map<T> {
 
 export function createMap<T>(): Map<T> {
     const map: Map<T> = createObject(null);
+    // tslint:disable-next-line
     map["__"] = undefined;
+    // tslint:disable-next-line
     delete map["__"];
     return map;
 }

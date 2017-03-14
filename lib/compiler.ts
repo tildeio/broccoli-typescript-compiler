@@ -1,20 +1,23 @@
 import * as ts from "typescript";
 import { sys } from "typescript";
-import SourceCache from "./source-cache";
-import OutputPatcher from "./output-patcher";
 import { heimdall } from "./helpers";
+import OutputPatcher from "./output-patcher";
+import SourceCache from "./source-cache";
 import { createParseConfigHost, formatDiagnosticsHost } from "./utils";
 
 export default class Compiler {
   public config: ts.ParsedCommandLine;
+  public input: SourceCache;
 
   private output: OutputPatcher;
-  public input: SourceCache;
   private host: ts.LanguageServiceHost;
   private languageService: ts.LanguageService;
   private program: ts.Program;
 
-  constructor(public outputPath: string, public inputPath: string, public rawConfig: any, public configFileName: string | undefined) {
+  constructor(public outputPath: string,
+              public inputPath: string,
+              public rawConfig: any,
+              public configFileName: string | undefined) {
     let output = new OutputPatcher(outputPath);
     let config = parseConfig(inputPath, rawConfig, configFileName, undefined);
     logDiagnostics(config.errors);
@@ -80,11 +83,16 @@ export default class Compiler {
 }
 
 function logDiagnostics(diagnostics: ts.Diagnostic[] | undefined) {
-  if (!diagnostics) return;
+  if (!diagnostics) {
+    return;
+  }
   sys.write(ts.formatDiagnostics(diagnostics, formatDiagnosticsHost));
 }
 
-function parseConfig(inputPath: string, rawConfig: any, configFileName: string | undefined, previous?: ts.CompilerOptions) {
+function parseConfig(inputPath: string,
+                     rawConfig: any,
+                     configFileName: string | undefined,
+                     previous?: ts.CompilerOptions) {
   let host = createParseConfigHost(inputPath);
   return ts.parseJsonConfigFileContent(rawConfig, host, "/", previous, configFileName);
 }

@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { md5Hex, walkSync, WalkSync, FSTree } from "./helpers";
+import { FSTree, md5Hex, walkSync, WalkSync } from "./helpers";
 import { createMap } from "./utils";
 
 export default class OutputPatcher {
@@ -72,6 +72,7 @@ export default class OutputPatcher {
         case "change":
           fs.writeFileSync(entry.fullPath, contents[path]);
           break;
+        default: throw new Error(`unrecognized case ${op}`);
       }
     });
     return nextTree;
@@ -89,7 +90,7 @@ class Entry implements WalkSync.Entry {
     this.checksum = checksum;
   }
 
-  isDirectory() {
+  public isDirectory() {
     return false;
   }
 }

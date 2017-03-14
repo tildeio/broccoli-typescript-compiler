@@ -1,5 +1,5 @@
-import { TypeScript, typescript, TypeScriptOptions } from "./lib/plugin";
 import filter from "./lib/compat/filter";
+import { TypeScript, typescript, TypeScriptOptions } from "./lib/plugin";
 
 export = Object.assign<{
   (inputNode: any, options?: TypeScriptOptions);

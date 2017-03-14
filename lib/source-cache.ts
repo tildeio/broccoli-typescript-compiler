@@ -1,15 +1,22 @@
+import {
+  CompilerOptions,
+  getDefaultLibFileName,
+  getDefaultLibFilePath,
+  IScriptSnapshot,
+  ScriptSnapshot,
+  sys
+} from "typescript";
 import { FSTree, walkSync } from "./helpers";
 import { createMap } from "./utils";
-import { sys, CompilerOptions, getDefaultLibFileName, getDefaultLibFilePath, IScriptSnapshot, ScriptSnapshot } from "typescript";
 
 export default class SourceCache {
+  public libFileName: string;
   private lastTree: FSTree | undefined = undefined;
   private cache = createMap<{
     content: string | undefined,
     version: number
   }>();
   private charset: string | undefined;
-  public libFileName: string;
   private libFilePath: string;
 
   constructor(public inputPath: string,
@@ -38,6 +45,7 @@ export default class SourceCache {
               file.version++;
             }
             break;
+          default:
         }
       });
     }
@@ -83,4 +91,3 @@ export default class SourceCache {
     return content;
   }
 }
-

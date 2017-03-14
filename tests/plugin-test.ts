@@ -1,11 +1,12 @@
-import "mocha";
+import { createBuilder, createTempDir, Output, TempDir } from "broccoli-test-helper";
 import { expect } from "chai";
-import { createBuilder, createTempDir, TempDir, Output } from "broccoli-test-helper";
+import "mocha";
 
 import filter = require("../index");
 
 const typescript = filter.typescript;
 
+// tslint:disable-next-line:only-arrow-functions
 describe("transpile TypeScript", function () {
   this.timeout(10000);
 
@@ -31,13 +32,13 @@ describe("transpile TypeScript", function () {
 
     output = createBuilder(typescript(input.path(), {
       tsconfig: {
-        "compilerOptions": {
-          "module": "commonjs",
-          "moduleResolution": "node",
-          "target": "es2015",
-          "newLine": "LF"
+        compilerOptions: {
+          module: "commonjs",
+          moduleResolution: "node",
+          newLine: "LF",
+          target: "es2015"
         },
-        "files": ["index.ts"]
+        files: ["index.ts"]
       }
     }));
 
@@ -150,13 +151,13 @@ exports.A = a_1.default;
 
     output = createBuilder(typescript(input.path(), {
       tsconfig: {
-        "compilerOptions": {
-          "module": "commonjs",
-          "moduleResolution": "node",
-          "target": "es2015",
-          "newLine": "LF"
+        compilerOptions: {
+          module: "commonjs",
+          moduleResolution: "node",
+          newLine: "LF",
+          target: "es2015"
         },
-        "files": ["index.ts"]
+        files: ["index.ts"]
       }
     }));
 

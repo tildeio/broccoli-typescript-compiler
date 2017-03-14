@@ -8,11 +8,14 @@
     "test": "mocha dist/tests",
     "test:debug": "mocha --no-timeouts debug dist/tests",
     "prepublish": "npm run build",
+    "lint": "tslint --project tsconfig.json",
     "build": "tsc"
   },
   "files": [
     "dist",
-    "!dist/tests"
+    "!dist/tests",
+    "index.ts",
+    "lib"
   ],
   "repository": {
     "type": "git",

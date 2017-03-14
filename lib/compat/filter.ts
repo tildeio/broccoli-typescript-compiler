@@ -1,6 +1,6 @@
-import { TypeScript, TypeScriptOptions } from "../plugin";
 import * as Funnel from "broccoli-funnel";
 import * as MergeTrees from "broccoli-merge-trees";
+import { TypeScript, TypeScriptOptions } from "../plugin";
 
 /**
  * Backwards compat filter behavior.
@@ -10,18 +10,18 @@ import * as MergeTrees from "broccoli-merge-trees";
  */
 export default function filterLike(inputNode: any, options?: TypeScriptOptions) {
   let passthrough = new Funnel(inputNode, {
-    exclude: ["**/*.ts"],
-    annotation: "TypeScript passthrough"
+    annotation: "TypeScript passthrough",
+    exclude: ["**/*.ts"]
   });
   let filter = new Funnel(inputNode, {
-    include: ["**/*.ts"],
-    annotation: "TypeScript input"
+    annotation: "TypeScript input",
+    include: ["**/*.ts"]
   });
   return new MergeTrees([
     passthrough,
     new TypeScript(filter, options)
   ], {
-    overwrite: true,
-    annotation: "TypeScript passthrough + ouput"
+    annotation: "TypeScript passthrough + ouput",
+    overwrite: true
   });
 }

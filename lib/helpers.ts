@@ -53,7 +53,7 @@ export namespace WalkSync {
   export type Row = string | RegExp[];
 
   export type Options = {
-    globs?: (string | { match(): boolean })[];
+    globs?: Array<string | { match(): boolean }>;
   };
 
   export interface Entry {

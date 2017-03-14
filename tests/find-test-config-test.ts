@@ -1,26 +1,26 @@
 import { expect } from "chai";
-import { findConfig as findTSConfig } from "../lib/utils";
 import * as fixturify from "fixturify";
 import * as mkdirp from "mkdirp";
-import * as rimraf from "rimraf";
 import * as os from "os";
 import * as path from "path";
+import * as rimraf from "rimraf";
+import { findConfig as findTSConfig } from "../lib/utils";
 
 describe("findTSConfig", () => {
   let tmpdir = path.join(os.tmpdir(), "broccoli-typescript-compiler-test");
 
-  beforeEach(done => {
+  beforeEach((done) => {
     mkdirp(tmpdir, done);
   });
 
-  afterEach(done => {
+  afterEach((done) => {
     rimraf(tmpdir, done);
   });
 
   it("basic", () => {
     fixturify.writeSync(tmpdir, {
-      "tsconfig.json": "",
-      "package.json": ""
+      "package.json": "",
+      "tsconfig.json": ""
     });
     expect(
       findTSConfig(tmpdir)
@@ -31,11 +31,11 @@ describe("findTSConfig", () => {
 
   it("nested, but without own package.json", () => {
     fixturify.writeSync(tmpdir, {
-      "tsconfig.json": "",
-      "package.json": "",
       "nested": {
-        "tsconfig.json": ""
-      }
+        "tsconfig.json": "",
+      },
+      "package.json": "",
+      "tsconfig.json": ""
     });
     expect(
       findTSConfig(
@@ -48,12 +48,12 @@ describe("findTSConfig", () => {
 
   it("nested, but with own package.json", () => {
     fixturify.writeSync(tmpdir, {
-      "tsconfig.json": "",
-      "package.json": "",
       "nested": {
-        "tsconfig.json": "",
-        "package.json": ""
-      }
+        "package.json": "",
+        "tsconfig.json": ""
+      },
+      "package.json": "",
+      "tsconfig.json": ""
     });
     expect(
       findTSConfig(
