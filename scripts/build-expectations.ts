@@ -1,0 +1,59 @@
+import * as fs from "fs";
+import * as mkdirp from "mkdirp";
+import * as path from "path";
+import * as rimraf from "rimraf";
+import * as ts from "typescript";
+
+// tslint:disable:no-console
+const { sys } = ts;
+const { useCaseSensitiveFileNames, newLine, getCurrentDirectory } = sys;
+
+export function getNewLine() {
+  return newLine;
+}
+
+export function getCanonicalFileName(fileName: string) {
+  return useCaseSensitiveFileNames ? fileName : fileName.toLowerCase();
+}
+
+const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
+  getCurrentDirectory,
+  getCanonicalFileName,
+  getNewLine
+};
+
+export function formatDiagnostics(diagnostics: ts.Diagnostic[]): string {
+  return ts.formatDiagnostics(diagnostics, formatDiagnosticsHost);
+}
+
+const outputPath = path.resolve("tests/expectations");
+
+rimraf.sync(outputPath);
+
+const testCases = fs.readdirSync("tests/cases");
+testCases.forEach((testCaseName) => {
+  console.log("test case", testCaseName);
+  const basePath = path.resolve(path.join("tests/cases", testCaseName));
+  console.log("basePath", basePath);
+  const configFileName = path.join(basePath, "tsconfig.json");
+  let configResult = ts.readConfigFile(configFileName, ts.sys.readFile);
+  console.log(basePath, configFileName);
+  if (configResult.error) {
+    throw new Error("failed to parse config");
+  }
+  let config = ts.parseJsonConfigFileContent(configResult.config, ts.sys, basePath, undefined, configFileName);
+  console.log(config.fileNames);
+  let host = ts.createCompilerHost(config.options);
+  let program = ts.createProgram(config.fileNames, config.options, host);
+
+  let diagnostics = ts.getPreEmitDiagnostics(program);
+
+  program.emit(undefined, (fileName, data) => {
+    let outFileName = path.join(outputPath, testCaseName, path.relative(basePath, fileName));
+
+    console.log("out", outFileName);
+    sys.writeFile(outFileName, data);
+  });
+
+  console.log(formatDiagnostics(diagnostics));
+});
