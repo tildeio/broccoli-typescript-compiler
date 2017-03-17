@@ -12,13 +12,8 @@
     "declaration": true
   },
   "include": [
-    "index.ts",
-    "lib/**/*.ts",
-    "tests/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "tests/fixtures"
+    "./index.ts",
+    "./lib/**/*.ts",
+    "./tests/*-test.ts"
   ]
 }
