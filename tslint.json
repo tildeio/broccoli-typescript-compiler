@@ -1,0 +1,18 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "no-var-requires": false,
+        "interface-name": [
+            false
+        ],
+        "no-namespace": [
+            false
+        ],
+        "trailing-comma": [
+            false
+        ],
+        "max-classes-per-file": [
+            false
+        ]
+    }
+}

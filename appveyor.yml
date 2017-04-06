@@ -7,27 +7,27 @@ init:
 # Test against these versions of Node.js.
 environment:
   matrix:
-    - nodejs_version: "0.12"
-    - nodejs_version: "4.2"
-    - nodejs_version: "5.0"
+    - nodejs_version: "4"
+    - nodejs_version: "6"
 
 # Install scripts. (runs after repo cloning)
 install:
   - git rev-parse HEAD
-  # Get the latest stable version of Node 0.STABLE.latest
+  # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
-  # Typical npm stuff.
-  - md C:\nc
-  - npm config set cache C:\nc
-  - npm version
-  - npm install
-  - npm install typescript
+  # install modules
+  - yarn install
 
 # Post-install test scripts.
 test_script:
   # Output useful info for debugging.
-  - npm version
-  - cmd: npm run test
+  - node --version
+  - yarn --version
+  # run tests
+  - yarn test
+
+cache:
+ - "%LOCALAPPDATA%\\Yarn"
 
 # Don't actually build.
 build: off
