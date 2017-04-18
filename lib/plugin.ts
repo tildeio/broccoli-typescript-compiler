@@ -1,13 +1,10 @@
 import Compiler from "./compiler";
-import { BroccoliPlugin, getCallerFile, heimdall } from "./helpers";
-import { findConfig, readConfig } from "./utils";
+import { toPath } from "./fs/path-utils";
+import { BroccoliPlugin, heimdall } from "./helpers";
+import { NormalizedOptions, TypeScriptPluginOptions } from "./interfaces";
+import normalizeOptions from "./normalize-options";
 
-export interface TypeScriptOptions {
-  tsconfig?: Object | string | undefined;
-  annotation?: string | undefined;
-}
-
-export { findConfig } from "./utils";
+export { TypeScriptPluginOptions, TypeScriptConfig, CompilerOptionsConfig } from "./interfaces";
 
 /**
  * Returns a Broccoli plugin instance that compiles
@@ -26,52 +23,37 @@ export { findConfig } from "./utils";
  * it will these as entry points and only compile
  * the files and files they reference from the input.
  */
-export function typescript(inputNode: any, options?: TypeScriptOptions | undefined) {
-  return new TypeScript(inputNode, options);
+export function typescript(inputNode: any, options?: TypeScriptPluginOptions) {
+  return new TypeScriptPlugin(inputNode, options);
 }
 
 /**
  * TypeScript Broccoli plugin class.
  */
-export class TypeScript extends BroccoliPlugin {
-  private config: Object;
-  private configFileName: string | undefined;
-  private host: Compiler | undefined;
+export class TypeScriptPlugin extends BroccoliPlugin {
+  private compiler: Compiler | undefined;
+  private options: NormalizedOptions;
 
-  constructor(inputNode: any, options?: TypeScriptOptions | undefined) {
+  constructor(inputNode: any, options?: TypeScriptPluginOptions) {
     super([ inputNode ], {
       annotation: options && options.annotation,
       name: "broccoli-typescript-compiler",
-      persistentOutput: true
+      persistentOutput: true,
     });
-
-    let configFileName: string | undefined;
-    let config: any;
-    if (!options || !options.tsconfig) {
-      configFileName = findConfig(getCallerFile(2));
-      config = readConfig(configFileName);
-    } else if (typeof options.tsconfig === "string") {
-      configFileName = options.tsconfig;
-      config = readConfig(configFileName);
-    } else {
-      configFileName = undefined;
-      config = options.tsconfig;
-    }
-
-    this.config = config;
-    this.configFileName = configFileName;
+    this.options = normalizeOptions(options || {});
   }
 
   public build() {
-    let token = heimdall.start("TypeScript:compile");
-    let inputPath = this.inputPaths[0];
-    let host = this.host;
-    if (!host) {
-      host = this.host = new Compiler(this.outputPath, inputPath, this.config, this.configFileName);
-    } else {
-      host.updateInput(inputPath);
+    const token = heimdall.start("TypeScript:compile");
+    let compiler = this.compiler;
+    if (!compiler) {
+      compiler = this.compiler = new Compiler(
+        toPath( this.inputPaths[0] ),
+        toPath( this.outputPath ),
+        this.options,
+      );
     }
-    host.compile();
+    compiler.compile();
     heimdall.stop(token);
   }
 }

@@ -1,10 +1,9 @@
 import * as fs from "fs";
-import { FSTree, md5Hex, walkSync, WalkSync } from "./helpers";
-import { createMap } from "./utils";
+import { FSTree, md5Hex, walkSync, WalkSync } from "../helpers";
 
 export default class OutputPatcher {
   private entries: WalkSync.Entry[] = [];
-  private contents = createMap<string>();
+  private contents = new Map<string, string>();
   private lastTree: FSTree | undefined = undefined;
   private isUnchanged: (a: Entry, b: Entry) => boolean;
 
@@ -23,7 +22,7 @@ export default class OutputPatcher {
   // relativePath should be without leading '/' and use forward slashes
   public add(relativePath: string, content: string): void {
     this.entries.push(new Entry(this.outputPath, relativePath, md5Hex(content)));
-    this.contents[relativePath] = content;
+    this.contents.set(relativePath, content);
   }
 
   public patch() {
@@ -35,27 +34,25 @@ export default class OutputPatcher {
       throw e;
     } finally {
       this.entries = [];
-      this.contents = createMap<string>();
+      this.contents = new Map<string, string>();
     }
   }
 
   private _patch() {
-    let entries = this.entries;
+    const entries = this.entries;
     let lastTree = this.lastTree;
-    let isUnchanged = this.isUnchanged;
-    let outputPath = this.outputPath;
-    let contents = this.contents;
-    let nextTree = FSTree.fromEntries(entries, {
-      sortAndExpand: true
-    });
+    const isUnchanged = this.isUnchanged;
+    const outputPath = this.outputPath;
+    const contents = this.contents;
+    const nextTree = FSTree.fromEntries(entries, { sortAndExpand: true });
     if (!lastTree) {
       lastTree = FSTree.fromEntries(walkSync.entries(outputPath));
     }
-    let patch = lastTree.calculatePatch(nextTree, isUnchanged);
+    const patch = lastTree.calculatePatch(nextTree, isUnchanged);
     patch.forEach((change) => {
-      let op = change[0];
-      let path = change[1];
-      let entry = change[2];
+      const op = change[0];
+      const path = change[1];
+      const entry = change[2];
       switch (op) {
         case "mkdir":
           // the expanded dirs don't have a base
@@ -70,7 +67,7 @@ export default class OutputPatcher {
           break;
         case "create":
         case "change":
-          fs.writeFileSync(entry.fullPath, contents[path]);
+          fs.writeFileSync(entry.fullPath, contents.get(path));
           break;
         default: throw new Error(`unrecognized case ${op}`);
       }
@@ -79,6 +76,7 @@ export default class OutputPatcher {
   }
 }
 
+/* tslint:disable:max-classes-per-file */
 class Entry implements WalkSync.Entry {
   public fullPath: string;
   public mode: number = 0;
