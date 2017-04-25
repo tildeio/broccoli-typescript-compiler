@@ -144,6 +144,66 @@ exports.A = a_1.default;
     });
   });
 
+  it("compiles changes on first rebuild", async () => {
+    input.write({
+      "a.ts": `export default class A {}`
+    });
+
+    output = createBuilder(typescript(input.path(), {
+      tsconfig: {
+        compilerOptions: {
+          module: "commonjs",
+          moduleResolution: "node",
+          newLine: "LF",
+          target: "es2015"
+        },
+        files: ["a.ts"]
+      }
+    }));
+
+    await output.build();
+
+    expect(
+      output.changes()
+    ).to.be.deep.equal({
+      "a.js": "create"
+    });
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "a.js": `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class A {
+}
+exports.default = A;
+`
+    });
+
+    input.write({
+      "a.ts": `export default class A1 {}`
+    });
+
+    await output.build();
+
+    expect(
+      output.changes()
+    ).to.be.deep.equal({
+      "a.js": "change"
+    });
+
+    expect(
+      output.read()
+    ).to.deep.equal({
+      "a.js": `"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class A1 {
+}
+exports.default = A1;
+`
+    });
+  });
+
   it("handles missing files", async () => {
     input.write({
       "index.ts": `export { default as A } from "./a";`
@@ -174,3 +234,4 @@ exports.A = a_1.default;
     });
   });
 });
+

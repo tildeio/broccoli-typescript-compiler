@@ -68,9 +68,8 @@ export class TypeScript extends BroccoliPlugin {
     let host = this.host;
     if (!host) {
       host = this.host = new Compiler(this.outputPath, inputPath, this.config, this.configFileName);
-    } else {
-      host.updateInput(inputPath);
     }
+    host.updateInput(inputPath);
     host.compile();
     heimdall.stop(token);
   }
