@@ -48,7 +48,7 @@ class ProjectRunner {
   }
 
   public initializeTests() {
-    globSync(path.join(this.root, "tests/cases/project/*.json")).slice(0, 10).forEach((fileName) => {
+    globSync(path.join(this.root, "tests/cases/project/*.json")).forEach((fileName) => {
       this.runProjectTestCase(fileName);
     });
   }
@@ -64,8 +64,17 @@ class ProjectRunner {
       path.join(this.root, `tests/baselines/reference/project/${basename}`),
     );
 
-    if (testCase.scenario === "InvalidRootFile" || !testCase.baselineCheck ||
-        testCase.resolveMapRoot || testCase.resolveSourceRoot) {
+    if (basename === "invalidRootFile" ||
+       /^mapRootRelativePath/.test(basename) ||
+       /^sourceRootRelativePath/.test(basename) ||
+       (/^maprootUrl/.test(basename) && !/^maprootUrlsourcerootUrl/.test(basename)) ||
+       /^maprootUrlSubfolder/.test(basename) ||
+       /^referenceResolutionRelativePaths/.test(basename) ||
+        basename === "rootDirectory" ||
+        basename === "rootDirectoryWithSourceRoot" ||
+        !testCase.baselineCheck ||
+        testCase.resolveMapRoot ||
+        testCase.resolveSourceRoot) {
       return;
     }
 
