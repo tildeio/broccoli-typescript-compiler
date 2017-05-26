@@ -2,29 +2,20 @@ export const FSTree: FSTree.Static = require("fs-tree-diff");
 export const BroccoliPlugin: BroccoliPlugin.Static = require("broccoli-plugin");
 export const walkSync: WalkSync = require("walk-sync");
 export const md5Hex: MD5Hex = require("md5-hex");
-export const findup: FindUp = require("findup");
-export const getCallerFile: GetCallerFile = require("get-caller-file");
 export const heimdall: Heimdall = require("heimdalljs");
 
 declare function require(id: string): any;
 
-export interface Token {}
+export interface Token {
+  __tokenBrand: any;
+}
+
 export interface Heimdall {
   start(name: string): Token;
-  stop(token: Token);
+  stop(token: Token): void;
 }
 
-export interface MD5Hex {
-  (str: string): string;
-}
-
-export interface GetCallerFile {
-  (pos?: number): string;
-}
-
-export interface FindUp {
-  sync(dir: string, file: string): string;
-}
+export type MD5Hex = (str: string) => string;
 
 export namespace BroccoliPlugin {
   export interface PluginOptions {
@@ -45,16 +36,12 @@ export namespace BroccoliPlugin {
 }
 
 export interface WalkSync {
-  (path: string, options?: WalkSync.Options): string[];
-  entries(path: string, options?: WalkSync.Options): WalkSync.Entry[];
+  (path: string, options?: any): string[];
+  entries(path: string, options?: any): WalkSync.Entry[];
 }
 
 export namespace WalkSync {
   export type Row = string | RegExp[];
-
-  export type Options = {
-    globs?: Array<string | { match(): boolean }>;
-  };
 
   export interface Entry {
     relativePath: string;
@@ -78,7 +65,7 @@ export namespace FSTree {
 
   export interface Static {
     fromEntries(entries: WalkSync.Entry[], options?: {
-      sortAndExpand?: boolean
+      sortAndExpand?: boolean,
     }): FSTree;
   }
 }

@@ -2,15 +2,13 @@ import { createBuilder, createReadableDir, createTempDir, Output, TempDir } from
 import { expect } from "chai";
 import * as fs from "fs";
 import "mocha";
+import { typescript } from "../lib/index";
 
 const testCasesDir = createReadableDir("tests/cases");
 const testCases = fs.readdirSync(testCasesDir.path());
 const expectationsDir = createReadableDir("tests/expectations");
-import filter = require("../index");
-const typescript = filter.typescript;
 
-// tslint:disable-next-line:only-arrow-functions
-describe("transpile TypeScript", function () {
+describe("TypeScriptPlugin cases", function() {
   this.timeout(10000);
 
   let output: Output;
@@ -24,19 +22,23 @@ describe("transpile TypeScript", function () {
     await input.dispose();
     if (output) {
       await output.dispose();
+      output = undefined as any;
     }
   });
 
   testCases.forEach((testCase) => {
     it(testCase.replace("-", " "), async () => {
-      let tree = testCasesDir.read(testCase);
+      const tree = testCasesDir.read(testCase);
 
       delete tree["tsconfig.json"];
 
       input.write(tree);
 
       output = createBuilder(typescript(input.path(), {
-        tsconfig: testCasesDir.path(testCase + "/tsconfig.json")
+        compilerOptions: {
+          noEmitOnError: true,
+        },
+        tsconfig: testCasesDir.path(testCase + "/tsconfig.json"),
       }));
 
       await output.build();

@@ -1,84 +1,113 @@
 import * as ts from "typescript";
-import { sys } from "typescript";
+import ConfigParser from "./compiler/config-parser";
+import createCompilerHost from "./compiler/create-compiler-host";
+import formatDiagnosticsHost from "./compiler/format-diagnostics-host";
+import Input from "./compiler/input-io";
+import OutputPatcher from "./compiler/output-patcher";
+import PathResolver from "./compiler/path-resolver";
+import SourceCache from "./compiler/source-cache";
 import { heimdall } from "./helpers";
-import OutputPatcher from "./output-patcher";
-import SourceCache from "./source-cache";
-import { createParseConfigHost, formatDiagnosticsHost } from "./utils";
+import { NormalizedOptions, Path } from "./interfaces";
 
 export default class Compiler {
-  public config: ts.ParsedCommandLine;
-  public input: SourceCache;
-
+  private resolver: PathResolver;
+  private rootPath: Path;
+  private input: Input;
+  private configParser: ConfigParser;
+  private sourceCache: SourceCache | undefined;
   private output: OutputPatcher;
-  private host: ts.LanguageServiceHost;
-  private languageService: ts.LanguageService;
-  private program: ts.Program;
+  private program: ts.Program | undefined;
 
-  constructor(public outputPath: string,
-              public inputPath: string,
-              public rawConfig: any,
-              public configFileName: string | undefined) {
-    let output = new OutputPatcher(outputPath);
-    let config = parseConfig(inputPath, rawConfig, configFileName, undefined);
-    logDiagnostics(config.errors);
-    let input = new SourceCache(inputPath, config.options);
-    this.output = output;
-    this.config = config;
-    this.input = input;
-    this.host = createLanguageServiceHost(this);
-    this.languageService = ts.createLanguageService(this.host, ts.createDocumentRegistry());
-  }
-
-  public updateInput(inputPath: string) {
-    // the config builds the list of files
-    let token = heimdall.start("TypeScript:updateInput");
-    let config = this.config = parseConfig(inputPath, this.rawConfig, this.configFileName, this.config.options);
-    logDiagnostics(config.errors);
-    if (this.inputPath !== inputPath) {
-      this.inputPath = inputPath;
-      this.config = config;
-      this.input = new SourceCache(inputPath, config.options);
-    } else {
-      this.input.updateCache();
-    }
-    heimdall.stop(token);
+  constructor(public inputPath: Path,
+              public outputPath: Path,
+              public options: NormalizedOptions) {
+    const rootPath = this.rootPath = options.rootPath;
+    const resolver = this.resolver = new PathResolver(rootPath, inputPath);
+    const input = this.input = new Input(resolver);
+    this.configParser = new ConfigParser(rootPath,
+      options.rawConfig, options.configFileName, options.compilerOptions, input);
+    this.output = new OutputPatcher(outputPath);
   }
 
   public compile() {
-    this.createProgram();
-    this.emitDiagnostics();
-    this.emitProgram();
+    const config = this.parseConfig();
+
+    const sourceCache = this.getSourceCache(config.options);
+
+    const program = this.createProgram(config, sourceCache);
+
+    this.emitDiagnostics(program);
+
+    sourceCache.releaseUnusedSourceFiles(program);
+
+    this.emitProgram(program);
+
     this.patchOutput();
+
+    this.resetCaches();
   }
 
-  protected createProgram() {
-    let languageService = this.languageService;
-    let token = heimdall.start("TypeScript:createProgram");
-    this.program = languageService.getProgram();
+  protected parseConfig() {
+    const token = heimdall.start("TypeScript:parseConfig");
+    const config = this.configParser.parseConfig();
     heimdall.stop(token);
+    return config;
   }
 
-  protected emitDiagnostics() {
+  protected getSourceCache(options: ts.CompilerOptions) {
+    let sourceCache = this.sourceCache;
+    if (sourceCache === undefined) {
+      sourceCache = this.sourceCache = new SourceCache(this.resolver, options);
+    } else {
+      sourceCache.updateOptions(options);
+    }
+    return sourceCache;
+  }
+
+  protected createProgram(config: ts.ParsedCommandLine, sourceCache: SourceCache): ts.Program {
+    const token = heimdall.start("TypeScript:createProgram");
+
+    const host = createCompilerHost(this.rootPath, this.input, sourceCache, config.options);
+
+    const oldProgram = this.program;
+    const program = ts.createProgram(config.fileNames, config.options, host, oldProgram);
+    this.program = program;
+
+    heimdall.stop(token);
+    return program;
+  }
+
+  protected emitDiagnostics(program: ts.Program) {
     // this is where bindings are resolved and typechecking is done
-    let token = heimdall.start("TypeScript:emitDiagnostics");
-    let diagnostics = ts.getPreEmitDiagnostics(this.program);
-    logDiagnostics(diagnostics);
+    const token = heimdall.start("TypeScript:emitDiagnostics");
+    const diagnostics = ts.getPreEmitDiagnostics(program);
     heimdall.stop(token);
+    logDiagnostics(diagnostics);
   }
 
-  protected emitProgram() {
-    let token = heimdall.start("TypeScript:emitProgram");
-    let emitResult = this.program.emit(undefined, (fileName: string, data: string) => {
-      this.output.add(fileName.slice(1), data);
+  protected emitProgram(program: ts.Program) {
+    const token = heimdall.start("TypeScript:emitProgram");
+    const { input, output } = this;
+    const emitResult = program.emit(undefined, (fileName: string, data: string) => {
+      /* tslint:disable:no-console */
+      const relativePath = input.relativePath(fileName);
+      if (relativePath) {
+        output.add(relativePath, data);
+      }
     });
-    logDiagnostics(emitResult.diagnostics);
     heimdall.stop(token);
+    logDiagnostics(emitResult.diagnostics);
   }
 
   protected patchOutput() {
-    let token = heimdall.start("TypeScript:patchOutput");
+    const token = heimdall.start("TypeScript:patchOutput");
     this.output.patch();
     heimdall.stop(token);
+  }
+
+  protected resetCaches() {
+    this.resolver.reset();
+    this.input.reset();
   }
 }
 
@@ -86,55 +115,5 @@ function logDiagnostics(diagnostics: ts.Diagnostic[] | undefined) {
   if (!diagnostics) {
     return;
   }
-  sys.write(ts.formatDiagnostics(diagnostics, formatDiagnosticsHost));
-}
-
-function parseConfig(inputPath: string,
-                     rawConfig: any,
-                     configFileName: string | undefined,
-                     previous?: ts.CompilerOptions) {
-  let host = createParseConfigHost(inputPath);
-  return ts.parseJsonConfigFileContent(rawConfig, host, "/", previous, configFileName);
-}
-
-function createLanguageServiceHost(compiler: Compiler): ts.LanguageServiceHost {
-  return {
-    getCurrentDirectory() {
-      return "/";
-    },
-    getCompilationSettings() {
-      return compiler.config.options;
-    },
-    getNewLine() {
-      return _getNewLine(compiler.config.options);
-    },
-    getScriptFileNames(): string[] {
-      return compiler.config.fileNames;
-    },
-    getScriptVersion(fileName: string): string {
-      return "" + compiler.input.getScriptVersion(fileName);
-    },
-    getScriptSnapshot(fileName: string): ts.IScriptSnapshot | undefined {
-      return compiler.input.getScriptSnapshot(fileName);
-    },
-    getDefaultLibFileName() {
-      return compiler.input.libFileName;
-    },
-    fileExists(fileName) {
-      return compiler.input.fileExists(fileName);
-    },
-    readFile(fileName) {
-      return compiler.input.readFile(fileName);
-    }
-  };
-}
-
-function _getNewLine(options: ts.CompilerOptions): string {
-  let newLine;
-  if (options.newLine === undefined) {
-    newLine = sys.newLine;
-  } else {
-    newLine = options.newLine === ts.NewLineKind.LineFeed ? "\n" : "\r\n";
-  }
-  return newLine;
+  ts.sys.write(ts.formatDiagnostics(diagnostics, formatDiagnosticsHost));
 }

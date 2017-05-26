@@ -5,10 +5,10 @@
       "name": "Launch",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceRoot}/node_modules/.bin/_mocha",
+      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
       "args": [
         "--no-timeouts",
-        "${workspaceRoot}/dist/tests/"
+        "${workspaceRoot}/dist/tests.js"
       ],
       "runtimeArgs": [
         "--no-lazy"
@@ -19,8 +19,10 @@
         "NODE_ENV": "development"
       },
       "sourceMaps": true,
+      "trace": true,
       "outFiles": [
-        "${workspaceRoot}/dist/**/*.js"
+        "${workspaceRoot}/dist/index.js",
+        "${workspaceRoot}/dist/tests.js"
       ]
     }
   ]

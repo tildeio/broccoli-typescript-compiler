@@ -1,13 +1,10 @@
 import { createBuilder, createTempDir, Output, TempDir } from "broccoli-test-helper";
 import { expect } from "chai";
 import "mocha";
-
-import filter = require("../index");
-
-const typescript = filter.typescript;
+import { typescript } from "../lib/index";
 
 // tslint:disable-next-line:only-arrow-functions
-describe("transpile TypeScript", function () {
+describe("TypeScriptPlugin rebuilds", function() {
   this.timeout(10000);
 
   let input: TempDir;
@@ -27,7 +24,7 @@ describe("transpile TypeScript", function () {
   it("compiles basic typescript", async () => {
     input.write({
       "a.ts": `export default class A {}`,
-      "index.ts": `export { default as A } from "./a";`
+      "index.ts": `export { default as A } from "./a";`,
     });
 
     output = createBuilder(typescript(input.path(), {
@@ -36,23 +33,23 @@ describe("transpile TypeScript", function () {
           module: "commonjs",
           moduleResolution: "node",
           newLine: "LF",
-          target: "es2015"
+          target: "es2015",
         },
-        files: ["index.ts"]
-      }
+        files: ["index.ts"],
+      },
     }));
 
     await output.build();
 
     expect(
-      output.changes()
+      output.changes(),
     ).to.be.deep.equal({
       "a.js": "create",
-      "index.js": "create"
+      "index.js": "create",
     });
 
     expect(
-      output.read()
+      output.read(),
     ).to.deep.equal({
       "a.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -64,33 +61,26 @@ exports.default = A;
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
 exports.A = a_1.default;
-`
-    });
-
-    await output.build();
-
-    expect(
-      output.changes()
-    ).to.be.deep.equal({
+`,
     });
 
     input.write({
       "b.ts": `export default class B {}`,
       "index.ts": `export { default as A } from "./a";
-export { default as B } from "./b"`
+export { default as B } from "./b"`,
     });
 
     await output.build();
 
     expect(
-      output.changes()
+      output.changes(),
     ).to.be.deep.equal({
       "b.js": "create",
-      "index.js": "change"
+      "index.js": "change",
     });
 
     expect(
-      output.read()
+      output.read(),
     ).to.deep.equal({
       "a.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -110,25 +100,32 @@ var a_1 = require("./a");
 exports.A = a_1.default;
 var b_1 = require("./b");
 exports.B = b_1.default;
-`
-    });
-
-    input.write({
-      "b.ts": null,
-      "index.ts": `export { default as A } from "./a";`
+`,
     });
 
     await output.build();
 
     expect(
-      output.changes()
+      output.changes(),
+    ).to.be.deep.equal({
+    });
+
+    input.write({
+      "b.ts": null,
+      "index.ts": `export { default as A } from "./a";`,
+    });
+
+    await output.build();
+
+    expect(
+      output.changes(),
     ).to.be.deep.equal({
       "b.js": "unlink",
-      "index.js": "change"
+      "index.js": "change",
     });
 
     expect(
-      output.read()
+      output.read(),
     ).to.deep.equal({
       "a.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -140,13 +137,13 @@ exports.default = A;
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
 exports.A = a_1.default;
-`
+`,
     });
   });
 
   it("handles missing files", async () => {
     input.write({
-      "index.ts": `export { default as A } from "./a";`
+      "index.ts": `export { default as A } from "./a";`,
     });
 
     output = createBuilder(typescript(input.path(), {
@@ -155,22 +152,21 @@ exports.A = a_1.default;
           module: "commonjs",
           moduleResolution: "node",
           newLine: "LF",
-          target: "es2015"
+          target: "es2015",
         },
-        files: ["index.ts"]
-      }
+        files: ["index.ts"],
+      },
     }));
 
     await output.build();
 
     expect(
-      output.read()
+      output.read(),
     ).to.deep.equal({
       "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
 exports.A = a_1.default;
-`
-    });
+`});
   });
 });

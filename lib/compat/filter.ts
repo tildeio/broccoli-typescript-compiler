@@ -1,6 +1,7 @@
-import * as Funnel from "broccoli-funnel";
-import * as MergeTrees from "broccoli-merge-trees";
-import { TypeScript, TypeScriptOptions } from "../plugin";
+import { TypeScriptPlugin, TypeScriptPluginOptions } from "../plugin";
+
+const Funnel: any = require("broccoli-funnel");
+const MergeTrees: any = require("broccoli-merge-trees");
 
 /**
  * Backwards compat filter behavior.
@@ -8,20 +9,20 @@ import { TypeScript, TypeScriptOptions } from "../plugin";
  * Preserves the filter aspect of compiling only .ts
  * and passing through all other files.
  */
-export default function filterLike(inputNode: any, options?: TypeScriptOptions) {
-  let passthrough = new Funnel(inputNode, {
+export default function filterLike(inputNode: any, options?: TypeScriptPluginOptions) {
+  const passthrough = new Funnel(inputNode, {
     annotation: "TypeScript passthrough",
-    exclude: ["**/*.ts"]
+    exclude: ["**/*.ts"],
   });
-  let filter = new Funnel(inputNode, {
+  const filter = new Funnel(inputNode, {
     annotation: "TypeScript input",
-    include: ["**/*.ts"]
+    include: ["**/*.ts"],
   });
   return new MergeTrees([
     passthrough,
-    new TypeScript(filter, options)
+    new TypeScriptPlugin(filter, options),
   ], {
     annotation: "TypeScript passthrough + ouput",
-    overwrite: true
+    overwrite: true,
   });
 }
