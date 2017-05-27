@@ -1,24 +1,28 @@
 import { createTempDir, TempDir } from "broccoli-test-helper";
-import { expect } from "chai";
-import "mocha";
 import * as ts from "typescript";
 import { ConfigParser, InputIO, PathResolver, toPath } from "../lib/index";
 
+let root: TempDir;
+let input: TempDir;
+
 /* tslint:disable:object-literal-sort-keys */
 /* tslint:disable:object-literal-key-quotes */
-/* tslint:disable:only-arrow-functions */
-describe("ConfigParser", function() {
-  let root: TempDir;
-  let input: TempDir;
-  beforeEach(async () => {
+QUnit.module("config-parser", {
+  async beforeEach() {
     [ root, input ] = await Promise.all([
       createTempDir(),
       createTempDir(),
     ]);
-  });
-
-  context("with an extended config", () => {
-    beforeEach(() => {
+  },
+  async afterEach() {
+    await Promise.all([
+      root.dispose(),
+      input.dispose(),
+    ]);
+  },
+}, () => {
+  QUnit.module("extended config", {
+    async beforeEach() {
       root.write({
         "tsconfig.json": `{
           "compilerOptions": {
@@ -50,9 +54,9 @@ describe("ConfigParser", function() {
           "a.ts": "export class A {};",
         },
       });
-    });
-
-    it("should be able to find the extended config", () => {
+    },
+  }, () => {
+    QUnit.test("should be able to find the extended config", (assert) => {
       const rootPath = toPath(root.path());
       const inputPath = toPath(input.path());
       const parser = new ConfigParser(rootPath,
@@ -62,8 +66,8 @@ describe("ConfigParser", function() {
         new InputIO(new PathResolver(rootPath, inputPath)),
       );
       const parsed = parser.parseConfig();
-      expect(parsed.errors).to.deep.equal([]);
-      expect(parsed.options).to.deep.equal({
+      assert.deepEqual( parsed.errors, [] );
+      assert.deepEqual( parsed.options, {
         "configFilePath": toPath("lib/tsconfig.json", rootPath),
         "module": ts.ModuleKind.UMD,
         "moduleResolution": ts.ModuleResolutionKind.NodeJs,
@@ -74,16 +78,9 @@ describe("ConfigParser", function() {
         ],
         "types": [ "foo" ],
       });
-      expect(parsed.fileNames).to.deep.equal([
+      assert.deepEqual( parsed.fileNames, [
         toPath("lib/a.ts", rootPath),
       ]);
     });
-  });
-
-  afterEach(async () => {
-    await Promise.all([
-      root.dispose(),
-      input.dispose(),
-    ]);
   });
 });
