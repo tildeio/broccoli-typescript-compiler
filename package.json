@@ -48,28 +48,26 @@
     "fs-tree-diff": "^0.5.2",
     "heimdalljs": "0.3.3",
     "md5-hex": "^2.0.0",
-    "typescript": "^2.3.2",
+    "typescript": "^2.3.3",
     "walk-sync": "^0.3.1"
   },
   "devDependencies": {
     "@types/mkdirp": "^0.3.29",
-    "@types/node": "^7.0.18",
+    "@types/node": "^7.0.22",
     "@types/qunit": "^2.0.31",
     "@types/rsvp": "^3.0.0",
     "broccoli": "^1.1.2",
     "broccoli-test-helper": "^1.1.0",
-    "chai": "^3.5.0",
     "fixturify": "^0.3.3",
     "json-schema": "^0.2.3",
     "json-schema-to-typescript": "^4.3.3",
     "mkdirp": "^0.5.1",
-    "mocha": "^3.4.1",
     "qunitjs": "^2.3.2",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.6",
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "tslint": "^5.2.0"
+    "tslint": "^5.3.2"
   }
 }

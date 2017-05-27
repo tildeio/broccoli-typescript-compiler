@@ -15,7 +15,7 @@ function getNewLine(): string {
 }
 
 export default {
-  getCurrentDirectory,
   getCanonicalFileName,
+  getCurrentDirectory,
   getNewLine,
 } as FormatDiagnosticsHost;
