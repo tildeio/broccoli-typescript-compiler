@@ -1,40 +1,22 @@
-import { createBuilder, createReadableDir, createTempDir, Output, TempDir } from "broccoli-test-helper";
-import { expect } from "chai";
+import { createBuilder, createReadableDir, createTempDir } from "broccoli-test-helper";
 import * as fs from "fs";
-import "mocha";
 import { typescript } from "../lib/index";
 
 const testCasesDir = createReadableDir("tests/cases");
 const testCases = fs.readdirSync(testCasesDir.path());
 const expectationsDir = createReadableDir("tests/expectations");
 
-describe("TypeScriptPlugin cases", function() {
-  this.timeout(10000);
-
-  let output: Output;
-  let input: TempDir;
-
-  beforeEach(async () => {
-    input = await createTempDir();
-  });
-
-  afterEach(async () => {
-    await input.dispose();
-    if (output) {
-      await output.dispose();
-      output = undefined as any;
-    }
-  });
-
+// tslint:disable-next-line:only-arrow-functions
+QUnit.module("plugin-cases", function() {
   testCases.forEach((testCase) => {
-    it(testCase.replace("-", " "), async () => {
+    QUnit.test(testCase.replace("-", " "), async (assert) => {
       const tree = testCasesDir.read(testCase);
 
       delete tree["tsconfig.json"];
-
+      const input = await createTempDir();
       input.write(tree);
 
-      output = createBuilder(typescript(input.path(), {
+      const output = createBuilder(typescript(input.path(), {
         compilerOptions: {
           noEmitOnError: true,
         },
@@ -43,7 +25,7 @@ describe("TypeScriptPlugin cases", function() {
 
       await output.build();
 
-      expect(output.read()).to.be.deep.equal(expectationsDir.read(testCase));
+      assert.deepEqual( output.read(), expectationsDir.read(testCase) );
     });
   });
 });

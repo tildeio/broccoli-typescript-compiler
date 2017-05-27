@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { readdirSync, readFileSync, Stats, statSync } from "fs";
-import { DirEntries, FileContent, Path, Resolution, PathResolver } from "../interfaces";
+import { DirEntries, FileContent, Path, PathResolver, Resolution } from "../interfaces";
 
 export function readFile(path: Path): FileContent {
   const buffer = readFileSync(path);

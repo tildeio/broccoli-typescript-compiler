@@ -5,19 +5,13 @@
       "name": "Launch",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--no-timeouts",
-        "${workspaceRoot}/dist/tests.js"
-      ],
-      "runtimeArgs": [
-        "--no-lazy"
-      ],
+      "protocol": "inspector",
+      "program": "${workspaceRoot}/node_modules/qunitjs/bin/qunit",
+      "args": [ "dist/tests.js" ],
+      "runtimeArgs": [ "--no-lazy" ],
       "cwd": "${workspaceRoot}",
       "preLaunchTask": "build",
-      "env": {
-        "NODE_ENV": "development"
-      },
+      "env": { "NODE_ENV": "development" },
       "sourceMaps": true,
       "trace": true,
       "outFiles": [

@@ -28,8 +28,8 @@ export default function normalizeOptions(options: TypeScriptPluginOptions): Norm
   }
 
   return {
-    configFileName,
     compilerOptions: options.compilerOptions,
+    configFileName,
     rawConfig,
     rootPath: toPath(rootPath),
     throwOnError: options.throwOnError === true,

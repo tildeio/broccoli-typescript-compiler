@@ -25,10 +25,10 @@ export default function createParseConfigHost(rootPath: Path, input: InputIO): P
   }
 
   return {
-    useCaseSensitiveFileNames,
-    readDirectory,
     fileExists,
+    readDirectory,
     readFile,
+    useCaseSensitiveFileNames,
   };
 }
 
