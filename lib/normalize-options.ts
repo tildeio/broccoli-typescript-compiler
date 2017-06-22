@@ -27,11 +27,16 @@ export default function normalizeOptions(options: TypeScriptPluginOptions): Norm
     }
   }
 
+  let throwOnError = options.throwOnError;
+  if (throwOnError === undefined) {
+    throwOnError = process.env.NODE_ENV === "production";
+  }
+
   return {
     compilerOptions: options.compilerOptions,
     configFileName,
     rawConfig,
     rootPath: toPath(rootPath),
-    throwOnError: options.throwOnError === true,
+    throwOnError,
   };
 }
