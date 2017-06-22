@@ -1,4 +1,5 @@
 import { Stats } from "fs";
+import { Diagnostic } from "typescript";
 import { TypeScriptConfig } from "./generated/typescript-config";
 export * from "./generated/typescript-config";
 
@@ -10,6 +11,15 @@ export interface NormalizedOptions {
   rawConfig: CompilerOptionsConfig | undefined;
   compilerOptions: CompilerOptionsConfig | undefined;
   throwOnError: boolean;
+}
+
+export interface DiagnosticsHandler {
+  /**
+   * Check for diagnostics and handle diagnostics.
+   *
+   * Returns true if there are errors.
+   */
+  check(diagnostics: Diagnostic[] | Diagnostic | undefined, throwOnError?: boolean): boolean;
 }
 
 export interface TypeScriptPluginOptions {

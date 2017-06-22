@@ -1,13 +1,12 @@
 import * as ts from "typescript";
 import ConfigParser from "./compiler/config-parser";
 import createCompilerHost from "./compiler/create-compiler-host";
-import formatDiagnosticsHost from "./compiler/format-diagnostics-host";
 import Input from "./compiler/input-io";
 import OutputPatcher from "./compiler/output-patcher";
 import PathResolver from "./compiler/path-resolver";
 import SourceCache from "./compiler/source-cache";
 import { heimdall } from "./helpers";
-import { NormalizedOptions, Path } from "./interfaces";
+import { DiagnosticsHandler, NormalizedOptions, Path } from "./interfaces";
 
 export default class Compiler {
   private resolver: PathResolver;
@@ -20,7 +19,8 @@ export default class Compiler {
 
   constructor(public inputPath: Path,
               public outputPath: Path,
-              public options: NormalizedOptions) {
+              public options: NormalizedOptions,
+              private diagnosticsHandler: DiagnosticsHandler) {
     const rootPath = this.rootPath = options.rootPath;
     const resolver = this.resolver = new PathResolver(rootPath, inputPath);
     const input = this.input = new Input(resolver);
@@ -82,7 +82,7 @@ export default class Compiler {
     const token = heimdall.start("TypeScript:emitDiagnostics");
     const diagnostics = ts.getPreEmitDiagnostics(program);
     heimdall.stop(token);
-    logDiagnostics(diagnostics);
+    this.diagnosticsHandler.check(diagnostics);
   }
 
   protected emitProgram(program: ts.Program) {
@@ -96,7 +96,7 @@ export default class Compiler {
       }
     });
     heimdall.stop(token);
-    logDiagnostics(emitResult.diagnostics);
+    this.diagnosticsHandler.check(emitResult.diagnostics);
   }
 
   protected patchOutput() {
@@ -109,11 +109,4 @@ export default class Compiler {
     this.resolver.reset();
     this.input.reset();
   }
-}
-
-function logDiagnostics(diagnostics: ts.Diagnostic[] | undefined) {
-  if (!diagnostics) {
-    return;
-  }
-  ts.sys.write(ts.formatDiagnostics(diagnostics, formatDiagnosticsHost));
 }

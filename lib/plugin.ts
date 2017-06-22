@@ -1,4 +1,5 @@
 import Compiler from "./compiler";
+import DiagnosticsHandler from "./diagnostics-handler";
 import { toPath } from "./fs/path-utils";
 import { BroccoliPlugin, heimdall } from "./helpers";
 import { NormalizedOptions, TypeScriptPluginOptions } from "./interfaces";
@@ -32,6 +33,7 @@ export function typescript(inputNode: any, options?: TypeScriptPluginOptions) {
  */
 export class TypeScriptPlugin extends BroccoliPlugin {
   private compiler: Compiler | undefined;
+  private diagnosticHandler: DiagnosticsHandler;
   private options: NormalizedOptions;
 
   constructor(inputNode: any, options?: TypeScriptPluginOptions) {
@@ -40,7 +42,9 @@ export class TypeScriptPlugin extends BroccoliPlugin {
       name: "broccoli-typescript-compiler",
       persistentOutput: true,
     });
-    this.options = normalizeOptions(options || {});
+    const normalizedOptions = normalizeOptions(options || {});
+    this.options = normalizedOptions;
+    this.diagnosticHandler = new DiagnosticsHandler(normalizedOptions);
   }
 
   public build() {
@@ -51,9 +55,14 @@ export class TypeScriptPlugin extends BroccoliPlugin {
         toPath( this.inputPaths[0] ),
         toPath( this.outputPath ),
         this.options,
+        this.diagnosticHandler,
       );
     }
     compiler.compile();
     heimdall.stop(token);
+  }
+
+  public setDiagnosticWriter(write: (message: string) => void) {
+    this.diagnosticHandler.setWrite(write);
   }
 }

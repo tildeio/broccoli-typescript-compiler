@@ -17,8 +17,8 @@ export function getCanonicalFileName(fileName: string) {
 }
 
 const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
-  getCurrentDirectory,
   getCanonicalFileName,
+  getCurrentDirectory,
   getNewLine,
 };
 
