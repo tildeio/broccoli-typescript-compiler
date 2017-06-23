@@ -25,23 +25,33 @@ export interface DiagnosticsHandler {
 export interface TypeScriptPluginOptions {
   /**
    * Used as the root for corresponding paths within the input node.
-   *
    * The input node will act as though it is mounted at this location.
    *
-   * Defaults to the dirname of tsconfig (if it is a path) or the
-   * current working directory.
+   * Acts as the current directory for compilation.
+   *
+   * Defaults to the current working directory.
    */
   rootPath?: string;
 
   /**
-   * The compiler options.
+   * The tsconfig file name or the JSON that would be in a tsconfig.json.
    *
-   * Must be of type `ts.CompilerOptions` not the unparsed options that
-   * would be in `tsconfig.json` or on the command line.
+   * Defaults to search result of 'tsconfig.json' from `rootPath`
+   *
+   * The `includes` or `files` must be in the input node. External imports
+   * will be resolved as though the input node were mounted at the `rootPath`
+   * but non declarations should be in the input node.
+   */
+  tsconfig?: string | TypeScriptConfig;
+
+  /**
+   * The compilerOptions of tsconfig.
    *
    * If there is a tsconfig set or a tsconfig file is found from the root,
    * this wil be passed in as existing options during parse and the actual
    * options used will be the result of the parsed options.
+   *
+   * This allows you to add options in addition to whats in the tsconfig.
    */
   compilerOptions?: CompilerOptionsConfig;
 
@@ -49,15 +59,6 @@ export interface TypeScriptPluginOptions {
    * Throw if an error occurs during compilation.
    */
   throwOnError?: boolean;
-
-  /**
-   * Path to the tsconfig file or the JSON that would be in a tsconfig.json.
-   *
-   * The includes and files must be in the input node. External imports will
-   * be resolved as though the input node were mounted at the `root` but only
-   * types and declarations. All other input should be in the input node.
-   */
-  tsconfig?: string | TypeScriptConfig;
 
   /**
    * Broccoli node annotation.

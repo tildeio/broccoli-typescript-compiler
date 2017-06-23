@@ -111,7 +111,6 @@ export class ProjectWithModule {
   get compilerOptions(): CompilerOptionsConfig {
     return Object.assign(this.project.compilerOptions, {
       module: this.module,
-      moduleResolution: "classic",
       newLine: "CRLF",
       typeRoots: [],
     });
@@ -129,6 +128,7 @@ export class ProjectWithModule {
     if (tsconfigFile) {
       config.tsconfig = tsconfigFile;
     } else if (inputFiles) {
+      config.compilerOptions!.moduleResolution = "classic";
       config.tsconfig = { files: inputFiles };
     }
 
@@ -142,7 +142,7 @@ export class ProjectWithModule {
 
 export class Baseline {
   public config: BaselineConfig;
-  public errors: any;
+  public errors: string | undefined;
   public sourcemap: any;
   public output: Tree;
   constructor(tree: Tree, basename: string) {
@@ -151,12 +151,26 @@ export class Baseline {
     const sourcemapName = basename + "sourcemap.txt";
     const config: BaselineConfig = JSON.parse(tree[configName] as string);
     this.config = config;
-    this.errors = tree[errorsName];
+    this.errors = processErrors(tree[errorsName]);
     this.sourcemap = tree[errorsName];
     delete tree[configName];
     delete tree[errorsName];
     delete tree[sourcemapName];
     this.output = cleanExpectedTree(tree, config.emittedFiles);
+  }
+}
+
+function processErrors(errors: any): string | undefined {
+  if (typeof errors === "string") {
+    return errors
+      .toLowerCase()
+      .split(/^(?:!!!|====)/m)[0]
+      // the project runner in typescript loads the tsconfig
+      // in the runner itself, we don't so we need to remove
+      // message about adding a tsconfig may help
+      .replace(/^.*?adding a tsconfig\.json file will help organize projects.*?$/m, "")
+      .split(/(?:\r\n|\n)+/)
+      .join(ts.sys.newLine);
   }
 }
 

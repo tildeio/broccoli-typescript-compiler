@@ -1,7 +1,7 @@
 import { createBuilder, createTempDir } from "broccoli-test-helper";
 import ProjectRunner from "./typescript-project-runner";
 
-import { typescript } from "../lib/index";
+import { toPath, typescript } from "../lib/index";
 
 // tslint:disable:no-console
 const runner = new ProjectRunner({
@@ -20,6 +20,14 @@ QUnit.module("typescript-project-cases", function() {
 
             const plugin = typescript( input.path(), mod.pluginConfig );
 
+            let errors: string | undefined;
+            plugin.setDiagnosticWriter((msg) => {
+              if (errors === undefined) {
+                errors = "";
+              }
+              errors += msg;
+            });
+
             const output = createBuilder( plugin );
             try {
               await output.build();
@@ -27,7 +35,8 @@ QUnit.module("typescript-project-cases", function() {
               const actual = output.read();
               const baseline = mod.baseline;
               assert.deepEqual(actual, baseline.output);
-
+              errors = removeRoots(errors, project.dir);
+              assert.equal(errors, baseline.errors);
             } finally {
               await output.dispose();
             }
@@ -39,3 +48,16 @@ QUnit.module("typescript-project-cases", function() {
     });
   });
 });
+
+function removeRoots(errors: string | undefined, rootPath: string) {
+  if (errors === undefined) {
+    return;
+  }
+  const root = toPath(rootPath);
+  const pattern = new RegExp(escapeRegExp(root + "/"), "g");
+  return errors.replace(pattern, "").toLowerCase();
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

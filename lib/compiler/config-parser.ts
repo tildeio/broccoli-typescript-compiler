@@ -1,6 +1,4 @@
 import {
-  CompilerOptions,
-  convertCompilerOptionsFromJson,
   Diagnostic,
   findConfigFile,
   ParseConfigHost,
@@ -9,7 +7,7 @@ import {
   readConfigFile,
 } from "typescript";
 import {getDirectoryPath } from "../fs/path-utils";
-import { CompilerOptionsConfig, Path } from "../interfaces";
+import { CompilerOptionsConfig, Path, TypeScriptConfig } from "../interfaces";
 import createParseConfigHost from "./create-parse-config-host";
 import Input from "./input-io";
 
@@ -25,40 +23,35 @@ export default class ConfigParser {
   }
 
   public parseConfig(): ParsedCommandLine {
-    let rawConfig = this.rawConfig;
+    const rawConfig: TypeScriptConfig = {};
+
     const rootPath = this.rootPath;
     const host = this.host;
     const errors: Diagnostic[] = [];
-    let readResult: {
-      config?: any,
-      error?: Diagnostic,
-    } | undefined;
     let configFileName: Path | undefined;
-    if (!rawConfig) {
+    if (this.rawConfig !== undefined) {
+      Object.assign(rawConfig, this.rawConfig);
+    } else {
       configFileName = this.resolveConfigFileName();
       if (configFileName) {
-        readResult = readConfigFile(configFileName, host.readFile);
+        const readResult = readConfigFile(configFileName, host.readFile);
         if (readResult.error) {
           errors.push(readResult.error);
         } else {
-          rawConfig = readResult.config;
+          Object.assign(rawConfig, readResult.config);
         }
       }
     }
-    if (!rawConfig) {
-      rawConfig = {};
-    }
     const basePath = configFileName ? getDirectoryPath(configFileName) : rootPath;
-    let compilerOptions: CompilerOptions | undefined;
     if (this.compilerOptions) {
-      const convertResult = convertCompilerOptionsFromJson(this.compilerOptions, basePath);
-      compilerOptions = convertResult.options;
-      if (convertResult.errors) {
-        errors.push.apply(errors, convertResult.errors);
+      if (rawConfig.compilerOptions === undefined) {
+        rawConfig.compilerOptions = this.compilerOptions;
+      } else {
+        rawConfig.compilerOptions = Object.assign({}, rawConfig.compilerOptions, this.compilerOptions);
       }
     }
     const result = parseJsonConfigFileContent(
-      rawConfig, host, basePath, compilerOptions, configFileName);
+      rawConfig, host, basePath, undefined, configFileName);
     result.errors = errors.concat(result.errors);
     return result;
   }
