@@ -3,9 +3,7 @@ import { useCaseSensitiveFileNames } from "../fs/path-utils";
 import { Path } from "../interfaces";
 import InputIO from "./input-io";
 
-export default function createParseConfigHost(rootPath: Path, input: InputIO): ParseConfigHost {
-  const currentDirectory = rootPath;
-
+export default function createParseConfigHost(workingPath: Path, input: InputIO): ParseConfigHost {
   function getFileSystemEntries(path: string) {
     return input.getFileSystemEntries(path);
   }
@@ -13,7 +11,7 @@ export default function createParseConfigHost(rootPath: Path, input: InputIO): P
   function readDirectory(rootDir: string, extensions: string[], excludes: string[], includes: string[]): string[] {
     return matchFiles(
       rootDir, extensions, excludes, includes,
-      useCaseSensitiveFileNames, currentDirectory, getFileSystemEntries);
+      useCaseSensitiveFileNames, workingPath, getFileSystemEntries);
   }
 
   function fileExists(path: string): boolean {

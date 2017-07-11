@@ -20,7 +20,7 @@ QUnit.module("plugin-cases", function() {
         compilerOptions: {
           noEmitOnError: true,
         },
-        tsconfig: testCasesDir.path(testCase + "/tsconfig.json"),
+        rootPath: testCasesDir.path(testCase)
       }));
 
       await output.build();

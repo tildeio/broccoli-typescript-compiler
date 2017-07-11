@@ -17,15 +17,14 @@ import InputIO from "./input-io";
 import SourceCache from "./source-cache";
 
 export default function createCompilerHost(
-  rootPath: Path, input: InputIO, sourceCache: SourceCache, compilerOptions: CompilerOptions,
+  workingPath: Path, input: InputIO, sourceCache: SourceCache, compilerOptions: CompilerOptions,
 ): CompilerHost {
   const newLine = getNewLine(compilerOptions);
-  const currentDirectory = rootPath;
   return {
     directoryExists: (path) => input.directoryExists(path),
     fileExists: (path) => input.fileExists(path),
     getCanonicalFileName,
-    getCurrentDirectory: () => currentDirectory,
+    getCurrentDirectory: () => workingPath,
     getDefaultLibFileName: (options) => toPath(getDefaultLibFileName(options), defaultLibLocation),
     getDefaultLibLocation: () => defaultLibLocation,
     getDirectories: (path) => input.getDirectories(path),

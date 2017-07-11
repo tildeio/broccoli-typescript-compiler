@@ -5,12 +5,15 @@ import Input from "./compiler/input-io";
 import OutputPatcher from "./compiler/output-patcher";
 import PathResolver from "./compiler/path-resolver";
 import SourceCache from "./compiler/source-cache";
+import { normalizePath, relativePathWithin, toPath } from "./fs/path-utils";
 import { heimdall } from "./helpers";
 import { DiagnosticsHandler, NormalizedOptions, Path } from "./interfaces";
 
 export default class Compiler {
   private resolver: PathResolver;
+  private workingPath: Path;
   private rootPath: Path;
+  private buildPath: Path | undefined;
   private input: Input;
   private configParser: ConfigParser;
   private sourceCache: SourceCache | undefined;
@@ -21,11 +24,13 @@ export default class Compiler {
               public outputPath: Path,
               public options: NormalizedOptions,
               private diagnosticsHandler: DiagnosticsHandler) {
+    const workingPath = this.workingPath = options.workingPath;
     const rootPath = this.rootPath = options.rootPath;
+    this.buildPath = options.buildPath;
     const resolver = this.resolver = new PathResolver(rootPath, inputPath);
     const input = this.input = new Input(resolver);
-    this.configParser = new ConfigParser(rootPath,
-      options.rawConfig, options.configFileName, options.compilerOptions, input);
+    this.configParser = new ConfigParser(options.projectPath,
+      options.rawConfig, options.configFileName, options.compilerOptions, workingPath, input);
     this.output = new OutputPatcher(outputPath);
   }
 
@@ -40,7 +45,7 @@ export default class Compiler {
 
     sourceCache.releaseUnusedSourceFiles(program);
 
-    this.emitProgram(program);
+    this.emitProgram(program, this.resolveBuildPath(config.options));
 
     this.patchOutput();
 
@@ -67,7 +72,7 @@ export default class Compiler {
   protected createProgram(config: ts.ParsedCommandLine, sourceCache: SourceCache): ts.Program {
     const token = heimdall.start("TypeScript:createProgram");
 
-    const host = createCompilerHost(this.rootPath, this.input, sourceCache, config.options);
+    const host = createCompilerHost(this.workingPath, this.input, sourceCache, config.options);
 
     const oldProgram = this.program;
     const program = ts.createProgram(config.fileNames, config.options, host, oldProgram);
@@ -85,12 +90,24 @@ export default class Compiler {
     this.diagnosticsHandler.check(diagnostics);
   }
 
-  protected emitProgram(program: ts.Program) {
+  protected resolveBuildPath(options: ts.CompilerOptions): Path {
+    if (this.buildPath !== undefined) {
+      return this.buildPath;
+    }
+    if (options.outDir !== undefined) {
+      return normalizePath(options.outDir) as Path;
+    }
+    return this.rootPath;
+  }
+
+  protected emitProgram(program: ts.Program, buildPath: Path) {
     const token = heimdall.start("TypeScript:emitProgram");
-    const { input, output } = this;
+    const { output } = this;
+
     const emitResult = program.emit(undefined, (fileName: string, data: string) => {
       /* tslint:disable:no-console */
-      const relativePath = input.relativePath(fileName);
+      // the fileName is absolute but not normalized if outDir is not normalized
+      const relativePath = relativePathWithin(buildPath, toPath(fileName, this.workingPath));
       if (relativePath) {
         output.add(relativePath, data);
       }
