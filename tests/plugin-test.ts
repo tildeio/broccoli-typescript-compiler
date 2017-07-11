@@ -141,7 +141,7 @@ exports.A = a_1.default;
       });
 
       let error = "";
-      plugin.setDiagnosticWriter((msg) => error += msg)
+      plugin.setDiagnosticWriter((msg) => error += msg);
 
       const output = createBuilder(plugin);
       try {
@@ -156,7 +156,7 @@ exports.A = a_1.default;
 `,
         });
 
-        assert.equal(error.trim(), "index.ts(1,30): error TS2307: Cannot find module './a'.")
+        assert.equal(error.trim(), "index.ts(1,30): error TS2307: Cannot find module './a'.");
 
       } finally {
         await output.dispose();

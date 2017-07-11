@@ -20,7 +20,7 @@ QUnit.module("plugin-cases", function() {
         compilerOptions: {
           noEmitOnError: true,
         },
-        rootPath: testCasesDir.path(testCase)
+        rootPath: testCasesDir.path(testCase),
       }));
 
       await output.build();

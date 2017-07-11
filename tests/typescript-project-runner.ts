@@ -114,15 +114,15 @@ export class ProjectWithModule {
     const { project } = this;
     const inputFiles = project.inputFiles;
     const config: TypeScriptConfig = {
+      buildPath: this.project.dir,
       compilerOptions: this.compilerOptions,
       workingPath: this.project.dir,
-      buildPath: this.project.dir
     };
 
     if (inputFiles) {
       config.compilerOptions!.moduleResolution = "classic";
       config.tsconfig = {
-        files: inputFiles
+        files: inputFiles,
       };
     } else {
       config.projectPath = project.config.project;
