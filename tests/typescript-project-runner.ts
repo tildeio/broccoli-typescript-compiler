@@ -46,7 +46,6 @@ export default class ProjectRunner {
        (/^maprootUrl/.test(basename) && !/^maprootUrlsourcerootUrl/.test(basename)) ||
        /^maprootUrlSubfolder/.test(basename) ||
        /^referenceResolutionRelativePaths/.test(basename) ||
-        basename === "rootDirectory" ||
         basename === "rootDirectoryWithSourceRoot" ||
         !config.baselineCheck ||
         config.resolveMapRoot ||
@@ -114,15 +113,15 @@ export class ProjectWithModule {
     const { project } = this;
     const inputFiles = project.inputFiles;
     const config: TypeScriptConfig = {
+      buildPath: this.project.dir,
       compilerOptions: this.compilerOptions,
       workingPath: this.project.dir,
-      buildPath: this.project.dir
     };
 
     if (inputFiles) {
       config.compilerOptions!.moduleResolution = "classic";
       config.tsconfig = {
-        files: inputFiles
+        files: inputFiles,
       };
     } else {
       config.projectPath = project.config.project;
@@ -177,12 +176,6 @@ function normalizeTree(baseline: Tree) {
     let value = baseline[file];
     if (typeof value === "object" && value !== null) {
       value = normalizeTree(value);
-    } else if (typeof value === "string" && path.extname(file) === ".map") {
-      const sourceMapData = JSON.parse(value);
-      for (let i = 0; i < sourceMapData.sources.length; i++) {
-        sourceMapData.sources[i] = normalizePath(sourceMapData.sources[i]);
-      }
-      value = JSON.stringify(sourceMapData);
     }
     normalized[normalizePath(file)] = value;
   }
