@@ -71,12 +71,6 @@ export class Project {
     return path.join(this.rootDir, this.config.projectRoot);
   }
 
-  get tsconfigFile(): string | undefined {
-    if (this.config.project) {
-      return path.join(this.config.project, "tsconfig.json");
-    }
-  }
-
   get inputFiles(): string[] | undefined {
     return this.config.inputFiles;
   }
@@ -119,17 +113,19 @@ export class ProjectWithModule {
   get pluginConfig(): TypeScriptConfig {
     const { project } = this;
     const inputFiles = project.inputFiles;
-    const tsconfigFile = project.tsconfigFile;
     const config: TypeScriptConfig = {
       compilerOptions: this.compilerOptions,
-      rootPath: this.project.dir,
+      workingPath: this.project.dir,
+      buildPath: this.project.dir
     };
 
-    if (tsconfigFile) {
-      config.tsconfig = tsconfigFile;
-    } else if (inputFiles) {
+    if (inputFiles) {
       config.compilerOptions!.moduleResolution = "classic";
-      config.tsconfig = { files: inputFiles };
+      config.tsconfig = {
+        files: inputFiles
+      };
+    } else {
+      config.projectPath = project.config.project;
     }
 
     return config;

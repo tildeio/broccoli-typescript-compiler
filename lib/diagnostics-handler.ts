@@ -8,7 +8,7 @@ export default class DiagnosticsHandlerImpl implements DiagnosticsHandler {
 
   constructor(options: NormalizedOptions) {
     this.throwOnError = options.throwOnError;
-    this.host = createFormatDiagnosticsHost(options.rootPath);
+    this.host = createFormatDiagnosticsHost(options.workingPath);
   }
 
   public setWrite(write: (s: string) => void) {

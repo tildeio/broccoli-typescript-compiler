@@ -6,7 +6,10 @@ export * from "./generated/typescript-config";
 export type CompilerOptionsConfig = TypeScriptConfig["compilerOptions"];
 
 export interface NormalizedOptions {
+  workingPath: Path;
   rootPath: Path;
+  projectPath: Path;
+  buildPath: Path | undefined;
   configFileName: string | undefined;
   rawConfig: CompilerOptionsConfig | undefined;
   compilerOptions: CompilerOptionsConfig | undefined;
@@ -24,34 +27,78 @@ export interface DiagnosticsHandler {
 
 export interface TypeScriptPluginOptions {
   /**
-   * Used as the root for corresponding paths within the input node.
+   * Acts as the current working directory for compilation.
+   *
+   * This affects how file paths are made relative for errors reporting.
+   *
+   * Defaults to `process.cwd()`.
+   */
+  workingPath?: string;
+
+  /**
+   * Used as the rootPath for relative paths within the input node.
+   *
+   * This affects type resolution for files outside the input node
+   * like node_modules.
+   *
    * The input node will act as though it is mounted at this location.
    *
-   * Acts as the current directory for compilation.
+   * The rootPath must contain the emitted files, since a broccoli node
+   * cannot write outside of its outputPath.
    *
-   * Defaults to the current working directory.
+   * Defaults to options.workingPath.
    */
   rootPath?: string;
 
   /**
-   * The tsconfig file name or the JSON that would be in a tsconfig.json.
+   * Used as the starting search path for the tsconfig file or the basePath for
+   * config parsing if the options.tsconfig is an object.
    *
-   * Defaults to search result of 'tsconfig.json' from `rootPath`
+   * Most the time this is the same as the rootPath. The only time this is
+   * important is if the project writes above its directory since the rootPath
+   * needs to contain all emitted files.
    *
-   * The `includes` or `files` must be in the input node. External imports
-   * will be resolved as though the input node were mounted at the `rootPath`
-   * but non declarations should be in the input node.
+   * Acts like the -p option to tsc.
+   *
+   * Defaults to options.rootPath.
+   */
+  projectPath?: string;
+
+  /**
+   * Used as the base for output. This should be set to your broccoli output.
+   *
+   * Your outDir should be at or beneath this path. The emitted files will be
+   * written to the output relative to this path.
+   *
+   * Defaults to compilerOptions.outDir (assumption is your outDir is set to where
+   * you place your broccoli output) or options.rootPath.
+   *
+   * Set this to where the broccoli output will go.  It must contain all emitted files
+   * and the broccoli node output will be relative to it.
+   *
+   * If your outDir is 'dist' and your broccoli output is written to 'dist' then this
+   * will by default write output relative to 'dist'.
+   *
+   * If your broccoli output is written to 'dist' and your outDir is 'dist/a', then this
+   * should be set to 'dist' so that your emitted output will be 'a' and ultimately 'dist/a'.
+   */
+  buildPath?: string;
+
+  /**
+   * The tsconfig file name search for from the projectPath
+   * or the JSON that would be in a tsconfig.
+   *
+   * If it is the JSON config itself, the base path will be set to the
+   * projectPath during parse.
    */
   tsconfig?: string | TypeScriptConfig;
 
   /**
    * The compilerOptions of tsconfig.
    *
-   * If there is a tsconfig set or a tsconfig file is found from the root,
-   * this wil be passed in as existing options during parse and the actual
-   * options used will be the result of the parsed options.
+   * This allows you to override compilerOptions in the tsconfig.
    *
-   * This allows you to add options in addition to whats in the tsconfig.
+   * This acts like if you specify --project plus additional options to tsc.
    */
   compilerOptions?: CompilerOptionsConfig;
 

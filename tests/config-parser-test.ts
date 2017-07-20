@@ -63,6 +63,7 @@ QUnit.module("config-parser", {
         undefined,
         "lib/tsconfig.json",
         { module: "umd" },
+        rootPath,
         new InputIO(new PathResolver(rootPath, inputPath)),
       );
       const parsed = parser.parseConfig();

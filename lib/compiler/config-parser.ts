@@ -14,18 +14,19 @@ import Input from "./input-io";
 export default class ConfigParser {
   private host: ParseConfigHost;
 
-  constructor(private rootPath: Path,
+  constructor(private projectPath: Path,
               private rawConfig: CompilerOptionsConfig | undefined,
               private configFileName: string | undefined,
               private compilerOptions: CompilerOptionsConfig | undefined,
+              workingPath: Path,
               input: Input) {
-    this.host = createParseConfigHost(rootPath, input);
+    this.host = createParseConfigHost(workingPath, input);
   }
 
   public parseConfig(): ParsedCommandLine {
     const rawConfig: TypeScriptConfig = {};
 
-    const rootPath = this.rootPath;
+    const projectPath = this.projectPath;
     const host = this.host;
     const errors: Diagnostic[] = [];
     let configFileName: Path | undefined;
@@ -42,7 +43,7 @@ export default class ConfigParser {
         }
       }
     }
-    const basePath = configFileName ? getDirectoryPath(configFileName) : rootPath;
+    const basePath = configFileName ? getDirectoryPath(configFileName) : projectPath;
     if (this.compilerOptions) {
       if (rawConfig.compilerOptions === undefined) {
         rawConfig.compilerOptions = this.compilerOptions;
@@ -53,11 +54,14 @@ export default class ConfigParser {
     const result = parseJsonConfigFileContent(
       rawConfig, host, basePath, undefined, configFileName);
     result.errors = errors.concat(result.errors);
+    if (result.options.noEmit === true) {
+      result.options.noEmit = false;
+    }
     return result;
   }
 
   private resolveConfigFileName(): Path {
-    const { configFileName, rootPath, host } = this;
-    return findConfigFile(rootPath, host.fileExists, configFileName) as Path;
+    const { configFileName, projectPath, host } = this;
+    return findConfigFile(projectPath, host.fileExists, configFileName) as Path;
   }
 }

@@ -128,7 +128,7 @@ exports.A = a_1.default;
         "index.ts": `export { default as A } from "./a";`,
       });
 
-      const output = createBuilder(typescript(input.path(), {
+      const plugin = typescript(input.path(), {
         tsconfig: {
           compilerOptions: {
             module: "commonjs",
@@ -138,7 +138,12 @@ exports.A = a_1.default;
           },
           files: ["index.ts"],
         },
-      }));
+      });
+
+      let error = "";
+      plugin.setDiagnosticWriter((msg) => error += msg)
+
+      const output = createBuilder(plugin);
       try {
 
         await output.build();
@@ -150,6 +155,8 @@ var a_1 = require("./a");
 exports.A = a_1.default;
 `,
         });
+
+        assert.equal(error.trim(), "index.ts(1,30): error TS2307: Cannot find module './a'.")
 
       } finally {
         await output.dispose();
