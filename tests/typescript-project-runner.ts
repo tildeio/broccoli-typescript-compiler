@@ -46,7 +46,6 @@ export default class ProjectRunner {
        (/^maprootUrl/.test(basename) && !/^maprootUrlsourcerootUrl/.test(basename)) ||
        /^maprootUrlSubfolder/.test(basename) ||
        /^referenceResolutionRelativePaths/.test(basename) ||
-        basename === "rootDirectory" ||
         basename === "rootDirectoryWithSourceRoot" ||
         !config.baselineCheck ||
         config.resolveMapRoot ||
@@ -177,12 +176,6 @@ function normalizeTree(baseline: Tree) {
     let value = baseline[file];
     if (typeof value === "object" && value !== null) {
       value = normalizeTree(value);
-    } else if (typeof value === "string" && path.extname(file) === ".map") {
-      const sourceMapData = JSON.parse(value);
-      for (let i = 0; i < sourceMapData.sources.length; i++) {
-        sourceMapData.sources[i] = normalizePath(sourceMapData.sources[i]);
-      }
-      value = JSON.stringify(sourceMapData);
     }
     normalized[normalizePath(file)] = value;
   }
