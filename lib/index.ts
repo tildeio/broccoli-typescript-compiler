@@ -1,4 +1,4 @@
-export { default as filterTypescript } from "./compat/filter";
+export { default as filterTypeScript } from "./compat/filter";
 export * from "./plugin";
 
 // needed for tests

@@ -39,7 +39,7 @@ var cjsTree = typescript(inputTree, {
 
 ### Config Options:
 
-`tsconfig:` 
+`tsconfig:`
 * default (when ommited): will find the nearest `tsconfig` relative to where the BroccoliTypeScriptCompiler is invoked.
 * as string: a absolute path to a config tsconfig file
 * as config object: See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
@@ -53,12 +53,12 @@ An optional string, which when provide should be a descriptive annotation. Usefu
 via the broccoli plugin subclass
 
 ```js
-var TypeScript = require('broccoli-typescript-compiler').TypeScript;
+var TypeScriptPlugin = require('broccoli-typescript-compiler').TypeScriptPlugin;
 ```
 
 via a function:
 
 ```js
-var filter = require('broccoli-typescript-compiler');
-var scriptTree = filter(inputTree);
+var filterTypeScript = require('broccoli-typescript-compiler').filterTypeScript;
+var scriptTree = filterTypeScript(inputTree);
 ```
