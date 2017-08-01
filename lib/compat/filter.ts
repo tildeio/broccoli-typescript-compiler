@@ -22,7 +22,7 @@ export default function filterLike(inputNode: any, options?: TypeScriptPluginOpt
     passthrough,
     new TypeScriptPlugin(filter, options),
   ], {
-    annotation: "TypeScript passthrough + ouput",
+    annotation: "TypeScript passthrough + output",
     overwrite: true,
   });
 }
