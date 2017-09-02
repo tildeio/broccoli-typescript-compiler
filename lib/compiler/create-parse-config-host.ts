@@ -8,7 +8,12 @@ export default function createParseConfigHost(workingPath: Path, input: InputIO)
     return input.getFileSystemEntries(path);
   }
 
-  function readDirectory(rootDir: string, extensions: ReadonlyArray<string>, excludes: ReadonlyArray<string>, includes: ReadonlyArray<string>, depth?: number): string[] {
+  function readDirectory(
+    rootDir: string,
+    extensions: ReadonlyArray<string>,
+    excludes: ReadonlyArray<string>,
+    includes: ReadonlyArray<string>,
+    depth?: number): string[] {
     return matchFiles(
       rootDir, extensions, excludes, includes,
       useCaseSensitiveFileNames, workingPath, depth, getFileSystemEntries);

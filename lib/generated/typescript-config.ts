@@ -61,9 +61,9 @@ export interface CompilerOptionsDefinition {
      */
   mapRoot?: string;
       /**
-     * Specify module code generation: 'none', 'CommonJS', 'Amd', 'System', 'UMD', or 'es2015'.
+     * Specify module code generation: 'none', 'CommonJS', 'Amd', 'System', 'UMD', 'es2015' or 'esnext'.
      */
-  module?: ("commonjs" | "amd" | "umd" | "system" | "es6" | "es2015" | "none");
+  module?: ("commonjs" | "amd" | "umd" | "system" | "es6" | "es2015" | "esnext" | "none");
       /**
      * Specifies the end of line sequence to be used when emitting files: 'CRLF' (dos) or 'LF' (unix).
      */
@@ -104,6 +104,10 @@ export interface CompilerOptionsDefinition {
      * Do not add triple-slash references or module import targets to the list of compiled files.
      */
   noResolve?: boolean;
+      /**
+     * Disable strict checking of generic signatures in function types.
+     */
+  noStrictGenericChecks?: boolean;
     skipDefaultLibCheck?: boolean;
       /**
      * Skip type checking of declaration files. Requires TypeScript version 2.0 or later.
@@ -121,6 +125,10 @@ export interface CompilerOptionsDefinition {
      * Do not erase const enum declarations in generated code.
      */
   preserveConstEnums?: boolean;
+      /**
+     * Do not resolve symlinks to their real path; treat a symlinked file like a real one.
+     */
+  preserveSymlinks?: boolean;
       /**
      * Stylize errors and messages using color and context (experimental).
      */
