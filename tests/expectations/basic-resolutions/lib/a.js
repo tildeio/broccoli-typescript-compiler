@@ -2,7 +2,7 @@
 exports.__esModule = true;
 var b_1 = require("./b");
 var c_1 = require("./c");
-var A = (function () {
+var A = /** @class */ (function () {
     function A(b, name) {
         this.b = b;
         this.name = name;
