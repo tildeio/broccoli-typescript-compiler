@@ -47,6 +47,7 @@ export namespace WalkSync {
     relativePath: string;
     basePath: string;
     fullPath: string;
+    checksum: string;
     mode: number;
     size: number;
     mtime: Date;
