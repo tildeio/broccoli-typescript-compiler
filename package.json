@@ -1,6 +1,6 @@
 {
   "name": "broccoli-typescript-compiler",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A Broccoli plugin which compiles TypeScript files.",
   "main": "dist/index.js",
   "typings": "dist/lib/index.d.ts",
