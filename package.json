@@ -41,7 +41,6 @@
   },
   "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
-    "array-binsearch": "^1.0.1",
     "broccoli-funnel": "^2.0.1",
     "broccoli-merge-trees": "^2.0.0",
     "broccoli-plugin": "^1.3.0",
