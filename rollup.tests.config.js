@@ -12,7 +12,7 @@ const ENTRY = resolve('tmp/lib/index.js');
 import buble from 'rollup-plugin-buble';
 
 export default {
-  entry: 'tmp/tests/*.js',
+  input: 'tmp/tests/*.js',
   plugins: [
     {
       load: function(id) {
@@ -29,9 +29,9 @@ export default {
     buble({ transforms: { dangerousForOf: true, generator: false } })
   ],
   external: ['mocha', 'chai', 'broccoli-test-helper', 'tslib', 'typescript', 'fs', 'path'],
-  sourceMap: true,
-  targets: [{
-    dest: 'dist/tests.js',
+  output: {
+    sourcemap: true,
+    file: 'dist/tests.js',
     format: 'cjs'
-  }]
+  }
 };
