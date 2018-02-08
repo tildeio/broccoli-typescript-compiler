@@ -54,7 +54,7 @@ export default class ProjectRunner {
 }
 
 export class Project {
-  public baselineDir: string;
+  public baselineDir!: string;
   constructor(
     public rootDir: string,
     public basename: string,

@@ -2,7 +2,7 @@ import B from "./b";
 import C from "./c";
 
 export default class A {
-  public static create(name: string) {
+  public static create(name: string): A {
     return new this(new B(new C()), name);
   }
 
