@@ -1,6 +1,6 @@
 import { createTempDir, TempDir } from "broccoli-test-helper";
 import * as ts from "typescript";
-import { ConfigParser, InputIO, PathResolver, toPath } from "../lib/index";
+import { ConfigParser, InputIO, PathResolver, toAbsolutePath, toCanonicalPath } from "../lib/index";
 
 let root: TempDir;
 let input: TempDir;
@@ -57,8 +57,8 @@ QUnit.module("config-parser", {
     },
   }, () => {
     QUnit.test("should be able to find the extended config", (assert) => {
-      const rootPath = toPath(root.path());
-      const inputPath = toPath(input.path());
+      const rootPath = toAbsolutePath(root.path());
+      const inputPath = toAbsolutePath(input.path());
       const parser = new ConfigParser(rootPath,
         undefined,
         "lib/tsconfig.json",
@@ -69,18 +69,18 @@ QUnit.module("config-parser", {
       const parsed = parser.parseConfig();
       assert.deepEqual( parsed.errors, [] );
       assert.deepEqual( parsed.options, {
-        "configFilePath": toPath("lib/tsconfig.json", rootPath),
+        "configFilePath": toAbsolutePath("lib/tsconfig.json", rootPath),
         "module": ts.ModuleKind.UMD,
         "moduleResolution": ts.ModuleResolutionKind.NodeJs,
-        "outDir": toPath("dist", rootPath),
+        "outDir": toCanonicalPath("dist", rootPath),
         "strictNullChecks": true,
         "typeRoots": [
-          toPath("typings", rootPath),
+          toCanonicalPath("typings", rootPath),
         ],
         "types": [ "foo" ],
       });
       assert.deepEqual( parsed.fileNames, [
-        toPath("lib/a.ts", rootPath),
+        toAbsolutePath("lib/a.ts", rootPath),
       ]);
     });
   });

@@ -1,12 +1,13 @@
 import parsePath from "../fs/parse-path";
-import { CacheDelegate, Path, PathInfo} from "../interfaces";
+import { toCanonicalPath } from "../fs/path-utils";
+import { AbsolutePath, CacheDelegate, CanonicalPath, PathInfo} from "../interfaces";
 
-export default class PathInfoCacheDelegate implements CacheDelegate<string, string, PathInfo> {
-  constructor(private rootPath: Path, private inputPath: Path) {
+export default class PathInfoCacheDelegate implements CacheDelegate<string, CanonicalPath, PathInfo> {
+  constructor(private rootPath: AbsolutePath, private inputPath: AbsolutePath) {
   }
 
-  public cacheKey(key: string): string {
-    return key;
+  public cacheKey(key: string): CanonicalPath {
+    return toCanonicalPath(key, this.rootPath);
   }
 
   public create(key: string) {

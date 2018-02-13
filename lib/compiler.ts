@@ -5,23 +5,23 @@ import Input from "./compiler/input-io";
 import OutputPatcher from "./compiler/output-patcher";
 import PathResolver from "./compiler/path-resolver";
 import SourceCache from "./compiler/source-cache";
-import { normalizePath, relativePathWithin, toPath } from "./fs/path-utils";
+import { normalizePath, relativePathWithin, toAbsolutePath } from "./fs/path-utils";
 import { heimdall } from "./helpers";
-import { DiagnosticsHandler, NormalizedOptions, Path } from "./interfaces";
+import { AbsolutePath, DiagnosticsHandler, NormalizedOptions } from "./interfaces";
 
 export default class Compiler {
   private resolver: PathResolver;
-  private workingPath: Path;
-  private rootPath: Path;
-  private buildPath: Path | undefined;
+  private workingPath: AbsolutePath;
+  private rootPath: AbsolutePath;
+  private buildPath: AbsolutePath | undefined;
   private input: Input;
   private configParser: ConfigParser;
   private sourceCache: SourceCache | undefined;
   private output: OutputPatcher;
   private program: ts.Program | undefined;
 
-  constructor(public inputPath: Path,
-              public outputPath: Path,
+  constructor(public inputPath: AbsolutePath,
+              public outputPath: AbsolutePath,
               public options: NormalizedOptions,
               private diagnosticsHandler: DiagnosticsHandler) {
     const workingPath = this.workingPath = options.workingPath;
@@ -90,24 +90,24 @@ export default class Compiler {
     this.diagnosticsHandler.check(diagnostics);
   }
 
-  protected resolveBuildPath(options: ts.CompilerOptions): Path {
+  protected resolveBuildPath(options: ts.CompilerOptions): AbsolutePath {
     if (this.buildPath !== undefined) {
       return this.buildPath;
     }
     if (options.outDir !== undefined) {
-      return normalizePath(options.outDir) as Path;
+      return normalizePath(options.outDir) as AbsolutePath;
     }
     return this.rootPath;
   }
 
-  protected emitProgram(program: ts.Program, buildPath: Path) {
+  protected emitProgram(program: ts.Program, buildPath: AbsolutePath) {
     const token = heimdall.start("TypeScript:emitProgram");
     const { output } = this;
 
     const emitResult = program.emit(undefined, (fileName: string, data: string) => {
       /* tslint:disable:no-console */
       // the fileName is absolute but not normalized if outDir is not normalized
-      const relativePath = relativePathWithin(buildPath, toPath(fileName, this.workingPath));
+      const relativePath = relativePathWithin(buildPath, toAbsolutePath(fileName, this.workingPath));
       if (relativePath) {
         output.add(relativePath, data);
       }

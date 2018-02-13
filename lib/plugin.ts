@@ -1,6 +1,6 @@
 import Compiler from "./compiler";
 import DiagnosticsHandler from "./diagnostics-handler";
-import { toPath } from "./fs/path-utils";
+import { toAbsolutePath } from "./fs/path-utils";
 import { BroccoliPlugin, heimdall } from "./helpers";
 import { NormalizedOptions, TypeScriptPluginOptions } from "./interfaces";
 import normalizeOptions from "./normalize-options";
@@ -52,8 +52,8 @@ export class TypeScriptPlugin extends BroccoliPlugin {
     let compiler = this.compiler;
     if (!compiler) {
       compiler = this.compiler = new Compiler(
-        toPath( this.inputPaths[0] ),
-        toPath( this.outputPath ),
+        toAbsolutePath( this.inputPaths[0] ),
+        toAbsolutePath( this.outputPath ),
         this.options,
         this.diagnosticHandler,
       );

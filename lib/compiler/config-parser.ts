@@ -1,17 +1,17 @@
 import * as ts from "typescript";
-import {getDirectoryPath } from "../fs/path-utils";
-import { CompilerOptionsConfig, Path, TypeScriptConfig } from "../interfaces";
+import { getDirectoryPath } from "../fs/path-utils";
+import { AbsolutePath, CompilerOptionsConfig, TypeScriptConfig } from "../interfaces";
 import createParseConfigHost from "./create-parse-config-host";
 import Input from "./input-io";
 
 export default class ConfigParser {
   private host: ts.ParseConfigHost;
 
-  constructor(private projectPath: Path,
+  constructor(private projectPath: AbsolutePath,
               private rawConfig: TypeScriptConfig | undefined,
               private configFileName: string | undefined,
               private compilerOptions: CompilerOptionsConfig | undefined,
-              workingPath: Path,
+              workingPath: AbsolutePath,
               input: Input) {
     this.host = createParseConfigHost(workingPath, input);
   }
@@ -34,24 +34,24 @@ export default class ConfigParser {
     return result;
   }
 
-  private resolveConfigFileName(): Path | undefined {
+  private resolveConfigFileName(): AbsolutePath | undefined {
     if (this.rawConfig !== undefined) {
       return;
     }
     return ts.findConfigFile(
       this.projectPath,
       this.host.fileExists,
-      this.configFileName) as Path;
+      this.configFileName) as AbsolutePath;
   }
 
-  private getBasePath(configFilePath: Path | undefined) {
+  private getBasePath(configFilePath: AbsolutePath | undefined): AbsolutePath {
     if (configFilePath === undefined) {
       return this.projectPath;
     }
-    return getDirectoryPath(configFilePath);
+    return getDirectoryPath(configFilePath) as AbsolutePath;
   }
 
-  private convertExistingOptions(basePath: Path) {
+  private convertExistingOptions(basePath: AbsolutePath) {
     const { compilerOptions } = this;
     if (compilerOptions === undefined) {
       return {
@@ -62,7 +62,7 @@ export default class ConfigParser {
     return ts.convertCompilerOptionsFromJson(this.compilerOptions, basePath);
   }
 
-  private readConfigSourceFile(configFilePath: Path | undefined): ts.JsonSourceFile | undefined {
+  private readConfigSourceFile(configFilePath: AbsolutePath | undefined): ts.JsonSourceFile | undefined {
     if (configFilePath === undefined) {
       return;
     }
@@ -74,8 +74,8 @@ export default class ConfigParser {
   }
 
   private parseConfigContent(
-    configFileName: Path | undefined,
-    basePath: Path,
+    configFileName: AbsolutePath | undefined,
+    basePath: AbsolutePath,
     existingOptions: ts.CompilerOptions | undefined,
   ) {
     const configSourceFile = this.readConfigSourceFile(configFileName);

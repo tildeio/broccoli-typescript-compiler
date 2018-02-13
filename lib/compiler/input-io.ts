@@ -1,7 +1,7 @@
 import { realpathSync } from "fs";
 import * as ts from "typescript";
 import DirectoryEntriesCache from "../cache/directory-entries-cache";
-import { DirEntries, Path, PathResolver, Resolution } from "../interfaces";
+import { AbsolutePath, CanonicalPath, DirEntries, PathResolver, Resolution } from "../interfaces";
 
 export default class Input {
   private entriesCache: DirectoryEntriesCache;
@@ -29,16 +29,16 @@ export default class Input {
     let directories: string[];
     if (resolution.isDirectory()) {
       if (resolution.isInput()) {
-        directories = this.readdir(resolution.pathInInput).directories;
+        directories = this.readdir(resolution.canonicalPathInInput).directories;
         if (resolution.isMerged()) {
-          for (const other in this.readdir(resolution.path).directories) {
+          for (const other in this.readdir(resolution.canonicalPath).directories) {
             if (directories.indexOf(other) === -1) {
               directories.push(other);
             }
           }
         }
       } else {
-        directories = this.readdir(resolution.path).directories;
+        directories = this.readdir(resolution.canonicalPath).directories;
       }
     } else {
       directories = [];
@@ -57,7 +57,7 @@ export default class Input {
     const resolution = this.resolve(path);
     let entries: DirEntries;
     if (resolution.isDirectory() && resolution.isInput()) {
-      entries = this.readdir(resolution.pathInInput);
+      entries = this.readdir(resolution.canonicalPathInInput);
     } else {
       entries = { files: [], directories: [] };
     }
@@ -66,7 +66,7 @@ export default class Input {
 
   public readFile(path: string): string | undefined {
     const resolution = this.resolve(path);
-    let resolved: Path | undefined;
+    let resolved: AbsolutePath | undefined;
     if (resolution.isFile()) {
       if (resolution.isInput()) {
         resolved = resolution.pathInInput;
@@ -83,7 +83,7 @@ export default class Input {
     return this.resolve(path).relativePath;
   }
 
-  public realpath(path: string): Path | undefined {
+  public realpath(path: string): AbsolutePath | undefined {
     const resolution = this.resolve(path);
     if (resolution.isInput()) {
       return resolution.path;
@@ -102,7 +102,7 @@ export default class Input {
     return this.resolver.resolve(path);
   }
 
-  private readdir(path: Path) {
+  private readdir(path: CanonicalPath) {
     return this.entriesCache.get(path);
   }
 }

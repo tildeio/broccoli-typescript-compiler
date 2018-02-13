@@ -1,9 +1,9 @@
 import resolve from "../fs/resolve";
-import { CacheDelegate, Path, PathInfo, Resolution} from "../interfaces";
+import { CacheDelegate, CanonicalPath, PathInfo, Resolution} from "../interfaces";
 
-export default class ResolutionCacheDelegate implements CacheDelegate<PathInfo, Path, Resolution> {
-  public cacheKey(pathInfo: PathInfo): Path {
-    return pathInfo.path;
+export default class ResolutionCacheDelegate implements CacheDelegate<PathInfo, CanonicalPath, Resolution> {
+  public cacheKey(pathInfo: PathInfo): CanonicalPath {
+    return pathInfo.canonicalPath;
   }
 
   public create(pathInfo: PathInfo) {

@@ -1,8 +1,8 @@
 import Cache from "../cache";
-import { Path, PathInfo, Resolution } from "../interfaces";
+import { CanonicalPath, PathInfo, Resolution } from "../interfaces";
 import ResolutionCacheDelegate from "./resolution-cache-delegate";
 
-export default class ResolutionCache extends Cache<PathInfo, Path, Resolution> {
+export default class ResolutionCache extends Cache<PathInfo, CanonicalPath, Resolution> {
   constructor() {
     super(new ResolutionCacheDelegate());
   }
