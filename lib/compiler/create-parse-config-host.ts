@@ -1,9 +1,9 @@
 import { matchFiles, ParseConfigHost } from "typescript";
 import { useCaseSensitiveFileNames } from "../fs/path-utils";
-import { Path } from "../interfaces";
+import { AbsolutePath } from "../interfaces";
 import InputIO from "./input-io";
 
-export default function createParseConfigHost(workingPath: Path, input: InputIO): ParseConfigHost {
+export default function createParseConfigHost(workingPath: AbsolutePath, input: InputIO): ParseConfigHost {
   function getFileSystemEntries(path: string) {
     return input.getFileSystemEntries(path);
   }

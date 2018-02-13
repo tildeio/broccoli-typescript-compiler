@@ -1,12 +1,12 @@
 import PathInfoCache from "../cache/path-info-cache";
 import ResolutionCache from "../cache/resolution-cache";
-import { Path, PathResolver, Resolution } from "../interfaces";
+import { AbsolutePath, PathResolver, Resolution } from "../interfaces";
 
 export default class PathResolverImpl implements PathResolver {
   private pathInfoCache: PathInfoCache;
   private resolutionCache = new ResolutionCache();
 
-  constructor(rootPath: Path, inputPath: Path) {
+  constructor(rootPath: AbsolutePath, inputPath: AbsolutePath) {
     this.pathInfoCache = new PathInfoCache(rootPath, inputPath);
   }
 

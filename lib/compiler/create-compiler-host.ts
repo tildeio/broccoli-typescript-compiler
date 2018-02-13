@@ -9,15 +9,15 @@ import {
 import {
   defaultLibLocation,
   getCanonicalFileName,
-  toPath,
+  toCanonicalPath,
   useCaseSensitiveFileNames,
 } from "../fs/path-utils";
-import { Path } from "../interfaces";
+import { AbsolutePath } from "../interfaces";
 import InputIO from "./input-io";
 import SourceCache from "./source-cache";
 
 export default function createCompilerHost(
-  workingPath: Path, input: InputIO, sourceCache: SourceCache, compilerOptions: CompilerOptions,
+  workingPath: AbsolutePath, input: InputIO, sourceCache: SourceCache, compilerOptions: CompilerOptions,
 ): CompilerHost {
   const newLine = getNewLine(compilerOptions);
   return {
@@ -25,7 +25,7 @@ export default function createCompilerHost(
     fileExists: (path) => input.fileExists(path),
     getCanonicalFileName,
     getCurrentDirectory: () => workingPath,
-    getDefaultLibFileName: (options) => toPath(getDefaultLibFileName(options), defaultLibLocation),
+    getDefaultLibFileName: (options) => toCanonicalPath(getDefaultLibFileName(options), defaultLibLocation),
     getDefaultLibLocation: () => defaultLibLocation,
     getDirectories: (path) => input.getDirectories(path),
     getNewLine: () => newLine,

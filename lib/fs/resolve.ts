@@ -1,11 +1,12 @@
 import { Stats } from "fs";
 import {
+  AbsolutePath,
+  CanonicalPath,
   DirectoryResolution,
   FileResolution,
   InputDirectoryResolution,
   InputFileResolution,
   MergedDirectoryResolution,
-  Path,
   PathInfo,
   Resolution,
 } from "../interfaces";
@@ -46,8 +47,10 @@ const enum ResolutionFlags {
 }
 
 class ResolutionImpl implements Resolution {
-  public path: Path;
-  public pathInInput: Path | undefined;
+  public canonicalPath: CanonicalPath;
+  public canonicalPathInInput: CanonicalPath | undefined;
+  public path: AbsolutePath;
+  public pathInInput: AbsolutePath | undefined;
   public relativePath: string | undefined;
 
   constructor(
@@ -56,6 +59,8 @@ class ResolutionImpl implements Resolution {
     public otherStats: Stats | undefined,
     private flags: ResolutionFlags,
   ) {
+    this.canonicalPath = pathInfo.canonicalPath;
+    this.canonicalPathInInput = pathInfo.canonicalPathInInput;
     this.path = pathInfo.path;
     this.pathInInput = pathInfo.pathInInput;
     this.relativePath = pathInfo.relativePath;

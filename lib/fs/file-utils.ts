@@ -1,8 +1,8 @@
 import { createHash } from "crypto";
 import { readdirSync, readFileSync, Stats, statSync } from "fs";
-import { DirEntries, FileContent, Path, PathResolver, Resolution } from "../interfaces";
+import { AbsolutePath, CanonicalPath, DirEntries, FileContent, PathResolver, Resolution } from "../interfaces";
 
-export function readFile(path: Path): FileContent {
+export function readFile(path: AbsolutePath): FileContent {
   const buffer = readFileSync(path);
   const hash = createHash("sha1");
   hash.update(buffer);
@@ -10,7 +10,7 @@ export function readFile(path: Path): FileContent {
 }
 
 export function readFileResolution(resolution: Resolution) {
-  let path: Path | undefined;
+  let path: AbsolutePath | undefined;
   if (resolution.isFile()) {
     if (resolution.isInput()) {
       path = resolution.pathInInput;
@@ -23,7 +23,7 @@ export function readFileResolution(resolution: Resolution) {
   }
 }
 
-export function stat(path: Path): Stats | undefined {
+export function stat(path: AbsolutePath): Stats | undefined {
   try {
     return statSync(path);
   } catch (e) {
@@ -34,7 +34,7 @@ export function stat(path: Path): Stats | undefined {
   }
 }
 
-export function readdir(path: Path, resolver: PathResolver): DirEntries {
+export function readdir(path: CanonicalPath, resolver: PathResolver): DirEntries {
   const prefix = path + "/";
   const files: string[] = [];
   const directories: string[] = [];

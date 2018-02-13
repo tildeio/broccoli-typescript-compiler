@@ -1,20 +1,26 @@
-import { Path, PathInfo } from "../interfaces";
-import { relativePathWithin, toPath } from "./path-utils";
+import { AbsolutePath, PathInfo } from "../interfaces";
+import { relativePathWithin, toAbsolutePath, toCanonicalPath } from "./path-utils";
 
-export default function parsePath(rootPath: Path, inputPath: Path, rawPath: string): PathInfo {
-  let path = toPath(rawPath, rootPath);
-  let pathInInput: Path | undefined;
+export default function parsePath(rootPath: AbsolutePath, inputPath: AbsolutePath, rawPath: string): PathInfo {
+  let path = toAbsolutePath(rawPath, rootPath);
+  let pathInInput: AbsolutePath | undefined;
   let relativePath = relativePathWithin(rootPath, path);
   if (relativePath === undefined) {
     relativePath = relativePathWithin(inputPath, path);
     if (relativePath !== undefined) {
       pathInInput = path;
-      path = toPath(relativePath, rootPath);
+      path = toAbsolutePath(relativePath, rootPath);
     }
   } else {
-    pathInInput = toPath(relativePath, inputPath);
+    pathInInput = toAbsolutePath(relativePath, inputPath);
   }
+
+  const canonicalPath = toCanonicalPath(path);
+  const canonicalPathInInput = pathInInput && toCanonicalPath(pathInInput);
+
   return {
+    canonicalPath,
+    canonicalPathInInput,
     path,
     pathInInput,
     relativePath,

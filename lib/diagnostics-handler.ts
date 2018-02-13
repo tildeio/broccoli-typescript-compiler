@@ -1,5 +1,6 @@
-import { Diagnostic, formatDiagnostics, FormatDiagnosticsHost, Path, sys } from "typescript";
-import { DiagnosticsHandler, NormalizedOptions } from "./interfaces";
+import { Diagnostic, formatDiagnostics, FormatDiagnosticsHost, sys } from "typescript";
+import { getCanonicalFileName } from "./fs/path-utils";
+import { AbsolutePath, DiagnosticsHandler, NormalizedOptions } from "./interfaces";
 
 export default class DiagnosticsHandlerImpl implements DiagnosticsHandler {
   private throwOnError: boolean;
@@ -43,11 +44,9 @@ function normalize(diagnostics: Diagnostic | Diagnostic[] | undefined): Diagnost
   return [ diagnostics ];
 }
 
-function createFormatDiagnosticsHost(rootPath: Path): FormatDiagnosticsHost {
+function createFormatDiagnosticsHost(rootPath: AbsolutePath): FormatDiagnosticsHost {
   const newLine = sys.newLine;
-  const getCanonicalFileName = sys.useCaseSensitiveFileNames ?
-    (f: string) => f :
-    (f: string) => f.toLowerCase();
+
   return {
     getCanonicalFileName,
     getCurrentDirectory: () => rootPath,

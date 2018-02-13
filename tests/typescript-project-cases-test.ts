@@ -1,7 +1,7 @@
 import { createBuilder, createTempDir } from "broccoli-test-helper";
 import ProjectRunner from "./typescript-project-runner";
 
-import { toPath, typescript } from "../lib/index";
+import { toAbsolutePath, typescript } from "../lib/index";
 
 // tslint:disable:no-console
 const runner = new ProjectRunner({
@@ -53,7 +53,7 @@ function removeRoots(errors: string | undefined, rootPath: string) {
   if (errors === undefined) {
     return;
   }
-  const root = toPath(rootPath);
+  const root = toAbsolutePath(rootPath);
   const pattern = new RegExp(escapeRegExp(root + "/"), "g");
   return errors.replace(pattern, "").toLowerCase();
 }

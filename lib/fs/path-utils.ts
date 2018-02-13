@@ -1,5 +1,5 @@
 import * as ts from "typescript";
-import { Path } from "../interfaces";
+import { AbsolutePath, CanonicalPath } from "../interfaces";
 
 const enum CharCode {
   Slash = 47,
@@ -10,22 +10,22 @@ export const getCanonicalFileName = ts.sys.useCaseSensitiveFileNames
   ? (fileName: string) => fileName
   : (fileName: string) => fileName.toLowerCase();
 
-export const defaultLibLocation = ts.getDirectoryPath(toPath(ts.sys.getExecutingFilePath()));
+export const defaultLibLocation = ts.getDirectoryPath(toCanonicalPath(ts.sys.getExecutingFilePath()));
 
 export function normalizePath(path: string) {
   if (path.length === 0) {
     return path;
   }
-  return trimTrailingSlash(getCanonicalFileName(ts.normalizePath(path)));
+  return trimTrailingSlash(ts.normalizePath(path));
 }
 
-export function isWithin(rootPath: Path, path: Path) {
+export function isWithin(rootPath: AbsolutePath, path: AbsolutePath) {
   return path.length > rootPath.length &&
          path.lastIndexOf(rootPath, 0) === 0 &&
          path.charCodeAt(rootPath.length) === CharCode.Slash;
 }
 
-export function relativePathWithin(root: Path, path: Path): string | undefined {
+export function relativePathWithin(root: AbsolutePath, path: AbsolutePath): string | undefined {
   let relativePath: string | undefined;
   if (path.length > root.length &&
       path.lastIndexOf(root, 0) === 0 &&
@@ -37,7 +37,7 @@ export function relativePathWithin(root: Path, path: Path): string | undefined {
   return relativePath;
 }
 
-export function toPath(fileName: string, basePath?: Path): Path {
+export function toCanonicalPath(fileName: string, basePath?: AbsolutePath | CanonicalPath): CanonicalPath {
   const p = ts.toPath(
     fileName,
     basePath === undefined ?
@@ -45,9 +45,19 @@ export function toPath(fileName: string, basePath?: Path): Path {
   return trimTrailingSlash(p);
 }
 
+export function toAbsolutePath(fileName: string, basePath?: AbsolutePath): AbsolutePath {
+  const p = ts.toPath(
+    fileName,
+    basePath === undefined ?
+      currentDirectory() : basePath, (name) => name);
+
+  return trimTrailingSlash(p) as string as AbsolutePath;
+}
+
 export { getDirectoryPath } from "typescript";
 
-function trimTrailingSlash(path: Path): Path;
+function trimTrailingSlash(path: CanonicalPath): CanonicalPath;
+function trimTrailingSlash(path: AbsolutePath): AbsolutePath;
 function trimTrailingSlash(path: string): string;
 function trimTrailingSlash(path: string) {
   if (path.charCodeAt(path.length - 1) === CharCode.Slash) {
@@ -57,7 +67,7 @@ function trimTrailingSlash(path: string) {
 }
 
 function currentDirectory() {
-  return normalizePath(process.cwd()) as Path;
+  return normalizePath(process.cwd()) as CanonicalPath;
 }
 
 // tslint:disable

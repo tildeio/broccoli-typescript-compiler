@@ -5,4 +5,4 @@ export * from "./plugin";
 export { default as ConfigParser } from "./compiler/config-parser";
 export { default as InputIO } from "./compiler/input-io";
 export { default as PathResolver } from "./compiler/path-resolver";
-export { normalizePath, relativePathWithin, toPath } from "./fs/path-utils";
+export { normalizePath, relativePathWithin, toAbsolutePath, toCanonicalPath } from "./fs/path-utils";

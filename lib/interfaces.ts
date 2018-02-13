@@ -6,10 +6,10 @@ export * from "./generated/typescript-config";
 export type CompilerOptionsConfig = TypeScriptConfig["compilerOptions"];
 
 export interface NormalizedOptions {
-  workingPath: Path;
-  rootPath: Path;
-  projectPath: Path;
-  buildPath: Path | undefined;
+  workingPath: AbsolutePath;
+  rootPath: AbsolutePath;
+  projectPath: AbsolutePath;
+  buildPath: AbsolutePath | undefined;
   configFileName: string | undefined;
   rawConfig: CompilerOptionsConfig | undefined;
   compilerOptions: CompilerOptionsConfig | undefined;
@@ -117,12 +117,22 @@ export interface PathInfo {
   /**
    * The absolute path.
    */
-  path: Path;
+  path: AbsolutePath;
+
+  /**
+   * The canonical form of the absolute path.
+   */
+  canonicalPath: CanonicalPath;
 
   /**
    * The corresponding absolute path in the input node if within root.
    */
-  pathInInput: Path | undefined;
+  pathInInput: AbsolutePath | undefined;
+
+  /**
+   * The canonical form of `pathInInput`.
+   */
+  canonicalPathInInput: CanonicalPath | undefined;
 
   /**
    * Path relative to root.
@@ -130,7 +140,30 @@ export interface PathInfo {
   relativePath: string | undefined;
 }
 
-export type Path = string & {
+/**
+ * An AbsolutePath is a path that has been normalized and provides the following
+ * guarantees:
+ *
+ * 1. The path is absolute.
+ * 2. Path separators have been normalized to slashes.
+ * 3. Any trailing slash has been removed.
+ *
+ * Generally speaking, AbsolutePaths should be preferred because they preserve
+ * casing, even on case-insensitive file systems. The exception is that
+ * CanonicalPaths should be used for things like cache keys, where the same file
+ * may be referred to by multiple casing permutations.
+ */
+export type AbsolutePath = string & {
+  __absolutePathBrand: any;
+};
+
+/**
+ * A CanonicalPath is an AbsolutePath that has been canonicalized. Primarily,
+ * this means that in addition to the guarantees of AbsolutePath, it has also
+ * had casing normalized on case-insensitive file systems. This is an alias of
+ * `ts.Path` type.
+ */
+export type CanonicalPath = string & {
   __pathBrand: any;
 };
 
@@ -157,7 +190,7 @@ export interface FileResolution extends Resolution {
 }
 
 export interface InputFileResolution extends FileResolution {
-  pathInInput: Path;
+  pathInInput: AbsolutePath;
   relativePath: string;
 
   isFile(): this is InputFileResolution;
@@ -172,7 +205,8 @@ export interface DirectoryResolution extends Resolution {
 }
 
 export interface InputDirectoryResolution extends DirectoryResolution {
-  pathInInput: Path;
+  pathInInput: AbsolutePath;
+  canonicalPathInInput: CanonicalPath;
   relativePath: string;
 
   isFile(): false;
