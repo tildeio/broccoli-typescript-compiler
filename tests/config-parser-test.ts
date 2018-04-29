@@ -1,6 +1,6 @@
 import { createTempDir, TempDir } from "broccoli-test-helper";
 import * as ts from "typescript";
-import { ConfigParser, InputIO, PathResolver, toAbsolutePath, toCanonicalPath } from "../lib/index";
+import { ConfigParser, InputIO, PathResolver, toAbsolutePath } from "../lib/index";
 
 let root: TempDir;
 let input: TempDir;
@@ -72,10 +72,10 @@ QUnit.module("config-parser", {
         "configFilePath": toAbsolutePath("lib/tsconfig.json", rootPath),
         "module": ts.ModuleKind.UMD,
         "moduleResolution": ts.ModuleResolutionKind.NodeJs,
-        "outDir": toCanonicalPath("dist", rootPath),
+        "outDir": toAbsolutePath("dist", rootPath),
         "strictNullChecks": true,
         "typeRoots": [
-          toCanonicalPath("typings", rootPath),
+          toAbsolutePath("typings", rootPath),
         ],
         "types": [ "foo" ],
       });
