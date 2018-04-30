@@ -7,7 +7,7 @@
   "scripts": {
     "test": "git submodule update --init && qunit dist/tests.js",
     "test:debug": "mocha --no-timeouts debug dist/tests.js",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "lint": "tslint --project tsconfig.json",
     "build:index": "rm -rf tmp && tsc",
     "build:scripts": "tsc -p scripts/tsconfig.json",
