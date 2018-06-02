@@ -2,11 +2,11 @@ import { isWithin, normalizePath, toAbsolutePath } from "./fs/path-utils";
 import {
   CompilerOptionsConfig,
   NormalizedOptions,
-  TypeScriptPluginOptions,
+  TypescriptCompilerOptions,
 } from "./interfaces";
 
 export default function normalizeOptions(
-  options: TypeScriptPluginOptions
+  options: TypescriptCompilerOptions
 ): NormalizedOptions {
   const workingPath = toAbsolutePath(
     options.workingPath === undefined ? process.cwd() : options.workingPath

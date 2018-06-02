@@ -2,14 +2,8 @@ import Compiler from "./compiler";
 import DiagnosticsHandler from "./diagnostics-handler";
 import { toAbsolutePath } from "./fs/path-utils";
 import { BroccoliPlugin, heimdall } from "./helpers";
-import { NormalizedOptions, TypeScriptPluginOptions } from "./interfaces";
+import { NormalizedOptions, TypescriptCompilerOptions } from "./interfaces";
 import normalizeOptions from "./normalize-options";
-
-export {
-  TypeScriptPluginOptions,
-  TypeScriptConfig,
-  CompilerOptionsConfig,
-} from "./interfaces";
 
 /**
  * Returns a Broccoli plugin instance that compiles
@@ -28,19 +22,22 @@ export {
  * it will these as entry points and only compile
  * the files and files they reference from the input.
  */
-export function typescript(inputNode: any, options?: TypeScriptPluginOptions) {
-  return new TypeScriptPlugin(inputNode, options);
+export function typescript(
+  inputNode: any,
+  options?: TypescriptCompilerOptions
+) {
+  return new TypescriptCompiler(inputNode, options);
 }
 
 /**
  * TypeScript Broccoli plugin class.
  */
-export class TypeScriptPlugin extends BroccoliPlugin {
+export class TypescriptCompiler extends BroccoliPlugin {
   private compiler: Compiler | undefined;
   private diagnosticHandler: DiagnosticsHandler;
   private options: NormalizedOptions;
 
-  constructor(inputNode: any, options?: TypeScriptPluginOptions) {
+  constructor(inputNode: any, options?: TypescriptCompilerOptions) {
     super([inputNode], {
       annotation: options && options.annotation,
       name: "broccoli-typescript-compiler",

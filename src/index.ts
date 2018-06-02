@@ -1,5 +1,6 @@
-export { default as filterTypeScript } from "./compat/filter";
-export * from "./plugin";
+export * from "./interfaces";
+export { typescript as default, TypescriptCompiler } from "./plugin";
+export { default as filterTypescript } from "./compat/filter";
 
 // needed for tests
 export { default as ConfigParser } from "./compiler/config-parser";

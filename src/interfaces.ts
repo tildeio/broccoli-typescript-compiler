@@ -1,9 +1,9 @@
 import { Stats } from "fs";
 import { Diagnostic } from "typescript";
-import { TypeScriptConfig } from "./generated/typescript-config";
+import { TypescriptConfig } from "./generated/typescript-config";
 export * from "./generated/typescript-config";
 
-export type CompilerOptionsConfig = TypeScriptConfig["compilerOptions"];
+export type CompilerOptionsConfig = TypescriptConfig["compilerOptions"];
 
 export interface NormalizedOptions {
   workingPath: AbsolutePath;
@@ -28,7 +28,7 @@ export interface DiagnosticsHandler {
   ): boolean;
 }
 
-export interface TypeScriptPluginOptions {
+export interface TypescriptCompilerOptions {
   /**
    * Acts as the current working directory for compilation.
    *
@@ -94,7 +94,7 @@ export interface TypeScriptPluginOptions {
    * If it is the JSON config itself, the base path will be set to the
    * projectPath during parse.
    */
-  tsconfig?: string | TypeScriptConfig;
+  tsconfig?: string | TypescriptConfig;
 
   /**
    * The compilerOptions of tsconfig.

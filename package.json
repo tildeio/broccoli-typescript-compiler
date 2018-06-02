@@ -2,34 +2,34 @@
   "name": "broccoli-typescript-compiler",
   "version": "3.0.0",
   "description": "A Broccoli plugin which compiles TypeScript files.",
-  "main": "dist/index.js",
-  "typings": "dist/lib/index.d.ts",
-  "scripts": {
-    "test": "git submodule update --init && qunit dist/tests.js",
-    "test:debug": "mocha --no-timeouts debug dist/tests.js",
-    "prepare": "npm run build",
-    "lint": "tslint --project tsconfig.json",
-    "build:index": "rm -rf tmp && tsc",
-    "build:scripts": "tsc -p scripts/tsconfig.json",
-    "build:rollup": "npm run build:rollup:index && npm run build:rollup:tests",
-    "build:rollup:index": "rollup -c rollup.index.config.js",
-    "build:rollup:tests": "rollup -c rollup.tests.config.js",
-    "build": "npm run build:index && npm run build:rollup",
-    "generate-tsconfig-interface":
-      "npm run build:scripts && node scripts/build-tsconfig-interface.js"
+  "keywords": ["TypeScript", "broccoli-plugin", "compiler", "javascript", "js"],
+  "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
+  "bugs": {
+    "url": "https://github.com/tildeio/broccoli-typescript-compiler/issues"
   },
-  "files": ["dist/index.js", "dist/index.js.map", "dist/lib", "lib"],
   "repository": {
     "type": "git",
     "url": "https://github.com/tildeio/broccoli-typescript-compiler.git"
   },
-  "keywords": ["broccoli-plugin", "compiler", "TypeScript", "javascript", "js"],
-  "author": "Godfrey Chan <godfrey@tilde.io> (http://tilde.io/)",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/tildeio/broccoli-typescript-compiler/issues"
+  "author": "Kris Selden <kris.selden@gmail.com>",
+  "files": ["dist", "!dist/tests", "src/**/*.ts"],
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "yarn build:index && yarn link-self && yarn build:tests",
+    "build:index": "tsc && rollup -c rollup.config.js",
+    "build:scripts": "tsc -p scripts/tsconfig.json",
+    "build:tests": "tsc -p tests/tsconfig.json",
+    "generate-tsconfig-interface":
+      "yarn build:scripts && node scripts/build-tsconfig-interface.js",
+    "link-self": "yarn link && yarn link broccoli-typescript-compiler",
+    "lint":
+      "tslint --project tsconfig.json && tslint --project tests/tsconfig.json",
+    "prepare": "npm run build",
+    "test": "git submodule update --init && qunit dist/tests/*-test.js"
   },
-  "homepage": "https://github.com/tildeio/broccoli-typescript-compiler",
   "dependencies": {
     "broccoli-funnel": "^2.0.1",
     "broccoli-merge-trees": "^3.0.0",
@@ -55,7 +55,6 @@
     "rimraf": "^2.5.4",
     "rollup": "^0.59.4",
     "rollup-plugin-buble": "^0.19.2",
-    "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "tslint": "^5.3.2",
     "tslint-config-prettier": "^1.13.0",

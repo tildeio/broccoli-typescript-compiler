@@ -5,7 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type TypeScriptConfig = CompilerOptionsDefinition &
+export type TypescriptConfig = CompilerOptionsDefinition &
   ExtendsDefinition &
   (FilesDefinition | ExcludeDefinition | IncludeDefinition);
 

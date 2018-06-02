@@ -31,7 +31,7 @@ const outputPath = path.resolve("tests/expectations");
 rimraf.sync(outputPath);
 
 const testCases = fs.readdirSync("tests/cases");
-testCases.forEach((testCaseName) => {
+testCases.forEach(testCaseName => {
   console.log("test case", testCaseName);
   const basePath = path.resolve(path.join("tests/cases", testCaseName));
   console.log("basePath", basePath);
@@ -41,7 +41,13 @@ testCases.forEach((testCaseName) => {
   if (configResult.error) {
     throw new Error("failed to parse config");
   }
-  const config = ts.parseJsonConfigFileContent(configResult.config, ts.sys, basePath, undefined, configFileName);
+  const config = ts.parseJsonConfigFileContent(
+    configResult.config,
+    ts.sys,
+    basePath,
+    undefined,
+    configFileName
+  );
   console.log(config.fileNames);
   const host = ts.createCompilerHost(config.options);
   const program = ts.createProgram(config.fileNames, config.options, host);
@@ -49,7 +55,11 @@ testCases.forEach((testCaseName) => {
   const diagnostics = ts.getPreEmitDiagnostics(program);
 
   program.emit(undefined, (fileName, data) => {
-    const outFileName = path.join(outputPath, testCaseName, path.relative(basePath, fileName));
+    const outFileName = path.join(
+      outputPath,
+      testCaseName,
+      path.relative(basePath, fileName)
+    );
 
     console.log("out", outFileName);
     sys.writeFile(outFileName, data);

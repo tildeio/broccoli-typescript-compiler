@@ -2,16 +2,16 @@ import {
   createReadableDir,
   ReadableDir,
   Tree,
-  TreeEntry
+  TreeEntry,
 } from "broccoli-test-helper";
-import * as fs from "fs";
-import * as path from "path";
-import * as ts from "typescript";
 import {
   CompilerOptionsConfig,
   normalizePath,
-  TypeScriptConfig
-} from "../lib/index";
+  TypescriptConfig,
+} from "broccoli-typescript-compiler";
+import * as fs from "fs";
+import * as path from "path";
+import * as ts from "typescript";
 
 export interface ProjectRunnerConfig {
   typescriptDir: string;
@@ -113,23 +113,23 @@ export class ProjectWithModule {
     return Object.assign(this.project.compilerOptions, {
       module: this.module,
       newLine: "CRLF",
-      typeRoots: []
+      typeRoots: [],
     });
   }
 
-  get pluginConfig(): TypeScriptConfig {
+  get pluginConfig(): TypescriptConfig {
     const { project } = this;
     const inputFiles = project.inputFiles;
-    const config: TypeScriptConfig = {
+    const config: TypescriptConfig = {
       buildPath: this.project.dir,
       compilerOptions: this.compilerOptions,
-      workingPath: this.project.dir
+      workingPath: this.project.dir,
     };
 
     if (inputFiles) {
       config.compilerOptions!.moduleResolution = "classic";
       config.tsconfig = {
-        files: inputFiles
+        files: inputFiles,
       };
     } else {
       config.projectPath = project.config.project;

@@ -1,4 +1,5 @@
-import { TypeScriptPlugin, TypeScriptPluginOptions } from "../plugin";
+import { TypescriptCompilerOptions } from "../interfaces";
+import { TypescriptCompiler } from "../plugin";
 
 const Funnel: any = require("broccoli-funnel");
 const MergeTrees: any = require("broccoli-merge-trees");
@@ -11,7 +12,7 @@ const MergeTrees: any = require("broccoli-merge-trees");
  */
 export default function filterLike(
   inputNode: any,
-  options?: TypeScriptPluginOptions
+  options?: TypescriptCompilerOptions
 ) {
   const passthrough = new Funnel(inputNode, {
     annotation: "TypeScript passthrough",
@@ -21,8 +22,11 @@ export default function filterLike(
     annotation: "TypeScript input",
     include: ["**/*.ts"],
   });
-  return new MergeTrees([passthrough, new TypeScriptPlugin(filter, options)], {
-    annotation: "TypeScript passthrough + output",
-    overwrite: true,
-  });
+  return new MergeTrees(
+    [passthrough, new TypescriptCompiler(filter, options)],
+    {
+      annotation: "TypeScript passthrough + output",
+      overwrite: true,
+    }
+  );
 }

@@ -1,7 +1,7 @@
 import { createBuilder, createTempDir } from "broccoli-test-helper";
 import ProjectRunner from "./typescript-project-runner";
 
-import { toAbsolutePath, typescript } from "../lib/index";
+import typescript, { toAbsolutePath } from "broccoli-typescript-compiler";
 
 // tslint:disable:no-console
 const runner = new ProjectRunner({
@@ -10,25 +10,25 @@ const runner = new ProjectRunner({
 
 // tslint:disable:only-arrow-functions
 QUnit.module("typescript-project-cases", function() {
-  runner.each((project) => {
+  runner.each(project => {
     QUnit.module(project.basename, function() {
-      project.each((mod) => {
+      project.each(mod => {
         QUnit.test(mod.module, async function(assert) {
           const input = await createTempDir();
           try {
-            input.copy( project.dir );
+            input.copy(project.dir);
 
-            const plugin = typescript( input.path(), mod.pluginConfig );
+            const plugin = typescript(input.path(), mod.pluginConfig);
 
             let errors: string | undefined;
-            plugin.setDiagnosticWriter((msg) => {
+            plugin.setDiagnosticWriter(msg => {
               if (errors === undefined) {
                 errors = "";
               }
               errors += msg;
             });
 
-            const output = createBuilder( plugin );
+            const output = createBuilder(plugin);
             try {
               await output.build();
 

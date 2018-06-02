@@ -3,7 +3,7 @@ import { getDirectoryPath } from "../fs/path-utils";
 import {
   AbsolutePath,
   CompilerOptionsConfig,
-  TypeScriptConfig,
+  TypescriptConfig,
 } from "../interfaces";
 import createParseConfigHost from "./create-parse-config-host";
 import Input from "./input-io";
@@ -13,7 +13,7 @@ export default class ConfigParser {
 
   constructor(
     private projectPath: AbsolutePath,
-    private rawConfig: TypeScriptConfig | undefined,
+    private rawConfig: TypescriptConfig | undefined,
     private configFileName: string | undefined,
     private compilerOptions: CompilerOptionsConfig | undefined,
     workingPath: AbsolutePath,
