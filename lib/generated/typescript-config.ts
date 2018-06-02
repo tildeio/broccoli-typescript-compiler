@@ -35,6 +35,10 @@ export interface CompilerOptionsDefinition {
      */
     emitBOM?: boolean;
     /**
+     * Only emit '.d.ts' declaration files.
+     */
+    emitDeclarationOnly?: boolean;
+    /**
      * Emit a single file with source maps instead of having a separate file.
      */
     inlineSourceMap?: boolean;
@@ -55,29 +59,25 @@ export interface CompilerOptionsDefinition {
      */
     listFiles?: boolean;
     /**
-     * The locale to use to show error messages, e.g. en-us.
-     */
-    locale?: string;
-    /**
      * Specifies the location where debugger should locate map files instead of generated locations
      */
     mapRoot?: string;
     /**
-     * Specify module code generation: 'none', 'CommonJS', 'Amd', 'System', 'UMD', 'es2015' or 'esnext'.
+     * Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015' or 'esnext'.
      */
     module?:
-      | "commonjs"
-      | "amd"
-      | "umd"
-      | "system"
-      | "es6"
-      | "es2015"
-      | "esnext"
-      | "none";
+      | ("commonjs" | "amd" | "umd" | "system" | "es6" | "es2015" | "esnext" | "none")
+      | {
+          [k: string]: any;
+        };
     /**
      * Specifies the end of line sequence to be used when emitting files: 'CRLF' (dos) or 'LF' (unix).
      */
-    newLine?: "CRLF" | "LF";
+    newLine?:
+      | ("CRLF" | "LF")
+      | {
+          [k: string]: any;
+        };
     /**
      * Do not emit output.
      */
@@ -140,6 +140,10 @@ export interface CompilerOptionsDefinition {
      */
     preserveSymlinks?: boolean;
     /**
+     * Keep outdated console output in watch mode instead of clearing the screen.
+     */
+    preserveWatchOutput?: boolean;
+    /**
      * Stylize errors and messages using color and context (experimental).
      */
     pretty?: boolean;
@@ -176,10 +180,10 @@ export interface CompilerOptionsDefinition {
      */
     stripInternal?: boolean;
     /**
-     * Specify ECMAScript target version. Permitted values are 'es3', 'es5', 'es2015', 'es2016', 'es2017' or 'esnext'.
+     * Specify ECMAScript target version. Permitted values are 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018' or 'esnext'.
      */
     target?:
-      | ("es3" | "es5" | "es2015" | "es2016" | "es2017" | "esnext")
+      | ("es3" | "es5" | "es6" | "es2015" | "es2016" | "es2017" | "es2018" | "esnext")
       | {
           [k: string]: any;
         };
@@ -198,7 +202,11 @@ export interface CompilerOptionsDefinition {
     /**
      * Specifies module resolution strategy: 'node' (Node) or 'classic' (TypeScript pre 1.6) .
      */
-    moduleResolution?: string;
+    moduleResolution?:
+      | ("classic" | "node")
+      | {
+          [k: string]: any;
+        };
     /**
      * Do not report errors on unused labels.
      */
@@ -227,8 +235,18 @@ export interface CompilerOptionsDefinition {
      * Specify path mapping to be computed relative to baseUrl option.
      */
     paths?: {
-      [k: string]: any;
+      [k: string]: string[];
     };
+    /**
+     * List of TypeScript language server plugins to load. Requires TypeScript version 2.3 or later.
+     */
+    plugins?: {
+      /**
+       * Plugin name.
+       */
+      name?: string;
+      [k: string]: any;
+    }[];
     /**
      * Specify list of root directories to be used when resolving modules.
      */
@@ -262,6 +280,10 @@ export interface CompilerOptionsDefinition {
      */
     listEmittedFiles?: boolean;
     /**
+     * Disable size limit for JavaScript project. Requires TypeScript version 2.0 or later.
+     */
+    disableSizeLimit?: boolean;
+    /**
      * Specify library file to be included in the compilation. Requires TypeScript version 2.0 or later.
      */
     lib?: (
@@ -271,6 +293,7 @@ export interface CompilerOptionsDefinition {
       | "es7"
       | "es2016"
       | "es2017"
+      | "es2018"
       | "esnext"
       | "dom"
       | "dom.iterable"
@@ -288,6 +311,13 @@ export interface CompilerOptionsDefinition {
       | "es2016.array.include"
       | "es2017.object"
       | "es2017.sharedmemory"
+      | "es2017.string"
+      | "es2017.typedarrays"
+      | "es2017.intl"
+      | "es2018.promise"
+      | "es2018.regexp"
+      | "es2018.intl"
+      | "esnext.array"
       | "esnext.asynciterable")[];
     /**
      * Enable strict null checks. Requires TypeScript version 2.0 or later.
@@ -321,6 +351,30 @@ export interface CompilerOptionsDefinition {
      * Report errors in .js files. Requires TypeScript version 2.3 or later.
      */
     checkJs?: boolean;
+    /**
+     * Disable bivariant parameter checking for function types. Requires TypeScript version 2.6 or later.
+     */
+    strictFunctionTypes?: boolean;
+    /**
+     * Ensure non-undefined class properties are initialized in the constructor. Requires TypeScript version 2.7 or later.
+     */
+    strictPropertyInitialization?: boolean;
+    /**
+     * Emit '__importStar' and '__importDefault' helpers for runtime babel ecosystem compatibility and enable '--allowSyntheticDefaultImports' for typesystem compatibility. Requires TypeScript version 2.7 or later.
+     */
+    esModuleInterop?: boolean;
+    /**
+     * Resolve 'keyof' to string valued property names only (no numbers or symbols). Requires TypeScript version 2.9 or later.
+     */
+    keyofStringsOnly?: boolean;
+    /**
+     * Generates a sourcemap for each corresponding '.d.ts' file. Requires TypeScript version 2.9 or later.
+     */
+    declarationMap?: boolean;
+    /**
+     * Include modules imported with '.json' extension. Requires TypeScript version 2.9 or later.
+     */
+    resolveJsonModule?: boolean;
     [k: string]: any;
   };
   [k: string]: any;
