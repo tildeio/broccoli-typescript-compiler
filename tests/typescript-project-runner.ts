@@ -1,11 +1,16 @@
-import { createReadableDir, ReadableDir, Tree } from "broccoli-test-helper";
+import {
+  createReadableDir,
+  ReadableDir,
+  Tree,
+  TreeEntry
+} from "broccoli-test-helper";
 import * as fs from "fs";
 import * as path from "path";
 import * as ts from "typescript";
 import {
   CompilerOptionsConfig,
   normalizePath,
-  TypeScriptConfig,
+  TypeScriptConfig
 } from "../lib/index";
 
 export interface ProjectRunnerConfig {
@@ -40,16 +45,19 @@ export default class ProjectRunner {
   }
 
   public shouldSkip(basename: string, config: ProjectConfig) {
-    return basename === "invalidRootFile" ||
-       /^mapRootRelativePath/.test(basename) ||
-       /^sourceRootRelativePath/.test(basename) ||
-       (/^maprootUrl/.test(basename) && !/^maprootUrlsourcerootUrl/.test(basename)) ||
-       /^maprootUrlSubfolder/.test(basename) ||
-       /^referenceResolutionRelativePaths/.test(basename) ||
-        basename === "rootDirectoryWithSourceRoot" ||
-        !config.baselineCheck ||
-        config.resolveMapRoot ||
-        config.resolveSourceRoot;
+    return (
+      basename === "invalidRootFile" ||
+      /^mapRootRelativePath/.test(basename) ||
+      /^sourceRootRelativePath/.test(basename) ||
+      (/^maprootUrl/.test(basename) &&
+        !/^maprootUrlsourcerootUrl/.test(basename)) ||
+      /^maprootUrlSubfolder/.test(basename) ||
+      /^referenceResolutionRelativePaths/.test(basename) ||
+      basename === "rootDirectoryWithSourceRoot" ||
+      !config.baselineCheck ||
+      config.resolveMapRoot ||
+      config.resolveSourceRoot
+    );
   }
 }
 
@@ -58,8 +66,8 @@ export class Project {
   constructor(
     public rootDir: string,
     public basename: string,
-    public config: ProjectConfig) {
-  }
+    public config: ProjectConfig
+  ) {}
 
   public each(callback: (project: ProjectWithModule) => void) {
     callback(new ProjectWithModule(this, "amd"));
@@ -77,7 +85,7 @@ export class Project {
   get compilerOptions() {
     const { config } = this;
     const compilerOptions: CompilerOptionsConfig = {};
-    ts.optionDeclarations.forEach((opt) => {
+    ts.optionDeclarations.forEach(opt => {
       const name = opt.name;
       if (name in config) {
         compilerOptions[name] = config[name];
@@ -88,24 +96,24 @@ export class Project {
 }
 
 export class ProjectWithModule {
-  constructor(
-    public project: Project,
-    public module: string,
-  ) {}
+  constructor(public project: Project, public module: string) {}
 
   get baselineDir(): ReadableDir {
-    return createReadableDir(path.join(
-      this.project.rootDir,
-      "tests/baselines/reference/project",
-      this.project.basename,
-      this.module === "amd" ? "amd" : "node"));
+    return createReadableDir(
+      path.join(
+        this.project.rootDir,
+        "tests/baselines/reference/project",
+        this.project.basename,
+        this.module === "amd" ? "amd" : "node"
+      )
+    );
   }
 
   get compilerOptions(): CompilerOptionsConfig {
     return Object.assign(this.project.compilerOptions, {
       module: this.module,
       newLine: "CRLF",
-      typeRoots: [],
+      typeRoots: []
     });
   }
 
@@ -115,13 +123,13 @@ export class ProjectWithModule {
     const config: TypeScriptConfig = {
       buildPath: this.project.dir,
       compilerOptions: this.compilerOptions,
-      workingPath: this.project.dir,
+      workingPath: this.project.dir
     };
 
     if (inputFiles) {
       config.compilerOptions!.moduleResolution = "classic";
       config.tsconfig = {
-        files: inputFiles,
+        files: inputFiles
       };
     } else {
       config.projectPath = project.config.project;
@@ -157,15 +165,20 @@ export class Baseline {
 
 function processErrors(errors: any): string | undefined {
   if (typeof errors === "string") {
-    return errors
-      .toLowerCase()
-      .split(/^(?:!!!|====)/m)[0]
-      // the project runner in typescript loads the tsconfig
-      // in the runner itself, we don't so we need to remove
-      // message about adding a tsconfig may help
-      .replace(/^.*?adding a tsconfig\.json file will help organize projects.*?$/m, "")
-      .split(/(?:\r\n|\n)+/)
-      .join(ts.sys.newLine);
+    return (
+      errors
+        .toLowerCase()
+        .split(/^(?:!!!|====)/m)[0]
+        // the project runner in typescript loads the tsconfig
+        // in the runner itself, we don't so we need to remove
+        // message about adding a tsconfig may help
+        .replace(
+          /^.*?adding a tsconfig\.json file will help organize projects.*?$/m,
+          ""
+        )
+        .split(/(?:\r\n|\n)+/)
+        .join(ts.sys.newLine)
+    );
   }
 }
 
@@ -191,10 +204,12 @@ function cleanExpectedTree(baseline: Tree, emittedFiles?: string[]) {
       let src: Tree | string | null | undefined = normalized;
       let target: Tree | string | null | undefined = clean;
       for (const part of parts) {
-        if (typeof target !== "object" ||
-            target === null ||
-            typeof src !== "object" ||
-            src === null) {
+        if (
+          typeof target !== "object" ||
+          target === null ||
+          typeof src !== "object" ||
+          src === null
+        ) {
           continue;
         }
         if (part === "..") {
@@ -204,8 +219,13 @@ function cleanExpectedTree(baseline: Tree, emittedFiles?: string[]) {
           console.warn(emittedFile);
           break;
         }
-        target[part] = src[part];
-        src = src[part];
+        const value: TreeEntry | undefined = src[part];
+        if (typeof value === "string") {
+          target[part] = value;
+        } else if (target[part] === undefined) {
+          target[part] = {};
+        }
+        src = value;
         target = target[part];
       }
     }

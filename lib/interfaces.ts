@@ -22,7 +22,10 @@ export interface DiagnosticsHandler {
    *
    * Returns true if there are errors.
    */
-  check(diagnostics: ReadonlyArray<Diagnostic> | Diagnostic | undefined, throwOnError?: boolean): boolean;
+  check(
+    diagnostics: ReadonlyArray<Diagnostic> | Diagnostic | undefined,
+    throwOnError?: boolean
+  ): boolean;
 }
 
 export interface TypeScriptPluginOptions {

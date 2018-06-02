@@ -1,6 +1,11 @@
 import * as ts from "typescript";
 import { readFileResolution } from "../fs/file-utils";
-import { CanonicalPath, FileContent, PathResolver, Resolution } from "../interfaces";
+import {
+  CanonicalPath,
+  FileContent,
+  PathResolver,
+  Resolution,
+} from "../interfaces";
 
 const SharedRegistry = ts.createDocumentRegistry();
 
@@ -14,7 +19,10 @@ export default class SourceCache {
 
   private sourceFiles = new Map<CanonicalPath, VersionedSourceFile>();
 
-  constructor( private resolver: PathResolver, private options: ts.CompilerOptions) {
+  constructor(
+    private resolver: PathResolver,
+    private options: ts.CompilerOptions
+  ) {
     this.bucketKey = SharedRegistry.getKeyForCompilationSettings(options);
   }
 
@@ -32,7 +40,10 @@ export default class SourceCache {
     return this.getSourceFileByPath(fileName, resolution.canonicalPath);
   }
 
-  public getSourceFileByPath(fileName: string, path: CanonicalPath): ts.SourceFile | undefined {
+  public getSourceFileByPath(
+    fileName: string,
+    path: CanonicalPath
+  ): ts.SourceFile | undefined {
     const resolution = this.resolve(path);
     return this.getSourceFileByResolution(resolution, fileName, path);
   }
@@ -62,7 +73,7 @@ export default class SourceCache {
   private getSourceFileByResolution(
     resolution: Resolution,
     fileName: string,
-    path: CanonicalPath,
+    path: CanonicalPath
   ): ts.SourceFile | undefined {
     const content = readFileResolution(resolution);
     if (content) {
@@ -70,7 +81,11 @@ export default class SourceCache {
     }
   }
 
-  private getOrUpdateSourceFile(fileName: string, path: CanonicalPath, content: FileContent) {
+  private getOrUpdateSourceFile(
+    fileName: string,
+    path: CanonicalPath,
+    content: FileContent
+  ) {
     const existing = this.sourceFiles.get(path);
     if (existing) {
       return this.updateSourceFile(existing, fileName, path, content);
@@ -79,24 +94,45 @@ export default class SourceCache {
     }
   }
 
-  private updateSourceFile(existing: VersionedSourceFile, fileName: string, path: CanonicalPath, content: FileContent) {
+  private updateSourceFile(
+    existing: VersionedSourceFile,
+    fileName: string,
+    path: CanonicalPath,
+    content: FileContent
+  ) {
     const { version } = content;
     if (existing.version === version) {
       return existing.sourceFile;
     }
     const { options, bucketKey } = this;
     const sourceFile = SharedRegistry.updateDocumentWithKey(
-      fileName, path, options, bucketKey, snapshot(content.buffer), version);
+      fileName,
+      path,
+      options,
+      bucketKey,
+      snapshot(content.buffer),
+      version
+    );
     existing.sourceFile = sourceFile;
     existing.version = version;
     return sourceFile;
   }
 
-  private createSourceFile(fileName: string, path: CanonicalPath, content: FileContent) {
+  private createSourceFile(
+    fileName: string,
+    path: CanonicalPath,
+    content: FileContent
+  ) {
     const { options, bucketKey, sourceFiles } = this;
     const { buffer, version } = content;
     const sourceFile = SharedRegistry.acquireDocumentWithKey(
-        fileName, path, options, bucketKey, snapshot(buffer), version);
+      fileName,
+      path,
+      options,
+      bucketKey,
+      snapshot(buffer),
+      version
+    );
     sourceFiles.set(path, { sourceFile, version });
     return sourceFile;
   }

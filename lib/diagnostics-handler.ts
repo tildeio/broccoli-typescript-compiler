@@ -1,6 +1,15 @@
-import { Diagnostic, formatDiagnostics, FormatDiagnosticsHost, sys } from "typescript";
+import {
+  Diagnostic,
+  formatDiagnostics,
+  FormatDiagnosticsHost,
+  sys,
+} from "typescript";
 import { getCanonicalFileName } from "./fs/path-utils";
-import { AbsolutePath, DiagnosticsHandler, NormalizedOptions } from "./interfaces";
+import {
+  AbsolutePath,
+  DiagnosticsHandler,
+  NormalizedOptions,
+} from "./interfaces";
 
 export default class DiagnosticsHandlerImpl implements DiagnosticsHandler {
   private throwOnError: boolean;
@@ -16,7 +25,10 @@ export default class DiagnosticsHandlerImpl implements DiagnosticsHandler {
     this.write = write;
   }
 
-  public check(diagnostics: Diagnostic | Diagnostic[] | undefined, throwOnError?: boolean): boolean {
+  public check(
+    diagnostics: Diagnostic | Diagnostic[] | undefined,
+    throwOnError?: boolean
+  ): boolean {
     const normalized = normalize(diagnostics);
     if (normalized === undefined) {
       return false;
@@ -34,17 +46,21 @@ export default class DiagnosticsHandlerImpl implements DiagnosticsHandler {
   }
 }
 
-function normalize(diagnostics: Diagnostic | Diagnostic[] | undefined): Diagnostic[] | undefined {
+function normalize(
+  diagnostics: Diagnostic | Diagnostic[] | undefined
+): Diagnostic[] | undefined {
   if (diagnostics === undefined) {
     return undefined;
   }
   if (Array.isArray(diagnostics)) {
     return diagnostics.length === 0 ? undefined : diagnostics;
   }
-  return [ diagnostics ];
+  return [diagnostics];
 }
 
-function createFormatDiagnosticsHost(rootPath: AbsolutePath): FormatDiagnosticsHost {
+function createFormatDiagnosticsHost(
+  rootPath: AbsolutePath
+): FormatDiagnosticsHost {
   const newLine = sys.newLine;
 
   return {

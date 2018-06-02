@@ -1,6 +1,13 @@
 import { createHash } from "crypto";
 import { readdirSync, readFileSync, Stats, statSync } from "fs";
-import { AbsolutePath, CanonicalPath, DirEntries, FileContent, PathResolver, Resolution } from "../interfaces";
+import {
+  AbsolutePath,
+  CanonicalPath,
+  DirEntries,
+  FileContent,
+  PathResolver,
+  Resolution,
+} from "../interfaces";
 
 export function readFile(path: AbsolutePath): FileContent {
   const buffer = readFileSync(path);
@@ -34,7 +41,10 @@ export function stat(path: AbsolutePath): Stats | undefined {
   }
 }
 
-export function readdir(path: CanonicalPath, resolver: PathResolver): DirEntries {
+export function readdir(
+  path: CanonicalPath,
+  resolver: PathResolver
+): DirEntries {
   const prefix = path + "/";
   const files: string[] = [];
   const directories: string[] = [];

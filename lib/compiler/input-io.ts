@@ -1,7 +1,13 @@
 import { realpathSync } from "fs";
 import * as ts from "typescript";
 import DirectoryEntriesCache from "../cache/directory-entries-cache";
-import { AbsolutePath, CanonicalPath, DirEntries, PathResolver, Resolution } from "../interfaces";
+import {
+  AbsolutePath,
+  CanonicalPath,
+  DirEntries,
+  PathResolver,
+  Resolution,
+} from "../interfaces";
 
 export default class Input {
   private entriesCache: DirectoryEntriesCache;
@@ -31,7 +37,8 @@ export default class Input {
       if (resolution.isInput()) {
         directories = this.readdir(resolution.canonicalPathInInput).directories;
         if (resolution.isMerged()) {
-          for (const other in this.readdir(resolution.canonicalPath).directories) {
+          for (const other in this.readdir(resolution.canonicalPath)
+            .directories) {
             if (directories.indexOf(other) === -1) {
               directories.push(other);
             }

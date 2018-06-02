@@ -56,7 +56,10 @@ export namespace WalkSync {
 }
 
 export interface FSTree {
-  calculatePatch(next: FSTree, isUnchanged?: (a: WalkSync.Entry, b: WalkSync.Entry) => {}): FSTree.PatchOp[];
+  calculatePatch(
+    next: FSTree,
+    isUnchanged?: (a: WalkSync.Entry, b: WalkSync.Entry) => {}
+  ): FSTree.PatchOp[];
 }
 
 export namespace FSTree {
@@ -65,8 +68,11 @@ export namespace FSTree {
   export type PatchOp = [Op, string, WalkSync.Entry];
 
   export interface Static {
-    fromEntries(entries: WalkSync.Entry[], options?: {
-      sortAndExpand?: boolean,
-    }): FSTree;
+    fromEntries(
+      entries: WalkSync.Entry[],
+      options?: {
+        sortAndExpand?: boolean;
+      }
+    ): FSTree;
   }
 }

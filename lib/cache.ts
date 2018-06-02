@@ -4,8 +4,7 @@ export default class Cache<K, CK, V> {
   public hits = 0;
   public misses = 0;
   private store = new Map<CK, V>();
-  constructor(private delegate: CacheDelegate<K, CK, V>) {
-  }
+  constructor(private delegate: CacheDelegate<K, CK, V>) {}
 
   public get(key: K): V {
     const cacheKey = this.delegate.cacheKey(key);

@@ -5,9 +5,17 @@ import Input from "./compiler/input-io";
 import OutputPatcher from "./compiler/output-patcher";
 import PathResolver from "./compiler/path-resolver";
 import SourceCache from "./compiler/source-cache";
-import { normalizePath, relativePathWithin, toAbsolutePath } from "./fs/path-utils";
+import {
+  normalizePath,
+  relativePathWithin,
+  toAbsolutePath,
+} from "./fs/path-utils";
 import { heimdall } from "./helpers";
-import { AbsolutePath, DiagnosticsHandler, NormalizedOptions } from "./interfaces";
+import {
+  AbsolutePath,
+  DiagnosticsHandler,
+  NormalizedOptions,
+} from "./interfaces";
 
 export default class Compiler {
   private resolver: PathResolver;
@@ -20,17 +28,25 @@ export default class Compiler {
   private output: OutputPatcher;
   private program: ts.Program | undefined;
 
-  constructor(public inputPath: AbsolutePath,
-              public outputPath: AbsolutePath,
-              public options: NormalizedOptions,
-              private diagnosticsHandler: DiagnosticsHandler) {
-    const workingPath = this.workingPath = options.workingPath;
-    const rootPath = this.rootPath = options.rootPath;
+  constructor(
+    public inputPath: AbsolutePath,
+    public outputPath: AbsolutePath,
+    public options: NormalizedOptions,
+    private diagnosticsHandler: DiagnosticsHandler
+  ) {
+    const workingPath = (this.workingPath = options.workingPath);
+    const rootPath = (this.rootPath = options.rootPath);
     this.buildPath = options.buildPath;
-    const resolver = this.resolver = new PathResolver(rootPath, inputPath);
-    const input = this.input = new Input(resolver);
-    this.configParser = new ConfigParser(options.projectPath,
-      options.rawConfig, options.configFileName, options.compilerOptions, workingPath, input);
+    const resolver = (this.resolver = new PathResolver(rootPath, inputPath));
+    const input = (this.input = new Input(resolver));
+    this.configParser = new ConfigParser(
+      options.projectPath,
+      options.rawConfig,
+      options.configFileName,
+      options.compilerOptions,
+      workingPath,
+      input
+    );
     this.output = new OutputPatcher(outputPath);
   }
 
@@ -69,13 +85,26 @@ export default class Compiler {
     return sourceCache;
   }
 
-  protected createProgram(config: ts.ParsedCommandLine, sourceCache: SourceCache): ts.Program {
+  protected createProgram(
+    config: ts.ParsedCommandLine,
+    sourceCache: SourceCache
+  ): ts.Program {
     const token = heimdall.start("TypeScript:createProgram");
 
-    const host = createCompilerHost(this.workingPath, this.input, sourceCache, config.options);
+    const host = createCompilerHost(
+      this.workingPath,
+      this.input,
+      sourceCache,
+      config.options
+    );
 
     const oldProgram = this.program;
-    const program = ts.createProgram(config.fileNames, config.options, host, oldProgram);
+    const program = ts.createProgram(
+      config.fileNames,
+      config.options,
+      host,
+      oldProgram
+    );
     this.program = program;
 
     heimdall.stop(token);
@@ -104,14 +133,20 @@ export default class Compiler {
     const token = heimdall.start("TypeScript:emitProgram");
     const { output } = this;
 
-    const emitResult = program.emit(undefined, (fileName: string, data: string) => {
-      /* tslint:disable:no-console */
-      // the fileName is absolute but not normalized if outDir is not normalized
-      const relativePath = relativePathWithin(buildPath, toAbsolutePath(fileName, this.workingPath));
-      if (relativePath) {
-        output.add(relativePath, data);
+    const emitResult = program.emit(
+      undefined,
+      (fileName: string, data: string) => {
+        /* tslint:disable:no-console */
+        // the fileName is absolute but not normalized if outDir is not normalized
+        const relativePath = relativePathWithin(
+          buildPath,
+          toAbsolutePath(fileName, this.workingPath)
+        );
+        if (relativePath) {
+          output.add(relativePath, data);
+        }
       }
-    });
+    );
     heimdall.stop(token);
     this.diagnosticsHandler.check(emitResult.diagnostics);
   }

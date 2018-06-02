@@ -10,7 +10,9 @@ export const getCanonicalFileName = ts.sys.useCaseSensitiveFileNames
   ? (fileName: string) => fileName
   : (fileName: string) => fileName.toLowerCase();
 
-export const defaultLibLocation = ts.getDirectoryPath(toCanonicalPath(ts.sys.getExecutingFilePath()));
+export const defaultLibLocation = ts.getDirectoryPath(
+  toCanonicalPath(ts.sys.getExecutingFilePath())
+);
 
 export function normalizePath(path: string) {
   if (path.length === 0) {
@@ -20,16 +22,23 @@ export function normalizePath(path: string) {
 }
 
 export function isWithin(rootPath: AbsolutePath, path: AbsolutePath) {
-  return path.length > rootPath.length &&
-         path.lastIndexOf(rootPath, 0) === 0 &&
-         path.charCodeAt(rootPath.length) === CharCode.Slash;
+  return (
+    path.length > rootPath.length &&
+    path.lastIndexOf(rootPath, 0) === 0 &&
+    path.charCodeAt(rootPath.length) === CharCode.Slash
+  );
 }
 
-export function relativePathWithin(root: AbsolutePath, path: AbsolutePath): string | undefined {
+export function relativePathWithin(
+  root: AbsolutePath,
+  path: AbsolutePath
+): string | undefined {
   let relativePath: string | undefined;
-  if (path.length > root.length &&
-      path.lastIndexOf(root, 0) === 0 &&
-      path.charCodeAt(root.length) === CharCode.Slash) {
+  if (
+    path.length > root.length &&
+    path.lastIndexOf(root, 0) === 0 &&
+    path.charCodeAt(root.length) === CharCode.Slash
+  ) {
     relativePath = path.substring(root.length + 1);
   } else if (path === root) {
     relativePath = "";
@@ -37,21 +46,29 @@ export function relativePathWithin(root: AbsolutePath, path: AbsolutePath): stri
   return relativePath;
 }
 
-export function toCanonicalPath(fileName: string, basePath?: AbsolutePath | CanonicalPath): CanonicalPath {
+export function toCanonicalPath(
+  fileName: string,
+  basePath?: AbsolutePath | CanonicalPath
+): CanonicalPath {
   const p = ts.toPath(
     fileName,
-    basePath === undefined ?
-      currentDirectory() : basePath, getCanonicalFileName);
+    basePath === undefined ? currentDirectory() : basePath,
+    getCanonicalFileName
+  );
   return trimTrailingSlash(p);
 }
 
-export function toAbsolutePath(fileName: string, basePath?: AbsolutePath): AbsolutePath {
+export function toAbsolutePath(
+  fileName: string,
+  basePath?: AbsolutePath
+): AbsolutePath {
   const p = ts.toPath(
     fileName,
-    basePath === undefined ?
-      currentDirectory() : basePath, (name) => name);
+    basePath === undefined ? currentDirectory() : basePath,
+    name => name
+  );
 
-  return trimTrailingSlash(p) as string as AbsolutePath;
+  return (trimTrailingSlash(p) as string) as AbsolutePath;
 }
 
 export { getDirectoryPath } from "typescript";
@@ -76,5 +93,9 @@ declare module "typescript" {
   export function getDirectoryPath(path: string): string;
 
   export function normalizePath(path: string): string;
-  export function toPath(fileName: string, basePath: string, getCanonicalFileName: (path: string) => string): ts.Path;
+  export function toPath(
+    fileName: string,
+    basePath: string,
+    getCanonicalFileName: (path: string) => string
+  ): ts.Path;
 }

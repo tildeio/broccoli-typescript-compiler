@@ -1,7 +1,15 @@
 import { AbsolutePath, PathInfo } from "../interfaces";
-import { relativePathWithin, toAbsolutePath, toCanonicalPath } from "./path-utils";
+import {
+  relativePathWithin,
+  toAbsolutePath,
+  toCanonicalPath,
+} from "./path-utils";
 
-export default function parsePath(rootPath: AbsolutePath, inputPath: AbsolutePath, rawPath: string): PathInfo {
+export default function parsePath(
+  rootPath: AbsolutePath,
+  inputPath: AbsolutePath,
+  rawPath: string
+): PathInfo {
   let path = toAbsolutePath(rawPath, rootPath);
   let pathInInput: AbsolutePath | undefined;
   let relativePath = relativePathWithin(rootPath, path);

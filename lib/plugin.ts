@@ -5,7 +5,11 @@ import { BroccoliPlugin, heimdall } from "./helpers";
 import { NormalizedOptions, TypeScriptPluginOptions } from "./interfaces";
 import normalizeOptions from "./normalize-options";
 
-export { TypeScriptPluginOptions, TypeScriptConfig, CompilerOptionsConfig } from "./interfaces";
+export {
+  TypeScriptPluginOptions,
+  TypeScriptConfig,
+  CompilerOptionsConfig,
+} from "./interfaces";
 
 /**
  * Returns a Broccoli plugin instance that compiles
@@ -37,7 +41,7 @@ export class TypeScriptPlugin extends BroccoliPlugin {
   private options: NormalizedOptions;
 
   constructor(inputNode: any, options?: TypeScriptPluginOptions) {
-    super([ inputNode ], {
+    super([inputNode], {
       annotation: options && options.annotation,
       name: "broccoli-typescript-compiler",
       persistentOutput: true,
@@ -52,10 +56,10 @@ export class TypeScriptPlugin extends BroccoliPlugin {
     let compiler = this.compiler;
     if (!compiler) {
       compiler = this.compiler = new Compiler(
-        toAbsolutePath( this.inputPaths[0] ),
-        toAbsolutePath( this.outputPath ),
+        toAbsolutePath(this.inputPaths[0]),
+        toAbsolutePath(this.outputPath),
         this.options,
-        this.diagnosticHandler,
+        this.diagnosticHandler
       );
     }
     compiler.compile();

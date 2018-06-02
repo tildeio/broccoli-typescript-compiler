@@ -1,20 +1,37 @@
+import { isWithin, normalizePath, toAbsolutePath } from "./fs/path-utils";
 import {
-  isWithin,
-  normalizePath,
-  toAbsolutePath,
-} from "./fs/path-utils";
-import { CompilerOptionsConfig, NormalizedOptions, TypeScriptPluginOptions } from "./interfaces";
+  CompilerOptionsConfig,
+  NormalizedOptions,
+  TypeScriptPluginOptions,
+} from "./interfaces";
 
-export default function normalizeOptions(options: TypeScriptPluginOptions): NormalizedOptions {
-  const workingPath = toAbsolutePath(options.workingPath === undefined ? process.cwd() : options.workingPath);
-  const rootPath = options.rootPath === undefined ? workingPath : toAbsolutePath(options.rootPath, workingPath);
-  const projectPath = options.projectPath === undefined ? rootPath : toAbsolutePath(options.projectPath, workingPath);
-  const buildPath = options.buildPath === undefined ? undefined : toAbsolutePath(options.buildPath, workingPath);
+export default function normalizeOptions(
+  options: TypeScriptPluginOptions
+): NormalizedOptions {
+  const workingPath = toAbsolutePath(
+    options.workingPath === undefined ? process.cwd() : options.workingPath
+  );
+  const rootPath =
+    options.rootPath === undefined
+      ? workingPath
+      : toAbsolutePath(options.rootPath, workingPath);
+  const projectPath =
+    options.projectPath === undefined
+      ? rootPath
+      : toAbsolutePath(options.projectPath, workingPath);
+  const buildPath =
+    options.buildPath === undefined
+      ? undefined
+      : toAbsolutePath(options.buildPath, workingPath);
   const tsconfig = options.tsconfig;
 
-  if (buildPath !== undefined &&
-      !(rootPath === buildPath || isWithin(rootPath, buildPath))) {
-    throw new Error(`buildPath "${buildPath}" must be at or within rootPath "${rootPath}"`);
+  if (
+    buildPath !== undefined &&
+    !(rootPath === buildPath || isWithin(rootPath, buildPath))
+  ) {
+    throw new Error(
+      `buildPath "${buildPath}" must be at or within rootPath "${rootPath}"`
+    );
   }
 
   let configFileName: string | undefined;

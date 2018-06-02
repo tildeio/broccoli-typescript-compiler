@@ -21,7 +21,9 @@ export default class OutputPatcher {
 
   // relativePath should be without leading '/' and use forward slashes
   public add(relativePath: string, content: string): void {
-    this.entries.push(new Entry(this.outputPath, relativePath, md5Hex(content)));
+    this.entries.push(
+      new Entry(this.outputPath, relativePath, md5Hex(content))
+    );
     this.contents.set(relativePath, content);
   }
 
@@ -49,7 +51,7 @@ export default class OutputPatcher {
       lastTree = FSTree.fromEntries(walkSync.entries(outputPath));
     }
     const patch = lastTree.calculatePatch(nextTree, isUnchanged);
-    patch.forEach((change) => {
+    patch.forEach(change => {
       const op = change[0];
       const path = change[1];
       const entry = change[2];
@@ -69,7 +71,8 @@ export default class OutputPatcher {
         case "change":
           fs.writeFileSync(entry.fullPath, contents.get(path));
           break;
-        default: throw new Error(`unrecognized case ${op}`);
+        default:
+          throw new Error(`unrecognized case ${op}`);
       }
     });
     return nextTree;
@@ -83,7 +86,11 @@ class Entry implements WalkSync.Entry {
   public size: number = 0;
   public mtime: Date = new Date();
 
-  constructor(public basePath: string, public relativePath: string, public checksum: string) {
+  constructor(
+    public basePath: string,
+    public relativePath: string,
+    public checksum: string
+  ) {
     this.fullPath = basePath + "/" + relativePath;
     this.checksum = checksum;
   }

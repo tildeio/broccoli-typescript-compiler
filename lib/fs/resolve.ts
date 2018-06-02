@@ -38,10 +38,10 @@ export default function resolve(pathInfo: PathInfo): Resolution {
 }
 
 const enum ResolutionFlags {
-  None   = 0,
-  File   = 1 << 0,
-  Dir    = 1 << 1,
-  Input  = 1 << 2,
+  None = 0,
+  File = 1 << 0,
+  Dir = 1 << 1,
+  Input = 1 << 2,
   Merge = 1 << 3,
   InputDir = Dir | Input,
 }
@@ -57,7 +57,7 @@ class ResolutionImpl implements Resolution {
     pathInfo: PathInfo,
     public stats: Stats | undefined,
     public otherStats: Stats | undefined,
-    private flags: ResolutionFlags,
+    private flags: ResolutionFlags
   ) {
     this.canonicalPath = pathInfo.canonicalPath;
     this.canonicalPathInInput = pathInfo.canonicalPathInInput;

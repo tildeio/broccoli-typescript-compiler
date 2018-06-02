@@ -9,7 +9,10 @@ const MergeTrees: any = require("broccoli-merge-trees");
  * Preserves the filter aspect of compiling only .ts
  * and passing through all other files.
  */
-export default function filterLike(inputNode: any, options?: TypeScriptPluginOptions) {
+export default function filterLike(
+  inputNode: any,
+  options?: TypeScriptPluginOptions
+) {
   const passthrough = new Funnel(inputNode, {
     annotation: "TypeScript passthrough",
     exclude: ["**/*.ts"],
@@ -18,10 +21,7 @@ export default function filterLike(inputNode: any, options?: TypeScriptPluginOpt
     annotation: "TypeScript input",
     include: ["**/*.ts"],
   });
-  return new MergeTrees([
-    passthrough,
-    new TypeScriptPlugin(filter, options),
-  ], {
+  return new MergeTrees([passthrough, new TypeScriptPlugin(filter, options)], {
     annotation: "TypeScript passthrough + output",
     overwrite: true,
   });
