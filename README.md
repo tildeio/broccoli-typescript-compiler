@@ -15,7 +15,7 @@ $ npm install broccoli-typescript-compiler --save-dev
 ## How to use?
 
 ```js
-var typescript = require('broccoli-typescript-compiler').typescript;
+var typescript = require("broccoli-typescript-compiler").default;
 var cjsTree = typescript(inputTree, {
   tsconfig: {
     compilerOptions: {
@@ -26,23 +26,21 @@ var cjsTree = typescript(inputTree, {
       rootDir: "src",
       outDir: "dist",
       sourceMap: true,
-      declaration: true
+      declaration: true,
     },
-    files: [
-      "src/index.ts",
-      "src/tests/**"
-    ]
+    files: ["src/index.ts", "src/tests/**"],
   },
-  annotation: "compile program"
+  annotation: "compile program",
 });
 ```
 
 ### Config Options:
 
 `tsconfig:`
-* default (when ommited): will find the nearest `tsconfig` relative to where the BroccoliTypeScriptCompiler is invoked.
-* as string: a absolute path to a config tsconfig file
-* as config object: See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+
+- default (when ommited): will find the nearest `tsconfig` relative to where the BroccoliTypeScriptCompiler is invoked.
+- as string: a absolute path to a config tsconfig file
+- as config object: See: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
 
 `annotation:`
 
@@ -50,15 +48,30 @@ An optional string, which when provide should be a descriptive annotation. Usefu
 
 ### Ways to use:
 
-via the broccoli plugin subclass
+## via the broccoli plugin subclass
+
+This outputs only the emitted files from the compiled program.
 
 ```js
-var TypeScriptPlugin = require('broccoli-typescript-compiler').TypeScriptPlugin;
+const { TypescriptCompiler } = require("broccoli-typescript-compiler");
+let compiled = new TypescriptCompiler(input, options);
 ```
 
-via a function:
+## via function
+
+This outputs only the emitted files from the compiled program.
 
 ```js
-var filterTypeScript = require('broccoli-typescript-compiler').filterTypeScript;
-var scriptTree = filterTypeScript(inputTree);
+const { default: typescript } = require("broccoli-typescript-compiler");
+
+let compiled = typescript(src, options);
+```
+
+## filter function (passthrough non .ts files)
+
+This selects only ts files from the input to compile and merges emitted files with the non ts files in the input.
+
+```js
+const { filterTypescript } = require("broccoli-typescript-compiler");
+let output = filterTypescript(input, options);
 ```

@@ -1,18 +1,17 @@
 import { createBuilder, createTempDir } from "broccoli-test-helper";
-import { typescript } from "../lib/index";
+import typescript from "broccoli-typescript-compiler";
 
 // tslint:disable-next-line:only-arrow-functions
 QUnit.module("plugin-rebuild", function() {
-  QUnit.test("compiles basic typescript", async (assert) => {
+  QUnit.test("compiles basic typescript", async assert => {
     const input = await createTempDir();
     try {
-
       input.write({
         "a.ts": `export default class A {}`,
         "index.ts": `export { default as A } from "./a";`,
       });
 
-      const plugin = typescript( input.path(), {
+      const plugin = typescript(input.path(), {
         tsconfig: {
           compilerOptions: {
             module: "commonjs",
@@ -20,21 +19,20 @@ QUnit.module("plugin-rebuild", function() {
             newLine: "LF",
             target: "es2015",
           },
-          files: [ "index.ts" ],
+          files: ["index.ts"],
         },
       });
 
-      const output = createBuilder( plugin );
+      const output = createBuilder(plugin);
       try {
-
         await output.build();
 
-        assert.deepEqual( output.changes(), {
-          "a.js":     "create",
+        assert.deepEqual(output.changes(), {
+          "a.js": "create",
           "index.js": "create",
         });
 
-        assert.deepEqual( output.read(), {
+        assert.deepEqual(output.read(), {
           "a.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class A {
@@ -56,12 +54,12 @@ export { default as B } from "./b"`,
 
         await output.build();
 
-        assert.deepEqual( output.changes(), {
+        assert.deepEqual(output.changes(), {
           "b.js": "create",
           "index.js": "change",
         });
 
-        assert.deepEqual( output.read(), {
+        assert.deepEqual(output.read(), {
           "a.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class A {
@@ -85,7 +83,7 @@ exports.B = b_1.default;
 
         await output.build();
 
-        assert.deepEqual( output.changes(), {} );
+        assert.deepEqual(output.changes(), {});
 
         input.write({
           "b.ts": null,
@@ -94,25 +92,24 @@ exports.B = b_1.default;
 
         await output.build();
 
-        assert.deepEqual( output.changes(), {
+        assert.deepEqual(output.changes(), {
           "b.js": "unlink",
           "index.js": "change",
         });
 
-        assert.deepEqual( output.read(), {
+        assert.deepEqual(output.read(), {
           "a.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class A {
 }
 exports.default = A;
 `,
-        "index.js": `"use strict";
+          "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
 exports.A = a_1.default;
 `,
         });
-
       } finally {
         await output.dispose();
       }
@@ -121,7 +118,7 @@ exports.A = a_1.default;
     }
   });
 
-  QUnit.test("handles missing files", async (assert) => {
+  QUnit.test("handles missing files", async assert => {
     const input = await createTempDir();
     try {
       input.write({
@@ -141,14 +138,13 @@ exports.A = a_1.default;
       });
 
       let error = "";
-      plugin.setDiagnosticWriter((msg) => error += msg);
+      plugin.setDiagnosticWriter(msg => (error += msg));
 
       const output = createBuilder(plugin);
       try {
-
         await output.build();
 
-        assert.deepEqual( output.read(), {
+        assert.deepEqual(output.read(), {
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
@@ -156,8 +152,10 @@ exports.A = a_1.default;
 `,
         });
 
-        assert.equal(error.trim(), "index.ts(1,30): error TS2307: Cannot find module './a'.");
-
+        assert.equal(
+          error.trim(),
+          "index.ts(1,30): error TS2307: Cannot find module './a'."
+        );
       } finally {
         await output.dispose();
       }

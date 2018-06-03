@@ -1,4 +1,4 @@
 [submodule "vendor/typescript"]
 	path = vendor/typescript
 	url = https://github.com/Microsoft/TypeScript.git
-	branch = release-2.8
+	branch = release-2.9
