@@ -30,6 +30,7 @@ var cjsTree = typescript(inputTree, {
     },
     files: ["src/index.ts", "src/tests/**"],
   },
+  throwOnError: false,
   annotation: "compile program",
 });
 ```
@@ -45,6 +46,12 @@ var cjsTree = typescript(inputTree, {
 `annotation:`
 
 An optional string, which when provide should be a descriptive annotation. Useful for debugging, to tell multiple instances of the same plugin apart.
+
+`throwOnError`
+
+An optional boolean, defaulting to `false`. If set to `true`, will cause the build to break on errors.
+
+*note: if `process.env.NODE_ENV === 'production'` is true, `throwOnError` will default to `true`.*
 
 ### Ways to use:
 
