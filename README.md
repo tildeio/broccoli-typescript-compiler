@@ -15,7 +15,7 @@ $ npm install broccoli-typescript-compiler --save-dev
 ## How to use?
 
 ```js
-var typescript = require("broccoli-typescript-compiler").default;
+var typescript = require("broccoli-typescript-compiler").typescript;
 var cjsTree = typescript(inputTree, {
   tsconfig: {
     compilerOptions: {
@@ -69,7 +69,7 @@ let compiled = new TypescriptCompiler(input, options);
 This outputs only the emitted files from the compiled program.
 
 ```js
-const { default: typescript } = require("broccoli-typescript-compiler");
+const { typescript } = require("broccoli-typescript-compiler");
 
 let compiled = typescript(src, options);
 ```
