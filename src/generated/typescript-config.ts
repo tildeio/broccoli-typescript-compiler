@@ -7,7 +7,7 @@
 
 export type TypescriptConfig = CompilerOptionsDefinition &
   ExtendsDefinition &
-  (FilesDefinition | ExcludeDefinition | IncludeDefinition);
+  (FilesDefinition | ExcludeDefinition | IncludeDefinition | ReferencesDefinition);
 
 export interface CompilerOptionsDefinition {
   /**
@@ -18,6 +18,10 @@ export interface CompilerOptionsDefinition {
      * The character set of the input files.
      */
     charset?: string;
+    /**
+     * Enables building for project references.
+     */
+    composite?: boolean;
     /**
      * Generates corresponding d.ts files.
      */
@@ -268,6 +272,10 @@ export interface CompilerOptionsDefinition {
      */
     allowJs?: boolean;
     /**
+     * Do not truncate error messages.
+     */
+    noErrorTruncation?: boolean;
+    /**
      * Allow default imports from modules with no default export. This does not affect code emit, just typechecking.
      */
     allowSyntheticDefaultImports?: boolean;
@@ -405,5 +413,18 @@ export interface IncludeDefinition {
    * Specifies a list of glob patterns that match files to be included in compilation. If no 'files' or 'include' property is present in a tsconfig.json, the compiler defaults to including all files in the containing directory and subdirectories except those specified by 'exclude'. Requires TypeScript version 2.0 or later.
    */
   include?: string[];
+  [k: string]: any;
+}
+export interface ReferencesDefinition {
+  /**
+   * Referenced projects. Requires TypeScript version 3.0 or later.
+   */
+  references?: {
+    /**
+     * Path to referenced tsconfig or to folder containing tsconfig.
+     */
+    path?: string;
+    [k: string]: any;
+  }[];
   [k: string]: any;
 }
