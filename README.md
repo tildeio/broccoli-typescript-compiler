@@ -82,3 +82,13 @@ This selects only ts files from the input to compile and merges emitted files wi
 const { filterTypescript } = require("broccoli-typescript-compiler");
 let output = filterTypescript(input, options);
 ```
+
+### Developemnt
+
+## How to upgrade `typescript`
+
+1. Update `typescript` in `package.json`
+2. Run `yarn run generate-tsconfig-interface`
+3. Update `vendor/typescript`. `cd vendor/typescript && git fetch --tags && git checkout v[new-version-of-typescript]`
+4. Commit all of the above changes
+5. Run `yarn test`. There may be some changes needed to the tests to accomidate changes in TypeScript.
