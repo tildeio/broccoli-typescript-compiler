@@ -83,9 +83,9 @@ const { filterTypescript } = require("broccoli-typescript-compiler");
 let output = filterTypescript(input, options);
 ```
 
-### Developemnt
+## Development
 
-## How to upgrade `typescript`
+### How to upgrade `typescript`
 
 1. Update `typescript` in `package.json`
 2. Run `yarn run generate-tsconfig-interface`
