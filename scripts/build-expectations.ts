@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as mkdirp from "mkdirp";
 import * as path from "path";
 import * as rimraf from "rimraf";
 import * as ts from "typescript";
@@ -22,7 +21,7 @@ const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
   getNewLine,
 };
 
-export function formatDiagnostics(diagnostics: ts.Diagnostic[]): string {
+export function formatDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>): string {
   return ts.formatDiagnostics(diagnostics, formatDiagnosticsHost);
 }
 

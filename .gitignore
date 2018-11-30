@@ -3,3 +3,4 @@
 /fixtures/tmp/
 /dist/
 /scripts/*.js
+yarn-error.log
