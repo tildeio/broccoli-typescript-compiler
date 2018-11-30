@@ -354,6 +354,10 @@ export interface CompilerOptionsDefinition {
      */
     strict?: boolean;
     /**
+     * Enable stricter checking of of the `bind`, `call`, and `apply` methods on functions.
+     */
+    strictBindCallApply?: boolean;
+    /**
      * Provide full support for iterables in 'for-of', spread, and destructuring when targeting 'ES5' or 'ES3'. Requires TypeScript version 2.3 or later.
      */
     downlevelIteration?: boolean;
