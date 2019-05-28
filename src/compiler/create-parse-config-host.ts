@@ -11,6 +11,14 @@ export default function createParseConfigHost(
     return input.getFileSystemEntries(path);
   }
 
+  function realpath(path: string): string  {
+    try {
+      return input.realpath(path) || path;
+    } catch {
+      return path;
+    }
+  }
+
   function readDirectory(
     rootDir: string,
     extensions: ReadonlyArray<string>,
@@ -26,7 +34,8 @@ export default function createParseConfigHost(
       useCaseSensitiveFileNames,
       workingPath,
       depth,
-      getFileSystemEntries
+      getFileSystemEntries,
+      realpath
     );
   }
 
@@ -60,6 +69,7 @@ declare module "typescript" {
     useCaseSensitiveFileNames: boolean,
     currentDirectory: string,
     depth: number | undefined,
-    getFileSystemEntries: (path: string) => FileSystemEntries
+    getFileSystemEntries: (path: string) => FileSystemEntries,
+    realpath: (path: string) => string,
   ): string[];
 }
