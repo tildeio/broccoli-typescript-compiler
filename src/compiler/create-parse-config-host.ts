@@ -12,11 +12,7 @@ export default function createParseConfigHost(
   }
 
   function realpath(path: string): string  {
-    try {
-      return input.realpath(path) || path;
-    } catch {
-      return path;
-    }
+    return input.realpath(path) || path;
   }
 
   function readDirectory(
