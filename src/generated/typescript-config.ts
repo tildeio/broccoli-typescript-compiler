@@ -43,6 +43,14 @@ export interface CompilerOptionsDefinition {
      */
     emitDeclarationOnly?: boolean;
     /**
+     * Enable incremental compilation.
+     */
+    incremental?: boolean;
+    /**
+     * Specify file to store incremental compilation information.
+     */
+    tsBuildInfoFile?: string;
+    /**
      * Emit a single file with source maps instead of having a separate file.
      */
     inlineSourceMap?: boolean;
@@ -184,10 +192,10 @@ export interface CompilerOptionsDefinition {
      */
     stripInternal?: boolean;
     /**
-     * Specify ECMAScript target version. Permitted values are 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018' or 'esnext'.
+     * Specify ECMAScript target version. Permitted values are 'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020' or 'esnext'.
      */
     target?:
-      | ("es3" | "es5" | "es6" | "es2015" | "es2016" | "es2017" | "es2018" | "esnext")
+      | ("es3" | "es5" | "es6" | "es2015" | "es2016" | "es2017" | "es2018" | "es2019" | "es2020" | "esnext")
       | {
           [k: string]: any;
         };
@@ -302,10 +310,13 @@ export interface CompilerOptionsDefinition {
       | "es2016"
       | "es2017"
       | "es2018"
+      | "es2019"
+      | "es2020"
       | "esnext"
       | "dom"
       | "dom.iterable"
       | "webworker"
+      | "webworker.importscripts"
       | "scripthost"
       | "es2015.core"
       | "es2015.collection"
@@ -322,11 +333,19 @@ export interface CompilerOptionsDefinition {
       | "es2017.sharedmemory"
       | "es2017.string"
       | "es2017.typedarrays"
+      | "es2018.asynciterable"
       | "es2018.intl"
       | "es2018.promise"
       | "es2018.regexp"
+      | "es2019.array"
+      | "es2019.object"
+      | "es2019.string"
+      | "es2019.symbol"
+      | "es2020.string"
+      | "es2020.symbol.wellknown"
       | "esnext.asynciterable"
       | "esnext.array"
+      | "esnext.bigint"
       | "esnext.intl"
       | "esnext.symbol")[];
     /**
@@ -377,6 +396,10 @@ export interface CompilerOptionsDefinition {
      * Emit '__importStar' and '__importDefault' helpers for runtime babel ecosystem compatibility and enable '--allowSyntheticDefaultImports' for typesystem compatibility. Requires TypeScript version 2.7 or later.
      */
     esModuleInterop?: boolean;
+    /**
+     * Allow accessing UMD globals from modules.
+     */
+    allowUmdGlobalAccess?: boolean;
     /**
      * Resolve 'keyof' to string valued property names only (no numbers or symbols). Requires TypeScript version 2.9 or later.
      */
