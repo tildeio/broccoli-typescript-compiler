@@ -19,7 +19,7 @@ import normalizeOptions from "./normalize-options";
  * It will only emit based on the root source files
  * you give it, by default it will look for all .ts
  * files, but if you specify a files or filesGlob
- * it will these as entry points and only compile
+ * it will use these as entry points and only compile
  * the files and files they reference from the input.
  */
 export function typescript(
