@@ -1,5 +1,5 @@
 import {
-  createReadableDir,
+  fromDir,
   ReadableDir,
   Tree,
   TreeEntry,
@@ -99,7 +99,7 @@ export class ProjectWithModule {
   constructor(public project: Project, public module: string) {}
 
   get baselineDir(): ReadableDir {
-    return createReadableDir(
+    return fromDir(
       path.join(
         this.project.rootDir,
         "tests/baselines/reference/project",

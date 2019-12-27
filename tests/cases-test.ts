@@ -1,14 +1,14 @@
 import {
   createBuilder,
-  createReadableDir,
+  fromDir,
   createTempDir,
 } from "broccoli-test-helper";
 import typescript from "broccoli-typescript-compiler";
 import * as fs from "fs";
 
-const testCasesDir = createReadableDir("tests/cases");
+const testCasesDir = fromDir("tests/cases");
 const testCases = fs.readdirSync(testCasesDir.path());
-const expectationsDir = createReadableDir("tests/expectations");
+const expectationsDir = fromDir("tests/expectations");
 
 // tslint:disable-next-line:only-arrow-functions
 QUnit.module("plugin-cases", function() {
