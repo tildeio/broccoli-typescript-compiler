@@ -2,9 +2,10 @@ import { createBuilder, createTempDir, fromDir } from "broccoli-test-helper";
 import typescript from "broccoli-typescript-compiler";
 import * as fs from "fs";
 
-const testCasesDir = fromDir("tests/cases");
+// tests are output to dist/tests
+const testCasesDir = fromDir(`${__dirname}/../../tests/cases`);
 const testCases = fs.readdirSync(testCasesDir.path());
-const expectationsDir = fromDir("tests/expectations");
+const expectationsDir = fromDir(`${__dirname}/../../tests/expectations`);
 
 // tslint:disable-next-line:only-arrow-functions
 QUnit.module("plugin-cases", function() {

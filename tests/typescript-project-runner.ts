@@ -168,7 +168,7 @@ function processErrors(errors: any): string | undefined {
         // in the runner itself, we don't so we need to remove
         // message about adding a tsconfig may help
         .replace(
-          /^.*?adding a tsconfig\.json file will help organize projects.*?$/m,
+          /^.*?adding a tsconfig\.json file will help organize projects.*?$/gm,
           ""
         )
         .split(/(?:\r\n|\n)+/)
