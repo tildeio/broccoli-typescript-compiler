@@ -1,9 +1,4 @@
-import {
-  createReadableDir,
-  ReadableDir,
-  Tree,
-  TreeEntry,
-} from "broccoli-test-helper";
+import { fromDir, ReadableDir, Tree, TreeEntry } from "broccoli-test-helper";
 import {
   CompilerOptionsConfig,
   normalizePath,
@@ -99,7 +94,7 @@ export class ProjectWithModule {
   constructor(public project: Project, public module: string) {}
 
   get baselineDir(): ReadableDir {
-    return createReadableDir(
+    return fromDir(
       path.join(
         this.project.rootDir,
         "tests/baselines/reference/project",
