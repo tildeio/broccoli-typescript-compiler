@@ -122,7 +122,7 @@ export class ProjectWithModule {
     };
 
     if (inputFiles) {
-      config.compilerOptions!.moduleResolution = "classic";
+      config.compilerOptions!.moduleResolution = "Classic";
       config.tsconfig = {
         files: inputFiles,
       };

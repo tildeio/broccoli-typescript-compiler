@@ -30,7 +30,7 @@ QUnit.module(
           root.write({
             "tsconfig.json": `{
           "compilerOptions": {
-            "moduleResolution": "node",
+            "moduleResolution": "Node",
             "outDir": "dist",
             "types": ["foo"],
             "typeRoots": [
@@ -68,7 +68,7 @@ QUnit.module(
             rootPath,
             undefined,
             "lib/tsconfig.json",
-            { module: "umd" },
+            { module: "UMD" },
             rootPath,
             new InputIO(new PathResolver(rootPath, inputPath))
           );

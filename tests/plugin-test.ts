@@ -14,10 +14,10 @@ QUnit.module("plugin-rebuild", function() {
       const plugin = typescript(input.path(), {
         tsconfig: {
           compilerOptions: {
-            module: "commonjs",
-            moduleResolution: "node",
-            newLine: "LF",
-            target: "es2015",
+            module: "CommonJS",
+            moduleResolution: "Node",
+            newLine: "lf",
+            target: "ES2015",
           },
           files: ["index.ts"],
         },
@@ -128,10 +128,10 @@ exports.A = a_1.default;
       const plugin = typescript(input.path(), {
         tsconfig: {
           compilerOptions: {
-            module: "commonjs",
-            moduleResolution: "node",
-            newLine: "LF",
-            target: "es2015",
+            module: "CommonJS",
+            moduleResolution: "Node",
+            newLine: "lf",
+            target: "ES2015",
           },
           files: ["index.ts"],
         },
