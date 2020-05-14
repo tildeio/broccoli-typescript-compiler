@@ -30,9 +30,7 @@ export namespace BroccoliPlugin {
     cachePath: string;
   }
 
-  export interface Static {
-    new (inputNodes: any[], options?: any): Plugin;
-  }
+  export type Static = new (inputNodes: any[], options?: any) => Plugin;
 }
 
 export interface WalkSync {
