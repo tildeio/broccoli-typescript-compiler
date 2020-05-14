@@ -42,7 +42,7 @@ exports.default = A;
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
-exports.A = a_1.default;
+Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 `,
         });
 
@@ -75,9 +75,9 @@ exports.default = B;
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
-exports.A = a_1.default;
+Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 var b_1 = require("./b");
-exports.B = b_1.default;
+Object.defineProperty(exports, "B", { enumerable: true, get: function () { return b_1.default; } });
 `,
         });
 
@@ -107,7 +107,7 @@ exports.default = A;
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
-exports.A = a_1.default;
+Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 `,
         });
       } finally {
@@ -148,13 +148,13 @@ exports.A = a_1.default;
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var a_1 = require("./a");
-exports.A = a_1.default;
+Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 `,
         });
 
         assert.equal(
           error.trim(),
-          "index.ts(1,30): error TS2307: Cannot find module './a'."
+          "index.ts(1,30): error TS2307: Cannot find module './a' or its corresponding type declarations."
         );
       } finally {
         await output.dispose();
