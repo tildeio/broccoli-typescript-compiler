@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - 'v*' # older version branches
+    tags:
+      - '*'
+  pull_request: {}
+  schedule:
+  - cron:  '0 6 * * 0' # weekly, on sundays
+
+jobs:
+  test:
+    name: "Node ${{ matrix.node }} - ${{ matrix.os }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: ['10', '12', '14']
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: volta-cli/action@v1
+      with:
+        node-version: ${{ matrix.node }}
+    - name: install dependencies
+      run: yarn --frozen-lockfile
+    - run: yarn lint
+    - run: yarn test
