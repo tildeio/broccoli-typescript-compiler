@@ -22,6 +22,8 @@ jobs:
         os: ['windows', 'ubuntu']
 
     steps:
+    - name: Ensure long path support
+      run: git config --global core.longpaths true
     - uses: actions/checkout@v1
     - uses: volta-cli/action@v1
       with:
