@@ -87,8 +87,9 @@ let output = filterTypescript(input, options);
 
 ### How to upgrade `typescript`
 
-1. Update `typescript` in `package.json`
-2. Run `yarn run generate-tsconfig-interface`
-3. Update `vendor/typescript`. `cd vendor/typescript && git fetch --tags && git checkout v[new-version-of-typescript]`
-4. Commit all of the above changes
-5. Run `yarn test`. There may be some changes needed to the tests to accomidate changes in TypeScript.
+1. Initialize git submodules. `git submodule update --init`
+2. Update `typescript` in `package.json`
+3. Run `yarn run generate-tsconfig-interface`
+4. Update `vendor/typescript`. `cd vendor/typescript && git fetch --tags && git checkout v[new-version-of-typescript]`
+5. Commit all of the above changes
+6. Run `yarn test`. There may be some changes needed to the tests to accomidate changes in TypeScript.
