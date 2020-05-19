@@ -1,7 +1,6 @@
 # broccoli-typescript-compiler
 
-[![Build Status](https://travis-ci.org/tildeio/broccoli-typescript-compiler.svg?branch=master)](https://travis-ci.org/tildeio/broccoli-typescript-compiler)
-[![Build status](https://ci.appveyor.com/api/projects/status/xg70wjppvd3l7e50?svg=true)](https://ci.appveyor.com/project/embercli/broccoli-typescript-compiler)
+[![Build Status](https://github.com/tildeio/broccoli-typescript-compiler/workflows/CI/badge.svg)
 
 A [Broccoli](https://github.com/broccolijs/broccoli) plugin which
 compiles [TypeScript](http://www.typescriptlang.org) files.
