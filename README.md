@@ -1,6 +1,6 @@
 # broccoli-typescript-compiler
 
-[![Build Status](https://github.com/tildeio/broccoli-typescript-compiler/workflows/CI/badge.svg)
+![Build Status](https://github.com/tildeio/broccoli-typescript-compiler/workflows/CI/badge.svg)
 
 A [Broccoli](https://github.com/broccolijs/broccoli) plugin which
 compiles [TypeScript](http://www.typescriptlang.org) files.
