@@ -69,7 +69,7 @@ export default class OutputPatcher {
           break;
         case "create":
         case "change":
-          fs.writeFileSync(entry.fullPath, contents.get(path));
+          fs.writeFileSync(entry.fullPath, contents.get(path) ?? "");
           break;
         default:
           throw new Error(`unrecognized case ${op}`);
