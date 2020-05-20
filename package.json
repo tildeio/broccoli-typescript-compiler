@@ -1,6 +1,6 @@
 {
   "name": "broccoli-typescript-compiler",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "description": "A Broccoli plugin which compiles TypeScript files.",
   "keywords": [
     "TypeScript",
@@ -39,24 +39,24 @@
     "test": "git submodule update --init && qunit dist/tests/*-test.js"
   },
   "dependencies": {
-    "broccoli-funnel": "^2.0.2",
-    "broccoli-merge-trees": "^4.1.0",
+    "broccoli-funnel": "^3.0.3",
+    "broccoli-merge-trees": "^4.2.0",
     "broccoli-plugin": "^4.0.1",
     "fs-tree-diff": "^2.0.1",
     "heimdalljs": "0.3.3",
     "md5-hex": "^3.0.1",
     "typescript": "~3.9.2",
-    "walk-sync": "^2.0.2"
+    "walk-sync": "^2.1.0"
   },
   "devDependencies": {
     "@types/mkdirp": "^1.0.0",
-    "@types/node": "*",
+    "@types/node": "^14.0.4",
     "@types/qunit": "^2.9.0",
-    "broccoli": "^3.2.0",
+    "broccoli": "^3.4.2",
     "broccoli-test-helper": "2.0.0",
-    "fixturify": "^1.2.0",
+    "fixturify": "^2.1.0",
     "json-schema": "^0.2.5",
-    "json-schema-to-typescript": "^8.0.1",
+    "json-schema-to-typescript": "^9.1.0",
     "mkdirp": "^1.0.3",
     "prettier": "^1.19.1",
     "qunit": "^2.9.3",

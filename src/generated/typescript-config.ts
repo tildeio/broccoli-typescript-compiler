@@ -31,7 +31,7 @@ export interface CompilerOptionsDefinition {
     /**
      * Specify output directory for generated declaration files. Requires TypeScript version 2.0 or later.
      */
-    declarationDir?: string;
+    declarationDir?: string | null;
     /**
      * Show diagnostic information.
      */
@@ -509,7 +509,7 @@ export interface TsNodeDefinition {
       /**
        * Specify output directory for generated declaration files. Requires TypeScript version 2.0 or later.
        */
-      declarationDir?: string;
+      declarationDir?: string | null;
       /**
        * Show diagnostic information.
        */
