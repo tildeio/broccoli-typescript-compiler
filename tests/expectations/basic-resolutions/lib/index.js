@@ -7,6 +7,7 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 exports.__esModule = true;
+exports.CapitalizedComponent = exports.C = exports.B = exports.A = void 0;
 var a_1 = require("./a");
 __createBinding(exports, a_1, "default", "A");
 var b_1 = require("./b");

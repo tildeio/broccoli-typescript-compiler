@@ -7,6 +7,7 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     o[k2] = m[k];
 }));
 exports.__esModule = true;
+exports.countDown = void 0;
 var count_down_1 = require("./count-down");
 __createBinding(exports, count_down_1, "default", "countDown");
 //# sourceMappingURL=index.js.map
