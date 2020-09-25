@@ -86,6 +86,11 @@ export class Project {
         compilerOptions[name] = config[name];
       }
     });
+
+    if (!('moduleResolution' in compilerOptions)) {
+      compilerOptions.moduleResolution = 'Classic';
+    }
+
     return compilerOptions;
   }
 }

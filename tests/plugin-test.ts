@@ -41,6 +41,7 @@ exports.default = A;
 `,
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.A = void 0;
 var a_1 = require("./a");
 Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 `,
@@ -74,6 +75,7 @@ exports.default = B;
 `,
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.B = exports.A = void 0;
 var a_1 = require("./a");
 Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 var b_1 = require("./b");
@@ -106,6 +108,7 @@ exports.default = A;
 `,
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.A = void 0;
 var a_1 = require("./a");
 Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 `,
@@ -147,6 +150,7 @@ Object.defineProperty(exports, "A", { enumerable: true, get: function () { retur
         assert.deepEqual(output.read(), {
           "index.js": `"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.A = void 0;
 var a_1 = require("./a");
 Object.defineProperty(exports, "A", { enumerable: true, get: function () { return a_1.default; } });
 `,

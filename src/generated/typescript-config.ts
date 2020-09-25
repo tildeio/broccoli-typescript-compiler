@@ -82,7 +82,7 @@ export interface CompilerOptionsDefinition {
     module?:
       | ("CommonJS" | "AMD" | "System" | "UMD" | "ES6" | "ES2015" | "ES2020" | "ESNext" | "None")
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         };
     /**
      * Specifies the end of line sequence to be used when emitting files: 'crlf' (Windows) or 'lf' (Unix).
@@ -90,7 +90,7 @@ export interface CompilerOptionsDefinition {
     newLine?:
       | ("crlf" | "lf")
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         };
     /**
      * Do not emit output.
@@ -199,7 +199,7 @@ export interface CompilerOptionsDefinition {
     target?:
       | ("ES3" | "ES5" | "ES6" | "ES2015" | "ES2016" | "ES2017" | "ES2018" | "ES2019" | "ES2020" | "ESNext")
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         };
     /**
      * Watch input files.
@@ -219,7 +219,7 @@ export interface CompilerOptionsDefinition {
     moduleResolution?:
       | ("Classic" | "Node")
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         };
     /**
      * Do not report errors on unused labels.
@@ -259,7 +259,7 @@ export interface CompilerOptionsDefinition {
        * Plugin name.
        */
       name?: string;
-      [k: string]: any;
+      [k: string]: unknown;
     }[];
     /**
      * Specify list of root directories to be used when resolving modules.
@@ -308,7 +308,6 @@ export interface CompilerOptionsDefinition {
       | (
           | "ES5"
           | "ES6"
-          | "ES7"
           | "ES2015"
           | "ES2015.Collection"
           | "ES2015.Core"
@@ -328,6 +327,7 @@ export interface CompilerOptionsDefinition {
           | "ES2017.String"
           | "ES2017.TypedArrays"
           | "ES2018"
+          | "ES2018.AsyncGenerator"
           | "ES2018.AsyncIterable"
           | "ES2018.Intl"
           | "ES2018.Promise"
@@ -347,6 +347,8 @@ export interface CompilerOptionsDefinition {
           | "ESNext.AsyncIterable"
           | "ESNext.BigInt"
           | "ESNext.Intl"
+          | "ESNext.Promise"
+          | "ESNext.String"
           | "ESNext.Symbol"
           | "DOM"
           | "DOM.Iterable"
@@ -355,37 +357,37 @@ export interface CompilerOptionsDefinition {
           | "WebWorker.ImportScripts"
         )
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
       | {
-          [k: string]: any;
+          [k: string]: unknown;
         }
     )[];
     /**
@@ -408,6 +410,10 @@ export interface CompilerOptionsDefinition {
      * Specify the JSX factory function to use when targeting react JSX emit, e.g. 'React.createElement' or 'h'. Requires TypeScript version 2.1 or later.
      */
     jsxFactory?: string;
+    /**
+     * Specify the JSX Fragment reference to use for fragements when targeting react JSX emit, e.g. 'React.Fragment' or 'Fragment'. Requires TypeScript version 4.0 or later.
+     */
+    jsxFragmentFactory?: string;
     /**
      * Parse in strict mode and emit 'use strict' for each source file. Requires TypeScript version 2.1 or later.
      */
@@ -464,16 +470,32 @@ export interface CompilerOptionsDefinition {
      * Have recompiles in '--incremental' and '--watch' assume that changes within a file will only affect files directly depending on it.
      */
     assumeChangesOnlyAffectDirectDependencies?: boolean;
-    [k: string]: any;
+    /**
+     * Show verbose diagnostic information.
+     */
+    extendedDiagnostics?: boolean;
+    /**
+     * Print names of files that are part of the compilation and then stop processing.
+     */
+    listFilesOnly?: boolean;
+    /**
+     * Disable use of source files instead of declaration files from referenced projects.
+     */
+    disableSourceOfProjectReferenceRedirect?: boolean;
+    /**
+     * Disable solution searching for this project.
+     */
+    disableSolutionSearching?: boolean;
+    [k: string]: unknown;
   };
-  [k: string]: any;
+  [k: string]: unknown;
 }
 export interface ExtendsDefinition {
   /**
    * Path to base configuration file to inherit from. Requires TypeScript version 2.1 or later.
    */
   extends?: string;
-  [k: string]: any;
+  [k: string]: unknown;
 }
 export interface TsNodeDefinition {
   /**
@@ -560,7 +582,7 @@ export interface TsNodeDefinition {
       module?:
         | ("CommonJS" | "AMD" | "System" | "UMD" | "ES6" | "ES2015" | "ES2020" | "ESNext" | "None")
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           };
       /**
        * Specifies the end of line sequence to be used when emitting files: 'crlf' (Windows) or 'lf' (Unix).
@@ -568,7 +590,7 @@ export interface TsNodeDefinition {
       newLine?:
         | ("crlf" | "lf")
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           };
       /**
        * Do not emit output.
@@ -677,7 +699,7 @@ export interface TsNodeDefinition {
       target?:
         | ("ES3" | "ES5" | "ES6" | "ES2015" | "ES2016" | "ES2017" | "ES2018" | "ES2019" | "ES2020" | "ESNext")
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           };
       /**
        * Watch input files.
@@ -697,7 +719,7 @@ export interface TsNodeDefinition {
       moduleResolution?:
         | ("Classic" | "Node")
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           };
       /**
        * Do not report errors on unused labels.
@@ -737,7 +759,7 @@ export interface TsNodeDefinition {
          * Plugin name.
          */
         name?: string;
-        [k: string]: any;
+        [k: string]: unknown;
       }[];
       /**
        * Specify list of root directories to be used when resolving modules.
@@ -786,7 +808,6 @@ export interface TsNodeDefinition {
         | (
             | "ES5"
             | "ES6"
-            | "ES7"
             | "ES2015"
             | "ES2015.Collection"
             | "ES2015.Core"
@@ -806,6 +827,7 @@ export interface TsNodeDefinition {
             | "ES2017.String"
             | "ES2017.TypedArrays"
             | "ES2018"
+            | "ES2018.AsyncGenerator"
             | "ES2018.AsyncIterable"
             | "ES2018.Intl"
             | "ES2018.Promise"
@@ -825,6 +847,8 @@ export interface TsNodeDefinition {
             | "ESNext.AsyncIterable"
             | "ESNext.BigInt"
             | "ESNext.Intl"
+            | "ESNext.Promise"
+            | "ESNext.String"
             | "ESNext.Symbol"
             | "DOM"
             | "DOM.Iterable"
@@ -833,37 +857,37 @@ export interface TsNodeDefinition {
             | "WebWorker.ImportScripts"
           )
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
         | {
-            [k: string]: any;
+            [k: string]: unknown;
           }
       )[];
       /**
@@ -886,6 +910,10 @@ export interface TsNodeDefinition {
        * Specify the JSX factory function to use when targeting react JSX emit, e.g. 'React.createElement' or 'h'. Requires TypeScript version 2.1 or later.
        */
       jsxFactory?: string;
+      /**
+       * Specify the JSX Fragment reference to use for fragements when targeting react JSX emit, e.g. 'React.Fragment' or 'Fragment'. Requires TypeScript version 4.0 or later.
+       */
+      jsxFragmentFactory?: string;
       /**
        * Parse in strict mode and emit 'use strict' for each source file. Requires TypeScript version 2.1 or later.
        */
@@ -942,7 +970,23 @@ export interface TsNodeDefinition {
        * Have recompiles in '--incremental' and '--watch' assume that changes within a file will only affect files directly depending on it.
        */
       assumeChangesOnlyAffectDirectDependencies?: boolean;
-      [k: string]: any;
+      /**
+       * Show verbose diagnostic information.
+       */
+      extendedDiagnostics?: boolean;
+      /**
+       * Print names of files that are part of the compilation and then stop processing.
+       */
+      listFilesOnly?: boolean;
+      /**
+       * Disable use of source files instead of declaration files from referenced projects.
+       */
+      disableSourceOfProjectReferenceRedirect?: boolean;
+      /**
+       * Disable solution searching for this project.
+       */
+      disableSolutionSearching?: boolean;
+      [k: string]: unknown;
     };
     /**
      * Emit output files into `.ts-node` directory.
@@ -973,6 +1017,15 @@ export interface TsNodeDefinition {
      */
     pretty?: boolean;
     /**
+     * Modules to require, like node's `--require` flag.
+     *
+     * If specified in tsconfig.json, the modules will be resolved relative to the tsconfig.json file.
+     *
+     * If specified programmatically, each input string should be pre-resolved to an absolute path for
+     * best results.
+     */
+    require?: string[];
+    /**
      * Scope compiler to files within `cwd`.
      */
     scope?: boolean;
@@ -988,30 +1041,30 @@ export interface TsNodeDefinition {
      * **DEPRECATED** Specify type-check is enabled (e.g. `transpileOnly == false`).
      */
     typeCheck?: boolean;
-    [k: string]: any;
+    [k: string]: unknown;
   };
-  [k: string]: any;
+  [k: string]: unknown;
 }
 export interface FilesDefinition {
   /**
    * If no 'files' or 'include' property is present in a tsconfig.json, the compiler defaults to including all files in the containing directory and subdirectories except those specified by 'exclude'. When a 'files' property is specified, only those files and those specified by 'include' are included.
    */
   files?: string[];
-  [k: string]: any;
+  [k: string]: unknown;
 }
 export interface ExcludeDefinition {
   /**
    * Specifies a list of files to be excluded from compilation. The 'exclude' property only affects the files included via the 'include' property and not the 'files' property. Glob patterns require TypeScript version 2.0 or later.
    */
   exclude?: string[];
-  [k: string]: any;
+  [k: string]: unknown;
 }
 export interface IncludeDefinition {
   /**
    * Specifies a list of glob patterns that match files to be included in compilation. If no 'files' or 'include' property is present in a tsconfig.json, the compiler defaults to including all files in the containing directory and subdirectories except those specified by 'exclude'. Requires TypeScript version 2.0 or later.
    */
   include?: string[];
-  [k: string]: any;
+  [k: string]: unknown;
 }
 export interface ReferencesDefinition {
   /**
@@ -1022,7 +1075,7 @@ export interface ReferencesDefinition {
      * Path to referenced tsconfig or to folder containing tsconfig.
      */
     path?: string;
-    [k: string]: any;
+    [k: string]: unknown;
   }[];
-  [k: string]: any;
+  [k: string]: unknown;
 }

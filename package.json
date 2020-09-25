@@ -45,7 +45,7 @@
     "fs-tree-diff": "^2.0.1",
     "heimdalljs": "0.3.3",
     "md5-hex": "^3.0.1",
-    "typescript": "~3.9.2",
+    "typescript": "~4.0.3",
     "walk-sync": "^2.1.0"
   },
   "devDependencies": {
