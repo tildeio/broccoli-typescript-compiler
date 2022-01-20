@@ -72,7 +72,11 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
       try {
         await output.build();
       } catch (e) {
-        assertMatches(assert, e.message, /TS2322/);
+        assertMatches(
+          assert,
+          e instanceof Error ? e.message : String(e),
+          /TS2322/
+        );
       }
     }
   );
@@ -99,7 +103,11 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
       try {
         await output.build();
       } catch (e) {
-        assertMatches(assert, e.message, /TS2322/);
+        assertMatches(
+          assert,
+          e instanceof Error ? e.message : String(e),
+          /TS2322/
+        );
       }
     }
   );
