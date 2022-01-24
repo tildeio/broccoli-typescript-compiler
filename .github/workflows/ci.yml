@@ -13,13 +13,22 @@ on:
 
 jobs:
   test:
-    name: "Node ${{ matrix.node }} - ${{ matrix.os }}"
+    name: "Node ${{ matrix.node }} / TS: ${{ matrix.typescript }} - ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
 
     strategy:
+      fail-fast: false
       matrix:
         node: ['10', '12', '14']
         os: ['windows', 'ubuntu']
+        typescript: ['default']
+        include:
+          - node: 10
+            os: ubuntu
+            typescript: ~4.0.3
+          - node: 14
+            os: ubuntu
+            typescript: latest
 
     steps:
     - name: Ensure long path support
@@ -28,7 +37,26 @@ jobs:
     - uses: volta-cli/action@v1
       with:
         node-version: ${{ matrix.node }}
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          node-modules
+          vendor/typescript
+        key: ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}-${{ matrix.typescript }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}-${{ matrix.typescript }}
+          ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          ${{ runner.os }}-${{ matrix.node }}-
     - name: install dependencies
       run: yarn --frozen-lockfile
+    - run: git submodule update --init
+    - name: Switch to alternate TS
+      if: matrix.typescript != 'default'
+      run: |
+        yarn upgrade typescript@${{ matrix.typescript }}
+        version=$(yarn tsc -v | grep Version | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
+        cd vendor/typescript
+        git checkout release-${version}
     - run: yarn lint
-    - run: yarn test
+    - run: yarn test:no-update
