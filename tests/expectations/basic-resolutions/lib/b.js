@@ -5,7 +5,7 @@ var B = /** @class */ (function () {
         this.c = c;
     }
     B.prototype.hello = function (to) {
-        return this.c.shout("hello " + to);
+        return this.c.shout("hello ".concat(to));
     };
     return B;
 }());
