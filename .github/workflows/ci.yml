@@ -40,9 +40,7 @@ jobs:
     - name: Cache
       uses: actions/cache@v2
       with:
-        path: |
-          node-modules
-          vendor/typescript
+        path: node-modules
         key: ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}-${{ matrix.typescript }}
         restore-keys: |
           ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}-${{ matrix.typescript }}
