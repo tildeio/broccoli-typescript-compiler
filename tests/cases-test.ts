@@ -1,11 +1,12 @@
 import { createBuilder, createTempDir, fromDir } from "broccoli-test-helper";
 import typescript from "broccoli-typescript-compiler";
 import * as fs from "fs";
+import { versionMajorMinor } from "typescript";
 
 // tests are output to dist/tests
 const testCasesDir = fromDir(`${__dirname}/../../tests/cases`);
 const testCases = fs.readdirSync(testCasesDir.path());
-const expectationsDir = fromDir(`${__dirname}/../../tests/expectations`);
+const expectationsDir = fromDir(`${__dirname}/../../tests/expectations/${versionMajorMinor}`);
 
 // tslint:disable-next-line:only-arrow-functions
 QUnit.module("plugin-cases", function() {
