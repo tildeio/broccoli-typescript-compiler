@@ -11,10 +11,15 @@ on:
   schedule:
   - cron:  '0 6 * * 0' # weekly, on sundays
 
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: "Node ${{ matrix.node }} / TS: ${{ matrix.typescript }} - ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
@@ -48,13 +53,16 @@ jobs:
           ${{ runner.os }}-${{ matrix.node }}-
     - name: install dependencies
       run: yarn --frozen-lockfile
-    - run: git submodule update --init
+    - run: |
+        git submodule init
+        git submodule update --depth 1
     - name: Switch to alternate TS
       if: matrix.typescript != 'default'
       run: |
         yarn upgrade typescript@${{ matrix.typescript }}
         version=$(yarn tsc -v | grep Version | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
         cd vendor/typescript
-        git checkout release-${version}
+        git fetch origin release-${version} --depth 1
+        git checkout FETCH_HEAD
     - run: yarn lint
     - run: yarn test:no-update
