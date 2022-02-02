@@ -25,7 +25,7 @@ export function formatDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>): st
   return ts.formatDiagnostics(diagnostics, formatDiagnosticsHost);
 }
 
-const outputPath = path.resolve("tests/expectations");
+const outputPath = path.resolve("tests/expectations", ts.versionMajorMinor);
 
 rimraf.sync(outputPath);
 

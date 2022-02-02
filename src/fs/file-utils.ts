@@ -9,6 +9,16 @@ import {
   Resolution,
 } from "../interfaces";
 
+interface CodedError extends Error {
+  code: string;
+}
+
+function isCodedError(value: unknown): value is CodedError {
+  return (
+    value instanceof Error && typeof (value as CodedError).code === "string"
+  );
+}
+
 export function readFile(path: AbsolutePath): FileContent {
   const buffer = readFileSync(path);
   const hash = createHash("sha1");
@@ -34,7 +44,7 @@ export function stat(path: AbsolutePath): Stats | undefined {
   try {
     return statSync(path);
   } catch (e) {
-    if (e.code === "ENOENT" || e.code === "EACCES") {
+    if (isCodedError(e) && (e.code === "ENOENT" || e.code === "EACCES")) {
       return;
     }
     throw e;
