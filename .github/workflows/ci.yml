@@ -27,13 +27,20 @@ jobs:
         node: ['12', '14', '16']
         os: ['windows', 'ubuntu']
         typescript: ['default']
+        yarn-flags: ["--frozen-lockfile"]
         include:
           - node: 12
             os: ubuntu
             typescript: ~4.0.3
+            yarn-flags: --frozen-lockfile
           - node: 16
             os: ubuntu
             typescript: latest
+            yarn-flags: --frozen-lockfile
+          - node: 17
+            os: ubuntu
+            typescript: default
+            yarn-flags: "--no-lockfile"
 
     steps:
     - name: Ensure long path support
@@ -52,7 +59,7 @@ jobs:
           ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
           ${{ runner.os }}-${{ matrix.node }}-
     - name: install dependencies
-      run: yarn --frozen-lockfile
+      run: yarn install ${{ matrix.yarn-flags }}
     - run: |
         git submodule init
         git submodule update --depth 1
