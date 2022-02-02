@@ -82,8 +82,8 @@ export default class OutputPatcher {
 /* tslint:disable:max-classes-per-file */
 class Entry implements WalkSync.Entry {
   public fullPath: string;
-  public mode: number = 0;
-  public size: number = 0;
+  public mode = 0;
+  public size = 0;
   public mtime: Date = new Date();
 
   constructor(

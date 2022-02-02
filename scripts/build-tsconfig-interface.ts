@@ -2,7 +2,6 @@ import * as fs from "fs";
 import * as http from "http";
 import { compile } from "json-schema-to-typescript";
 import * as path from "path";
-import * as ts from "typescript";
 
 http.get(
   {

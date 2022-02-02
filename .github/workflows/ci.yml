@@ -16,6 +16,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Ensure long path support
+      run: git config --global core.longpaths true
+    - uses: actions/checkout@v1
+    - uses: volta-cli/action@v1
+      with:
+        node-version: 16
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+        path: node-modules
+        key: ${{ runner.os }}-16-${{ hashFiles('**/package-lock.json') }}-default
+        restore-keys: |
+          ${{ runner.os }}-16-${{ hashFiles('**/package-lock.json') }}-default
+          ${{ runner.os }}-16-${{ hashFiles('**/package-lock.json') }}
+          ${{ runner.os }}-16-
+    - name: install dependencies
+      run: yarn install --frozen-lockfile
+    - run: yarn lint
+
   test:
     name: "Node ${{ matrix.node }} / TS: ${{ matrix.typescript }} - ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
@@ -71,5 +94,4 @@ jobs:
         cd vendor/typescript
         git fetch origin release-${version} --depth 1
         git checkout FETCH_HEAD
-    - run: yarn lint
     - run: yarn test:no-update
