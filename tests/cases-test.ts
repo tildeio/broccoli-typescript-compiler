@@ -6,7 +6,12 @@ import { versionMajorMinor } from "typescript";
 // tests are output to dist/tests
 const testCasesDir = fromDir(`${__dirname}/../../tests/cases`);
 const testCases = fs.readdirSync(testCasesDir.path());
-const expectationsDir = fromDir(`${__dirname}/../../tests/expectations/${versionMajorMinor}`);
+
+let expectationsDirPath = `${__dirname}/../../tests/expectations/${versionMajorMinor}`;
+if (!fs.existsSync(expectationsDirPath)) {
+  expectationsDirPath = `${__dirname}/../../tests/expectations/default`;
+}
+const expectationsDir = fromDir(expectationsDirPath);
 
 // tslint:disable-next-line:only-arrow-functions
 QUnit.module("plugin-cases", function() {
