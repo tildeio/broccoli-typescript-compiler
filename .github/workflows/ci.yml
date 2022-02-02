@@ -19,7 +19,7 @@ jobs:
   test:
     name: "Node ${{ matrix.node }} / TS: ${{ matrix.typescript }} - ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     strategy:
       fail-fast: false
