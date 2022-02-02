@@ -2,8 +2,8 @@ import { createBuilder, createTempDir } from "broccoli-test-helper";
 import typescript from "broccoli-typescript-compiler";
 
 // tslint:disable-next-line:only-arrow-functions
-QUnit.module("plugin-rebuild", function() {
-  QUnit.test("compiles basic typescript", async assert => {
+QUnit.module("plugin-rebuild", function () {
+  QUnit.test("compiles basic typescript", async (assert) => {
     const input = await createTempDir();
     try {
       input.write({
@@ -121,7 +121,7 @@ Object.defineProperty(exports, "A", { enumerable: true, get: function () { retur
     }
   });
 
-  QUnit.test("handles missing files", async assert => {
+  QUnit.test("handles missing files", async (assert) => {
     const input = await createTempDir();
     try {
       input.write({
@@ -141,7 +141,7 @@ Object.defineProperty(exports, "A", { enumerable: true, get: function () { retur
       });
 
       let error = "";
-      plugin.setDiagnosticWriter(msg => (error += msg));
+      plugin.setDiagnosticWriter((msg) => (error += msg));
 
       const output = createBuilder(plugin);
       try {

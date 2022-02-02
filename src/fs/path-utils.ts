@@ -65,10 +65,10 @@ export function toAbsolutePath(
   const p = ts.toPath(
     fileName,
     basePath === undefined ? currentDirectory() : basePath,
-    name => name
+    (name) => name
   );
 
-  return (trimTrailingSlash(p) as string) as AbsolutePath;
+  return trimTrailingSlash(p) as string as AbsolutePath;
 }
 
 export { getDirectoryPath } from "typescript";

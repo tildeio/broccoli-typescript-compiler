@@ -21,7 +21,7 @@ export default class SourceCache {
 
   constructor(
     private resolver: PathResolver,
-    private options: ts.CompilerOptions,
+    private options: ts.CompilerOptions
   ) {
     this.bucketKey = SharedRegistry.getKeyForCompilationSettings(options);
   }
@@ -42,7 +42,7 @@ export default class SourceCache {
 
   public getSourceFileByPath(
     fileName: string,
-    path: CanonicalPath,
+    path: CanonicalPath
   ): ts.SourceFile | undefined {
     const resolution = this.resolve(path);
     return this.getSourceFileByResolution(resolution, fileName, path);
@@ -73,7 +73,7 @@ export default class SourceCache {
   private getSourceFileByResolution(
     resolution: Resolution,
     fileName: string,
-    path: CanonicalPath,
+    path: CanonicalPath
   ): ts.SourceFile | undefined {
     const content = readFileResolution(resolution);
     if (content) {
@@ -84,7 +84,7 @@ export default class SourceCache {
   private getOrUpdateSourceFile(
     fileName: string,
     path: CanonicalPath,
-    content: FileContent,
+    content: FileContent
   ) {
     const existing = this.sourceFiles.get(path);
     if (existing) {
@@ -98,7 +98,7 @@ export default class SourceCache {
     existing: VersionedSourceFile,
     fileName: string,
     path: CanonicalPath,
-    content: FileContent,
+    content: FileContent
   ) {
     const { version } = content;
     const { options, bucketKey } = this;
@@ -108,7 +108,7 @@ export default class SourceCache {
       options,
       bucketKey,
       snapshot(content.buffer),
-      version,
+      version
     );
     existing.sourceFile = sourceFile;
     existing.version = version;
@@ -118,7 +118,7 @@ export default class SourceCache {
   private createSourceFile(
     fileName: string,
     path: CanonicalPath,
-    content: FileContent,
+    content: FileContent
   ) {
     const { options, bucketKey, sourceFiles } = this;
     const { buffer, version } = content;
@@ -128,7 +128,7 @@ export default class SourceCache {
       options,
       bucketKey,
       snapshot(buffer),
-      version,
+      version
     );
     sourceFiles.set(path, { sourceFile, version });
     return sourceFile;

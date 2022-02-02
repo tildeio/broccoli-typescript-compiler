@@ -7,7 +7,8 @@ import {
 } from "../interfaces";
 
 export default class ResolutionCacheDelegate
-  implements CacheDelegate<PathInfo, CanonicalPath, Resolution> {
+  implements CacheDelegate<PathInfo, CanonicalPath, Resolution>
+{
   public cacheKey(pathInfo: PathInfo): CanonicalPath {
     return pathInfo.canonicalPath;
   }

@@ -10,11 +10,11 @@ const runner = new ProjectRunner({
 });
 
 // tslint:disable:only-arrow-functions
-QUnit.module("typescript-project-cases", function() {
-  runner.each(project => {
-    QUnit.module(project.basename, function() {
-      project.each(mod => {
-        QUnit.test(mod.module, async function(assert) {
+QUnit.module("typescript-project-cases", function () {
+  runner.each((project) => {
+    QUnit.module(project.basename, function () {
+      project.each((mod) => {
+        QUnit.test(mod.module, async function (assert) {
           const input = await createTempDir();
           try {
             input.copy(project.dir);
@@ -22,7 +22,7 @@ QUnit.module("typescript-project-cases", function() {
             const plugin = typescript(input.path(), mod.pluginConfig);
 
             let errors: string | undefined;
-            plugin.setDiagnosticWriter(msg => {
+            plugin.setDiagnosticWriter((msg) => {
               if (errors === undefined) {
                 errors = "";
               }

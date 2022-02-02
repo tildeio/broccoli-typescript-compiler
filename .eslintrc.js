@@ -9,15 +9,15 @@ module.exports = {
     "@typescript-eslint/ban-types": [
       "error",
       {
-        "extendDefaults": true,
-        "types": {
-          "{}": false
-        }
-      }
+        extendDefaults: true,
+        types: {
+          "{}": false,
+        },
+      },
     ],
     // We're using ES2015 syntax
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-var-requires": "off"
-  }
+    "@typescript-eslint/no-var-requires": "off",
+  },
 };

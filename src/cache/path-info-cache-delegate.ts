@@ -8,7 +8,8 @@ import {
 } from "../interfaces";
 
 export default class PathInfoCacheDelegate
-  implements CacheDelegate<string, CanonicalPath, PathInfo> {
+  implements CacheDelegate<string, CanonicalPath, PathInfo>
+{
   constructor(
     private rootPath: AbsolutePath,
     private inputPath: AbsolutePath

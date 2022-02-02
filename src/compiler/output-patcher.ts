@@ -51,7 +51,7 @@ export default class OutputPatcher {
       lastTree = FSTree.fromEntries(walkSync.entries(outputPath));
     }
     const patch = lastTree.calculatePatch(nextTree, isUnchanged);
-    patch.forEach(change => {
+    patch.forEach((change) => {
       const op = change[0];
       const path = change[1];
       const entry = change[2];
