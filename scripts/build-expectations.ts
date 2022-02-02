@@ -21,7 +21,9 @@ const formatDiagnosticsHost: ts.FormatDiagnosticsHost = {
   getNewLine,
 };
 
-export function formatDiagnostics(diagnostics: ReadonlyArray<ts.Diagnostic>): string {
+export function formatDiagnostics(
+  diagnostics: ReadonlyArray<ts.Diagnostic>
+): string {
   return ts.formatDiagnostics(diagnostics, formatDiagnosticsHost);
 }
 
@@ -30,7 +32,7 @@ const outputPath = path.resolve("tests/expectations", ts.versionMajorMinor);
 rimraf.sync(outputPath);
 
 const testCases = fs.readdirSync("tests/cases");
-testCases.forEach(testCaseName => {
+testCases.forEach((testCaseName) => {
   console.log("test case", testCaseName);
   const basePath = path.resolve(path.join("tests/cases", testCaseName));
   console.log("basePath", basePath);

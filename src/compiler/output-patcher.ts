@@ -51,7 +51,7 @@ export default class OutputPatcher {
       lastTree = FSTree.fromEntries(walkSync.entries(outputPath));
     }
     const patch = lastTree.calculatePatch(nextTree, isUnchanged);
-    patch.forEach(change => {
+    patch.forEach((change) => {
       const op = change[0];
       const path = change[1];
       const entry = change[2];
@@ -82,8 +82,8 @@ export default class OutputPatcher {
 /* tslint:disable:max-classes-per-file */
 class Entry implements WalkSync.Entry {
   public fullPath: string;
-  public mode: number = 0;
-  public size: number = 0;
+  public mode = 0;
+  public size = 0;
   public mtime: Date = new Date();
 
   constructor(

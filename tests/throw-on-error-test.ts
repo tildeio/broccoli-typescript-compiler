@@ -7,7 +7,7 @@ import {
 import typescript from "broccoli-typescript-compiler";
 
 // tslint:disable-next-line:only-arrow-functions
-QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
+QUnit.module("throwOnError", function ({ beforeEach, afterEach }) {
   let input: TempDir;
   let output: Output | null;
   let nodeEnv: string | undefined;
@@ -32,7 +32,7 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
     process.env.NODE_ENV = nodeEnv;
   });
 
-  QUnit.test("does not throw on type errors by default", async assert => {
+  QUnit.test("does not throw on type errors by default", async (assert) => {
     assert.expect(1);
 
     input.write({
@@ -53,7 +53,7 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
 
   QUnit.test(
     "throws on type errors when throwOnErrors is set to true",
-    async assert => {
+    async (assert) => {
       assert.expect(1);
 
       input.write({
@@ -83,7 +83,7 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
 
   QUnit.test(
     "throws on type errors if NODE_ENV is 'production'",
-    async assert => {
+    async (assert) => {
       assert.expect(1);
 
       input.write({
@@ -114,7 +114,7 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
 
   QUnit.test(
     "does not throw by default if NODE_ENV is not 'production'",
-    async assert => {
+    async (assert) => {
       assert.expect(1);
 
       input.write({
@@ -137,7 +137,7 @@ QUnit.module("throwOnError", function({ beforeEach, afterEach }) {
 
   QUnit.test(
     "does not throw when NODE_ENV is 'production' if throwOnError is explicitly false",
-    async assert => {
+    async (assert) => {
       assert.expect(1);
 
       input.write({

@@ -7,7 +7,8 @@ import {
 } from "../interfaces";
 
 export default class DirEntriesCacheDelegate
-  implements CacheDelegate<CanonicalPath, CanonicalPath, DirEntries> {
+  implements CacheDelegate<CanonicalPath, CanonicalPath, DirEntries>
+{
   constructor(private resolver: PathResolver) {}
 
   public cacheKey(path: CanonicalPath): CanonicalPath {

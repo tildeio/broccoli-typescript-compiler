@@ -11,7 +11,7 @@ export default function createParseConfigHost(
     return input.getFileSystemEntries(path);
   }
 
-  function realpath(path: string): string  {
+  function realpath(path: string): string {
     return input.realpath(path) || path;
   }
 
@@ -66,6 +66,6 @@ declare module "typescript" {
     currentDirectory: string,
     depth: number | undefined,
     getFileSystemEntries: (path: string) => FileSystemEntries,
-    realpath: (path: string) => string,
+    realpath: (path: string) => string
   ): string[];
 }

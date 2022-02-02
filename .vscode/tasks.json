@@ -7,10 +7,7 @@
     {
       "label": "test",
       "type": "shell",
-      "args": [
-        "run",
-        "test"
-      ],
+      "args": ["run", "test"],
       "problemMatcher": [],
       "group": {
         "_id": "test",
@@ -20,10 +17,7 @@
     {
       "label": "build",
       "type": "shell",
-      "args": [
-        "run",
-        "build"
-      ],
+      "args": ["run", "build"],
       "problemMatcher": "$tsc",
       "group": {
         "_id": "build",

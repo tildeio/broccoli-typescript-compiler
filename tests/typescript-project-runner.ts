@@ -80,15 +80,15 @@ export class Project {
   get compilerOptions() {
     const { config } = this;
     const compilerOptions: CompilerOptionsConfig = {};
-    ts.optionDeclarations.forEach(opt => {
+    ts.optionDeclarations.forEach((opt) => {
       const name = opt.name;
       if (name in config) {
         compilerOptions[name] = config[name];
       }
     });
 
-    if (!('moduleResolution' in compilerOptions)) {
-      compilerOptions.moduleResolution = 'Classic';
+    if (!("moduleResolution" in compilerOptions)) {
+      compilerOptions.moduleResolution = "Classic";
     }
 
     return compilerOptions;

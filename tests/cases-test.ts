@@ -14,9 +14,9 @@ if (!fs.existsSync(expectationsDirPath)) {
 const expectationsDir = fromDir(expectationsDirPath);
 
 // tslint:disable-next-line:only-arrow-functions
-QUnit.module("plugin-cases", function() {
-  testCases.forEach(testCase => {
-    QUnit.test(testCase.replace("-", " "), async assert => {
+QUnit.module("plugin-cases", function () {
+  testCases.forEach((testCase) => {
+    QUnit.test(testCase.replace("-", " "), async (assert) => {
       const tree = testCasesDir.read(testCase);
 
       delete tree["tsconfig.json"];

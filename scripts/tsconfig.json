@@ -4,8 +4,5 @@
     "moduleResolution": "node",
     "target": "es2015"
   },
-  "files": [
-    "build-expectations.ts",
-    "build-tsconfig-interface.ts"
-  ]
+  "files": ["build-expectations.ts", "build-tsconfig-interface.ts"]
 }

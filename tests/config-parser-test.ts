@@ -61,7 +61,7 @@ QUnit.module(
         },
       },
       () => {
-        QUnit.test("should be able to find the extended config", assert => {
+        QUnit.test("should be able to find the extended config", (assert) => {
           const rootPath = toAbsolutePath(root.path());
           const inputPath = toAbsolutePath(input.path());
           const parser = new ConfigParser(

@@ -50,7 +50,7 @@ An optional string, which when provide should be a descriptive annotation. Usefu
 
 An optional boolean, defaulting to `false`. If set to `true`, will cause the build to break on errors.
 
-*note: if `process.env.NODE_ENV === 'production'` is true, `throwOnError` will default to `true`.*
+_note: if `process.env.NODE_ENV === 'production'` is true, `throwOnError` will default to `true`._
 
 ### Ways to use:
 
